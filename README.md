@@ -1,7 +1,7 @@
 <p align="center">
-  <img alt="XAF Logo" src="https://raw.githubusercontent.com/Aquaver/xaf-framework/master/assets/logo.png"><br>
-  <img alt="Latest stable release version" src="https://img.shields.io/badge/latest_stable_release-1.0.0-brightgreen.svg">
+  <img alt="XAF Logo" src="https://raw.githubusercontent.com/Aquaver/xaf-framework/master/assets/logo.png"><br><br>
   <img alt="Latest development release version" src="https://img.shields.io/badge/latest_development_release-1.0.0-orange.svg">
+  <img alt="Latest stable release version" src="https://img.shields.io/badge/latest_stable_release-1.0.0-brightgreen.svg">
   <img alt="Requied OS" src="https://img.shields.io/badge/required_OS-OpenOS_1.7-blue.svg">
 </p>
 

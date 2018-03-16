@@ -239,6 +239,7 @@ function XafCore:getTableInstance()
   public.loadFromFile = function(self, filePath)                                    -- [!] Function: loadFromFile(filePath) - Returns a table from file where it was previously saved.
     assert(type(filePath) == "string", "[XAF Core] Expected STRING as argument #1") -- [!] Parameter: filePath - Absolute path of file where table was saved.
                                                                                     -- [!] Return: loadTable - Successfully loaded table.
+    local lineDelimiter = string.char(13, 10)
     local loadPath = filePath
     local loadTable = {}
     
@@ -252,7 +253,7 @@ function XafCore:getTableInstance()
         tableData = tableFile:read(math.huge)
       end
       
-      for line in string.gmatch(tableContent, "[^\n]+") do
+      for line in string.gmatch(tableContent, "[^" .. lineDelimiter .. "]+") do
         local delimiter = string.find(line, " = ")
         local key = nil
         local value = nil

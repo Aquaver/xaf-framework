@@ -253,6 +253,9 @@ function XafCore:getTableInstance()
         tableData = tableFile:read(math.huge)
       end
       
+      tableData = ''
+      tableFile:close()
+      
       for line in string.gmatch(tableContent, "[^" .. lineDelimiter .. "]+") do
         local delimiter = string.find(line, " = ")
         local key = nil

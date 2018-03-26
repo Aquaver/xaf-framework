@@ -27,6 +27,7 @@ if (command) then
         initData = initFile:read(math.huge)
       end
       
+      initFile:close()
       initFunction = load(initCode)
       initFunction(arguments, options)
     else

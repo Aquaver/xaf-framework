@@ -1,0 +1,7 @@
+[#] Extensible Application Framework package release data.
+[#] This file is used while checking for update procedure.
+[#] Data represented in XAF Table Format.
+
+[S] package_name = [S] xaf-framework
+[S] package_stable = [S] true
+[S] package_version = [S] 1.0.0

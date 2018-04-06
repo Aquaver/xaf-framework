@@ -18,7 +18,7 @@ local systemVersion = string.sub(systemIdentifier, systemDelimiter)
 
 -- General XAF package installation properties.
 local sourceProject = "https://raw.githubusercontent.com/Aquaver/xaf-framework/"
-local sourceVersion = "1.0.0"
+local sourceVersion = "master"
 local sourcePackage = "/package"
 local sourceModules = {}
 local sourceScripts = {}
@@ -146,13 +146,26 @@ end
 -- Starting downloading and installation procedure.
 local scriptsAddress = sourceProject .. sourceVersion .. sourcePackage
 local scriptsTarget = filesystem.concat(pathRoot, pathProject, pathScripts)
-local scriptsTotalSize = 0
+local scriptsTotalSize = 0 
 local sourceAddress = sourceProject .. sourceVersion .. packageType
 local sourceTarget = filesystem.concat(pathRoot, pathProject, pathClasses)
 local sourceTotalSize = 0
 
 print("  >> Preparing to installation...")
 print("  >> Connecting to project repository...")
+
+local filesystem, internet = require("filesystem"), require("internet")
+local function httpget(remotepath, localpath, localfile, maxattempt) maxattempts = maxattempts or 3
+local gsub, cout, fs, ie = string.gsub, io.write, filesystem, internet
+if fs.exists(localpath) == false then fs.makeDirectory(localpath) end
+local f, reason = fs.open(fs.concat(localpath, localfile), "w") 
+if not f then cout("\nFailed opening file for writing: " .. reason) return false end
+cout("    >> Downloading \n      FROM " .. remotepath .. " \n      TO " .. fs.concat(localpath, localfile))
+local con = ie.request(remotepath) os.sleep(1) local a, res = 0, con.response()
+while res ~= 200 and ( a < maxattempts ) do con = ie.request(remotepath) os.sleep(1) res = con.response() a = a + 1 end
+if res == 200 then cout(" OK\n      Saving ")for c in con do cout(".")gsub(c,"\r\n","\n")f:write(c)end cout(" DONE\n") return true
+else cout(" failed\n") f:close() fs.remove(fs.concat(localpath, localfile)) cout("    >>FAILED "..res) return false end
+end
 
 for scriptType, scriptTable in pairs(sourceScripts) do
   local remotePath = scriptsAddress .. packageType .. pathScripts .. '/' .. scriptType
@@ -172,37 +185,11 @@ for scriptType, scriptTable in pairs(sourceScripts) do
   
   for scriptIdentifier, scriptName in ipairs(scriptTable) do
     local internalRemote = remotePath .. '/' .. scriptName .. ".lua"
-    local internalLocal = localPath .. '/' .. scriptName .. ".lua"
-    local connection = internet.request(internalRemote)
-    
-    print("      >> Downloading script: " .. scriptType .. '/' .. scriptName)
-    os.sleep(1)
-    
-    for i = 1, 3 do
-      if (connection.response()) then
-        local scriptFile = filesystem.open(internalLocal, 'w')
-        local scriptCode = connection.read(math.huge)
-        local scriptSize = 0
-        
-        while (scriptCode) do
-          scriptSize = scriptSize + unicode.wlen(scriptCode)
-          scriptFile:write(scriptCode)
-          scriptCode = connection.read(math.huge)
-        end
-        
-        scriptsTotalSize = scriptsTotalSize + scriptSize
-        connection.close()
-        scriptFile:close()
-        
-        print("      >> Downloading script '" .. scriptType .. '/' .. scriptName .. "' finished (" .. string.format("%.2f", scriptSize / 1024) .. " kB)")
-        break
-      else
-        print("        >> Cannot download, trying again...")
-        os.sleep(1)
-      end
-    end
+    local internalLocal = filesystem.concat(localPath, scriptName .. ".lua")
+
+    --print("      >> Downloading script: " .. scriptType .. '/' .. scriptName)
+    os.sleep(1) httpget(internalRemote, localPath, scriptName..".lua")
   end
-  
   print("    >> Downloading script type '" .. scriptType .. "' finished")
 end
 
@@ -214,38 +201,13 @@ for moduleName, moduleTable in pairs(sourceModules) do
   end
   
   for classIdentifier, className in ipairs(moduleTable) do
+
     local remotePath = sourceAddress .. moduleName .. '/' .. className .. ".lua"
-    local localPath = sourceTarget .. '/' .. moduleName .. '/' .. className .. ".lua"
-    local connection = internet.request(remotePath)
+    local localPath = filesystem.concat("/", sourceTarget, moduleName)
     
-    print("      >> Downloading class: " .. moduleName .. '/' .. className)
-    os.sleep(1)
-    
-    for i = 1, 3 do
-      if (connection.response()) then
-        local classFile = filesystem.open(localPath, 'w')
-        local classCode = connection.read(math.huge)
-        local classSize = 0
-        
-        while (classCode) do
-          classSize = classSize + unicode.wlen(classCode)
-          classFile:write(classCode)
-          classCode = connection.read(math.huge)
-        end
-        
-        sourceTotalSize = sourceTotalSize + classSize
-        connection.close()
-        classFile:close()
-        
-        print("      >> Downloading class '" .. moduleName .. '/' .. className .. "' finished (" .. string.format("%.2f", classSize / 1024) .. " kB)")
-        break
-      else
-        print("        >> Cannot download, trying again...")
-        os.sleep(1)
-      end
-    end
+    --print("      >> Downloading class: " .. moduleName .. '/' .. className)
+    os.sleep(1) httpget(remotePath, localPath, className .. ".lua")
   end
-  
   print("    >> Downloading module '" .. moduleName .. "' finished")
 end
 

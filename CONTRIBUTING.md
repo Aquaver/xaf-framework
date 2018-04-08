@@ -14,17 +14,23 @@ Hello! You probably came to this page because you would like to contribute to XA
 
 ```
 xaf-framework
-   └─ master ─── < ─── merge only on new release ──┐
-       ├─ stable                                   │
-       │   ├─ hotfix-name                          │
-       │   └─ release-name ─────────── > ──────────┤
-       └─ development                              │
-           ├─ feature-name                         │
-           ├─ fix-name                             │
-           ├─ pr-username                          │
-           │   └─ ...                              │
-           ├─ release-name ─────────── > ──────────┘
+   └─ master
+       ├─ stable
+       │   ├─ hotfix-name
+       │   └─ release-name
+       └─ development
+           ├─ feature-name
+           ├─ fix-name
+           ├─ pr-username
+           │   └─ ...
+           ├─ release-name
            └─ ...
+
+[>] Master must be merged only from release-name branches either from 'stable' or 'development' on releases.
+[>] All changes that concern specific version must be merged to 'release-name' before releasing.
+[>] Branch named 'pr-username' is used for contributing with PR workflow.
+[>] Contributors should merge all sub-branches (...) to 'pr-username' before PR.
+[>] Parent branches: 'master', 'stable' and 'development' must not be removed.
 ```
 
 Remember that if you feel lost with some of these conventions or if you think you did something incorrectly, please have a look among others on main commits list or on some code. However, if you still feel insecure, please do not be afraid to ask somebody from leader team - we will help you. Better ask twice than lose yourself once.

@@ -5,7 +5,7 @@
 -- [>] It could be used as plain label if deactivated or event has not been set.
 -- [!] Accepted events: 'click', 'double-click'
 
-local component = require("graphic/component")
+local component = require("xaf/graphic/component")
 local computer = require("computer")
 local unicode = require("unicode")
 

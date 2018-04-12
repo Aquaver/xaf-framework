@@ -5,7 +5,7 @@
 -- [>] It also has two states (selected/deselected), however, it looks differently.
 -- [!] Accepted events: 'select', 'deselect'
 
-local component = require("graphic/component")
+local component = require("xaf/graphic/component")
 local unicode = require("unicode")
 
 local Checkbox = {

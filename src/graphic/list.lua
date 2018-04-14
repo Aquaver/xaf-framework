@@ -6,8 +6,8 @@
 -- [>] Furthermore that component allows selecting and deselecting specific text lines (single or multiple at once).
 -- [!] Accepted events: 'click', 'scroll'
 
-local component = require("graphic/component")
-local xafcore = require("core/xafcore")
+local component = require("xaf/graphic/component")
+local xafcore = require("xaf/core/xafcore")
 local xafcoreTable = xafcore:getTableInstance()
 
 local List = {

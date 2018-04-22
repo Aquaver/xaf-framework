@@ -6,7 +6,7 @@
 -- [>] It may be scrolled by mouse wheel or two buttons (up and down).
 -- [!] Accepted events: 'click', 'scroll'
 
-local component = require("graphic/component")
+local component = require("xaf/graphic/component")
 
 local Spinner = {
   C_NAME = "Generic GUI Spinner",

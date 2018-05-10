@@ -7,9 +7,9 @@
 
 local component = require("component")
 local filesystem = require("filesystem")
-local server = require("network/server")
+local server = require("xaf/network/server")
 local unicode = require("unicode")
-local xafcore = require("core/xafcore")
+local xafcore = require("xaf/core/xafcore")
 local xafcoreString = xafcore:getStringInstance()
 local xafcoreTable = xafcore:getTableInstance()
 local xafcoreText = xafcore:getTextInstance()

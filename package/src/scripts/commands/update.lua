@@ -5,8 +5,8 @@
 local arguments, options = ...
 local version = table.remove(arguments, 1)
 local component = require("component")
-local httpstream = require("utility/httpstream")
-local xafcore = require("core/xafcore")
+local httpstream = require("xaf/utility/httpstream")
+local xafcore = require("xaf/core/xafcore")
 local xafcoreExecutor = xafcore:getExecutorInstance()
 
 if (options.h == true or options.help == true) then

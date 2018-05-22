@@ -325,8 +325,12 @@ function List:initialize()
         renderer.fill(posX + 2, posY + 1, columns, rows, ' ')
         
         if (private.showScrollbar == true) then
-          renderer.fill(posX + columns + 4, posY + 1, 1, height - 2, ' ')
-          renderer.set(posX + columns + 4, posY + private.scrollbarPosition + 1, '█')
+          if (contentLength > rows) then
+            renderer.fill(posX + columns + 4, posY + 1, 1, height - 2, ' ')
+            renderer.set(posX + columns + 4, posY + private.scrollbarPosition + 1, '█')
+          else
+            renderer.fill(posX + columns + 4, posY + 1, 1, height - 2, '▒')
+          end
         end
         
         for i = 1, iterations do

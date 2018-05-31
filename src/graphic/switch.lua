@@ -6,7 +6,7 @@
 -- [>] It accepts either inactive (default) and active state.
 -- [!] Accepted events: 'active', 'inactive'
 
-local component = require("graphic/component") -- Class Component is a parent for this class.
+local component = require("xaf/graphic/component") -- Class Component is a parent for this class.
 local unicode = require("unicode")
 
 local Switch = {

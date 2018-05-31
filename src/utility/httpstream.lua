@@ -8,7 +8,7 @@
 -- [>] Connection with HTTP Secure targets (HTTPS) are also fully supported.
 
 local unicode = require("unicode")
-local xafcore = require("core/xafcore")
+local xafcore = require("xaf/core/xafcore")
 local xafcoreText = xafcore:getTextInstance()
 
 local HttpStream = {

@@ -5,8 +5,8 @@
 -- [>] It may be used directly with top-level DNS server module, but you could obviously extend it.
 -- [>] That class comes with four function which allow making requests corresponding to them.
 
-local client = require("network/client")
-local xafcore = require("core/xafcore")
+local client = require("xaf/network/client")
+local xafcore = require("xaf/core/xafcore")
 local xafcoreSecurity = xafcore:getSecurityInstance()
 
 local DnsClient = {

@@ -6,8 +6,8 @@
 -- [>] Due to that module implements only plain DNS related processes, it is strongly recommended extending and reimplementing it.
 
 local filesystem = require("filesystem")
-local server = require("network/server")
-local xafcore = require("core/xafcore")
+local server = require("xaf/network/server")
+local xafcore = require("xaf/core/xafcore")
 local xafcoreSecurity = xafcore:getSecurityInstance()
 local xafcoreTable = xafcore:getTableInstance()
 

@@ -5,7 +5,7 @@
 -- [>] It has generally three variables: minimum and maximum value bound and obviously current value.
 -- [!] Accepted events: no events
 
-local component = require("graphic/component")
+local component = require("xaf/graphic/component")
 
 local ProgressBar = {
   C_NAME = "Generic GUI Progress Bar",

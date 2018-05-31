@@ -8,7 +8,6 @@ local filesystem = require("filesystem")
 local configTable = _G._XAF
 local pathRoot = "aquaver.github.io"
 local pathProject = "xaf-framework"
-local pathClasses = "api"
 
 if (options.h == true or options.help == true) then
   print("-----------------------------------------------")
@@ -34,14 +33,14 @@ if (configTable) then
   print("  >> XAF interface is already initialized")
   print("  >> You could use 'xaf list' - for available command list")
 else
-  local packagePath = filesystem.concat(pathRoot, pathProject, pathClasses)
+  local packagePath = filesystem.concat(pathRoot, pathProject)
   local fullPath = packagePath .. "/?.lua"
   local pathSegment = ';/' .. fullPath
   
   package.path = package.path .. pathSegment
   _G._XAF = {}
   _G._XAF._APPDATA = {}
-  _G._XAF._VERSION = "1.0.0"
+  _G._XAF._VERSION = "1.0.1"
   
   print("---------------------------------------------------")
   print("-- Extensible Application Framework - Controller --")

@@ -18,7 +18,7 @@ local systemVersion = string.sub(systemIdentifier, systemDelimiter)
 
 -- General XAF package installation properties.
 local sourceProject = "https://raw.githubusercontent.com/Aquaver/xaf-framework/"
-local sourceVersion = "1.0.0"
+local sourceVersion = "1.0.1"
 local sourcePackage = "/package"
 local sourceModules = {}
 local sourceScripts = {}
@@ -32,7 +32,7 @@ sourceModules["utility"] = {"httpstream", "redstream"}
 -- Target installation directories in absolute paths.
 local pathRoot = "aquaver.github.io"
 local pathProject = "xaf-framework"
-local pathClasses = "api"
+local pathClasses = "xaf"
 local pathScripts = "scripts"
 
 -- XAF scripts directories (for initializing, controlling, et cetera).

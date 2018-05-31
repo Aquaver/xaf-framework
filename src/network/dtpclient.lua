@@ -5,7 +5,7 @@
 -- [>] It could be used directly but obviously you might reimplement it if needed.
 -- [>] That module comes with API which provides sending all request types to the server.
 
-local client = require("network/client")
+local client = require("xaf/network/client")
 
 local DtpClient = {
   C_NAME = "Generic DTP Client",

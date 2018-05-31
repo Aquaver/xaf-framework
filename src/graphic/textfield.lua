@@ -6,7 +6,7 @@
 -- [>] Each text field's container dimensions is specified by columns and rows.
 -- [!] Accepted events: 'click', 'key', 'clipboard'
 
-local component = require("graphic/component")
+local component = require("xaf/graphic/component")
 local unicode = require("unicode")
 
 local TextField = {

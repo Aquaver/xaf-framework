@@ -1,8 +1,8 @@
 <p align="center">
   <img alt="XAF Logo" src="https://raw.githubusercontent.com/Aquaver/xaf-framework/master/assets/logo.png"><br><br>
-  <img alt="Latest development release version" src="https://img.shields.io/badge/latest_development_release-1.0.0-orange.svg">
-  <img alt="Latest stable release version" src="https://img.shields.io/badge/latest_stable_release-1.0.0-brightgreen.svg">
-  <img alt="Required OS" src="https://img.shields.io/badge/required_OS-OpenOS_1.7-blue.svg">
+  <img alt="Latest development release version" src="https://raw.githubusercontent.com/Aquaver/xaf-framework/master/assets/versions/development.svg?sanitize=true">
+  <img alt="Latest stable release version" src="https://raw.githubusercontent.com/Aquaver/xaf-framework/master/assets/versions/stable.svg?sanitize=true">
+  <img alt="Required OS" src="https://raw.githubusercontent.com/Aquaver/xaf-framework/master/assets/versions/system.svg?sanitize=true">
 </p>
 
 Extensible Application Framework is a development package for Minecraft modification - OpenComputers. This open-source project makes programming applications with GUI more and more easy, but not only. It consists of several modules: core, graphic, network and utilities. Each of these modules also contains many libraries so possibilities of this framework are unlimited. Initially it was designed to provide many useful GUI controls but currently it has also quite a few classes which help to build a computer network for example, or a redstone controller terminal.

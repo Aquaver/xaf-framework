@@ -7,8 +7,8 @@
 -- [>] Built-in request types have been designed for creating tables (or directories), renaming, removing and key-value pairs managing.
 
 local filesystem = require("filesystem")
-local server = require("network/server")
-local xafcore = require("core/xafcore")
+local server = require("xaf/network/server")
+local xafcore = require("xaf/core/xafcore")
 local xafcoreString = xafcore:getStringInstance()
 local xafcoreTable = xafcore:getTableInstance()
 local xafcoreText = xafcore:getTextInstance()

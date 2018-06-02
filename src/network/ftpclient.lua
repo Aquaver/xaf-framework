@@ -5,7 +5,7 @@
 -- [>] It implements all functions that are able to perform needed request types.
 -- [>] As the FTP server, this module also supports transferring files with any length (concerning transferring time).
 
-local client = require("network/client")
+local client = require("xaf/network/client")
 local filesystem = require("filesystem")
 local unicode = require("unicode")
 

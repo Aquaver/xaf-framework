@@ -6,7 +6,7 @@
 -- [>] Entered text could be received not as table with text, but as single string value.
 -- [!] Accepted events: 'click', 'key', 'clipboard'
 
-local component = require("graphic/component")
+local component = require("xaf/graphic/component")
 local unicode = require("unicode")
 
 local PasswordField = {

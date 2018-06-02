@@ -7,7 +7,7 @@
 -- [>] Warning! Note that these protocols may not work properly in non-default conditions.
 
 local event = require("event")
-local xafcore = require("core/xafcore")
+local xafcore = require("xaf/core/xafcore")
 local xafcoreSecurity = xafcore:getSecurityInstance()
 
 local Client = {

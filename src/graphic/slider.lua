@@ -5,7 +5,7 @@
 -- [>] Each slider can change its value bounds and incremental skip of value and slider graphical switch.
 -- [!] Accepted events: 'drag'
 
-local component = require("graphic/component") -- As this class describes top-level graphic component it must inherit from Component class.
+local component = require("xaf/graphic/component") -- As this class describes top-level graphic component it must inherit from Component class.
 
 local Slider = {
   C_NAME = "Generic GUI Slider",

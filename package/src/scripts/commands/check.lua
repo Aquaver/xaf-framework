@@ -5,8 +5,8 @@
 local arguments, options = ...
 local component = require("component")
 local filesystem = require("filesystem")
-local httpstream = require("utility/httpstream")
-local xafcore = require("core/xafcore")
+local httpstream = require("xaf/utility/httpstream")
+local xafcore = require("xaf/core/xafcore")
 local xafcoreTable = xafcore:getTableInstance()
 
 if (options.h == true or options.help == true) then

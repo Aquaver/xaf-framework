@@ -5,6 +5,8 @@
 -- [>] It comes with simple parser, which returns processed data to JSON object as Lua table.
 -- [>] Currently, it has only one function to parse input string.
 
+local unicode = require("unicode")
+
 local JsonParser = {
   C_NAME = "Generic JSON Parser",
   C_INSTANCE = true,
@@ -222,14 +224,45 @@ function JsonParser:initialize()
     end
   end
 
+  private.removeWhitespaces = function(self, jsonString)                                 -- [!] Function: removeWhitespaces(jsonString) - Minifies the JSON string on input by removing all whitespaces (except in string literals).
+    local currentCharacter = ''                                                          -- [!] Parameter: jsonString - Input JSON string to minify.
+    local previousCharacter = ''                                                         -- [!] Return: transformedString - Minified JSON string, ready to parse.
+    local stringLiteral = false
+    local totalLength = unicode.wlen(jsonString)
+    local transformedString = ''
+
+    for i = 1, totalLength do
+      currentCharacter = string.sub(jsonString, i, i)
+
+      if (currentCharacter == '\"') then
+        if (previousCharacter == "\\") then
+          transformedString = transformedString .. previousCharacter .. currentCharacter
+        else
+          stringLiteral = (not stringLiteral)
+          transformedString = transformedString .. currentCharacter
+        end
+      elseif (string.find(currentCharacter, "%s")) then
+        if (stringLiteral == true) then
+          transformedString = transformedString .. currentCharacter
+        end
+      else
+        transformedString = transformedString .. currentCharacter
+      end
+
+      previousCharacter = currentCharacter
+    end
+
+    return transformedString
+  end
+
   public.parse = function(self, inputJson)                                           -- [!] Function: parse(inputJson) - Starts JSON text processing procedure into Lua object.
     assert(type(inputJson) == "string", "[XAF Core] Expected STRING as argument #1") -- [!] Parameter: inputJson - JSON data as plain text string.
                                                                                      -- [!] Return: ... - Processed JSON object table or value (number, boolean, string, nil).
-    private.inputData = inputJson
+    private.inputData = private:removeWhitespaces(inputJson)
     private.currentCharacter = string.sub(private.inputData, 1, 1)
     private.currentIndex = 0
 
-    return private:getValue(inputData)
+    return private:getValue(private.inputData)
   end
 
   return {

@@ -18,7 +18,7 @@ local XafCore = {
   C_NAME = "XAF Core",
   C_INSTANCE = false,
   C_INHERIT = false,
-  
+
   static = {
     CONCAT_DEFAULT = 0, -- [>] Text instance related constants, used for string mode concatenation in function 'convertLinesToString()'
     CONCAT_SPACE = 1,   -- [>] Access to constants: local xafcore = require("xafcore") xafcore.static.NAME
@@ -29,19 +29,19 @@ local XafCore = {
 
 function XafCore:getExecutorInstance()
   local public = {}
-  
+
   public.run = function(self, task, ...)                                            -- [!] Function: run(task, ...) - Runs a protected task from given function and argument list.
     assert(type(task) == "function", "[XAF Core] Expected FUNCTION as argument #1") -- [!] Parameter: task - A function to run script from.
                                                                                     -- [!] Parameter: ... - Argument list that pass into function.
     local taskArguments = {...}                                                     -- [!] Return: ... - Result values - first value is always a status of execution, may be 'true' or 'false'.
     local taskFunction = task
     local taskResults = {}
-    
+
     taskResults = {pcall(taskFunction, table.unpack(taskArguments))}
-    
+
     return table.unpack(taskResults)
   end
-  
+
   public.runExternal = function(self, filePath, ...)                                -- [!] Function: runExternal(path, ...) - Runs a protected task from external file and argument list.
     assert(type(filePath) == "string", "[XAF Core] Expected STRING as argument #1") -- [!] Parameter: filePath - Absolute path to Lua script file.
                                                                                     -- [!] Parameter: ... - Argument list (with extension) passed into script function.
@@ -49,21 +49,21 @@ function XafCore:getExecutorInstance()
     local taskFunction = nil
     local taskArguments = {...}
     local taskResults = {}
-    
+
     if (filesystem.exists(taskPath) == true) then
       local taskFile = filesystem.open(taskPath, 'r')
       local taskCode = ""
       local taskData = taskFile:read(math.huge)
-      
+
       while (taskData) do
         taskCode = taskCode .. tostring(taskData)
         taskData = taskFile:read(math.huge)
       end
-      
+
       taskFile:close()
       taskFunction = load(taskCode)
       taskResults = {pcall(taskFunction, table.unpack(taskArguments))}
-      
+
       return table.unpack(taskResults)
     else
       error("[XAF Error] File '" .. taskPath .. "' does not exist")
@@ -72,22 +72,41 @@ function XafCore:getExecutorInstance()
 
   public.stop = function(self, clear)                                              -- [!] Function: stop(clear) - Stops running program and safely exits it.
     assert(type(clear) == "boolean", "[XAF Core] Expected BOOLEAN as argument #1") -- [!] Parameter: clear - Terminal clearing flag: if 'true' then screen will clear itself.
-    
+
     if (clear == true) then
       term.clear()
     end
-    
+
     computer.pushSignal("")
     coroutine.yield() -- For older OC version with previous coroutine library.
     os.exit()         -- For newer (1.7 and later) OC version with modified coroutine library.
   end
-  
+
+  return public
+end
+
+function XafCore:getMathInstance()
+  local public = {}
+
+  public.checkInteger = function(self, number)                                    -- [!] Function: checkInteger(number) - Checks that is entered number integer (has not fractional component).
+    assert(type(number) == "number", "[XAF Core] Expected NUMBER as argument #1") -- [!] Parameter: number - Number to check.
+                                                                                  -- [!] Return: 'true' or 'false' - Flag, is the given number an integer.
+    local approximationLower = math.floor(number)
+    local approximationUpper = math.ceil(number)
+
+    if (approximationLower == approximationUpper) then
+      return true
+    else
+      return false
+    end
+  end
+
   return public
 end
 
 function XafCore:getSecurityInstance()
   local public = {}
-  
+
   public.convertBinaryToHex = function(self, binary, uppercase)                        -- [!] Function: convertBinaryToHex(binary, uppercase) - Converts binary string to its hexadecimal representation.
     assert(type(binary) == "string", "[XAF Core] Expected STRING as argument #1")      -- [!] Parameter: binary - Binary string to convert it.
     assert(type(uppercase) == "boolean", "[XAF Core] Expected BOOLEAN as argument #2") -- [!] Parameter: uppercase - Uppercase flag of output hexadecimal string.
@@ -97,18 +116,18 @@ function XafCore:getSecurityInstance()
     local byteTable = {string.byte(binaryString, 1, binaryLength)}
     local hexString = ""
     local hexUppercase = uppercase
-    
+
     for i = 1, binaryLength do
       hexString = hexString .. string.format("%02x", byteTable[i])
     end
-    
+
     if (hexUppercase == true) then
       hexString = string.upper(hexString)
     end
-    
+
     return hexString
   end
-  
+
   public.getRandomHash = function(self, length, uppercase)                                             -- [!] Function: getRandomHash(length, uppercase) - Generates random hex-string at specified length.
     assert(type(length) == "number", "[XAF Core] Expected NUMBER as argument #1")                      -- [!] Parameter: length - Total length of the generated string in chars.
     assert(type(uppercase) == "boolean", "[XAF Core] Expected BOOLEAN as argument #2")                 -- [!] Parameter: uppercase - Uppercase flag, if 'true' then all letters will convert to its uppercase.
@@ -117,18 +136,18 @@ function XafCore:getSecurityInstance()
     local hashLength = length
     local hashString = ""
     local isUppercase = uppercase
-    
+
     for i = 1, hashLength do
       hashString = hashString .. hashChars[math.random(1, 16)]
     end
-    
+
     if (isUppercase == true) then
       hashString = string.upper(hashString)
     end
-    
+
     return hashString
   end
-  
+
   public.getRandomUuid = function(self, uppercase)                                                     -- [!] Function: getRandomUuid(uppercase) - Generates random UUID version 4 string.
     assert(type(uppercase) == "boolean", "[XAF Core] Expected BOOLEAN as argument #1")                 -- [!] Parameter: uppercase - String uppercase flag, if 'true' then chars will be converted to uppercase.
                                                                                                        -- [!] Return: uuid - Generated UUID version 4 string.
@@ -136,24 +155,24 @@ function XafCore:getSecurityInstance()
     local uuid = ""
     local uuidRaw = ""
     local uuidUppercase = uppercase
-    
+
     for i = 1, 30 do
       uuidRaw = uuidRaw .. uuidChars[math.random(1, 16)]
     end
-    
+
     uuid = uuid .. string.sub(uuidRaw, 1, 8)
     uuid = uuid .. "-" .. string.sub(uuidRaw, 9, 12)
     uuid = uuid .. "-4" .. string.sub(uuidRaw, 13, 15)
     uuid = uuid .. "-" .. uuidChars[math.random(9, 12)] .. string.sub(uuidRaw, 16, 18)
     uuid = uuid .. "-" .. string.sub(uuidRaw, 19, 30)
-    
+
     if (uuidUppercase == true) then
       uuid = string.upper(uuid)
     end
-    
+
     return uuid
   end
-  
+
   public.isUuid = function(self, uuid)                                                                 -- [!] Function: isUuid(uuid) - Checks if given string is an UUID.
     assert(type(uuid) == "string", "[XAF Core] Expected STRING as argument #1")                        -- [!] Parameter: uuid - UUID string to check it.
                                                                                                        -- [!] Return: isUuid - Boolean flag if passed string is an UUID.
@@ -161,113 +180,113 @@ function XafCore:getSecurityInstance()
     local uuidLength = unicode.wlen(uuid)
     local uuidRegex = "(%x%x%x%x%x%x%x%x[-]%x%x%x%x[-]%x%x%x%x[-]%x%x%x%x[-]%x%x%x%x%x%x%x%x%x%x%x%x)"
     local isUuid = false
-    
+
     if (uuidLength == 36 and string.match(uuidString, uuidRegex) == uuidString) then
       isUuid = true
     end
-    
+
     return isUuid
   end
-  
+
   return public
 end
 
 function XafCore:getStringInstance()
   local public = {}
-  
+
   public.checkControlCharacter = function(self, data)                           -- [!] Function: checkControlCharacter(data) - Searches a string data to find control and unprintable characters (ASCII 0 - 31 and 127 code).
     assert(type(data) == "string", "[XAF Core] Expected STRING as argument #1") -- [!] Parameter: data - String to check by containing control characters.
                                                                                 -- [!] Return: containCharacter - Boolean flag is string contains control characters.
     local checkedString = data
     local controlCharRegex = "[\0-\31\127]"
     local containCharacter = false
-    
+
     if (string.find(checkedString, controlCharRegex)) then
       containCharacter = true
     end
-    
+
     return containCharacter
   end
-  
+
   public.checkSpecialCharacter = function(self, data)                           -- [!] Function: checkSpecialCharacter(data) - Checks whether argument string contains special character.
     assert(type(data) == "string", "[XAF Core] Expected STRING as argument #1") -- [!] Parameter: data - String to check by containing special characters.
                                                                                 -- [!] Return: containCharacter - Boolean flag is string containing special characters.
     local checkedString = data
     local specialCharRegex = "[\a\b\f\n\r\t\v\\\"\'/]"
     local containCharacter = false
-    
+
     if (string.find(checkedString, specialCharRegex)) then
       containCharacter = true
     end
-    
+
     return containCharacter
   end
-  
+
   public.checkWhitespace = function(self, data)                                 -- [!] Function: checkWhitespace(data) - Checks whether given string contains a white space.
     assert(type(data) == "string", "[XAF Core] Expected STRING as argument #1") -- [!] Parameter: data - String data to check it by white spaces.
                                                                                 -- [!] Return: containCharacter - Boolean flag is string contain white spaces.
     local checkedString = data
     local whitespaceCharRegex = "[\n\r\t\v ]"
     local containCharacter = false
-    
+
     if (string.find(checkedString, whitespaceCharRegex)) then
       containCharacter = true
     end
-    
+
     return containCharacter
   end
-  
+
   return public
 end
 
 function XafCore:getTableInstance()
   local public = {}
-  
+
   public.getLength = function(self, array)                                     -- [!] Function: getLength(array) - Returns total length of given table (index and non-index keys).
     assert(type(array) == "table", "[XAF Core] Expected TABLE as argument #1") -- [!] Parameter: array - Table to get length from.
                                                                                -- [!] Return: arrayLength - Total length of given array.
     local checkedArray = array
     local arrayLength = 0
-    
+
     for key, value in pairs(checkedArray) do
       arrayLength = arrayLength + 1
     end
-    
+
     return arrayLength
   end
-  
+
   public.loadFromFile = function(self, filePath)                                    -- [!] Function: loadFromFile(filePath) - Returns a table from file where it was previously saved.
     assert(type(filePath) == "string", "[XAF Core] Expected STRING as argument #1") -- [!] Parameter: filePath - Absolute path of file where table was saved.
                                                                                     -- [!] Return: loadTable - Successfully loaded table.
     local lineDelimiter = string.char(13, 10)
     local loadPath = filePath
     local loadTable = {}
-    
+
     if (filesystem.exists(loadPath) == true) then
       local tableFile = filesystem.open(loadPath, 'r')
       local tableContent = ''
       local tableData = ''
-      
+
       while (tableData) do
         tableContent = tableContent .. tableData
         tableData = tableFile:read(math.huge)
       end
-      
+
       tableData = ''
       tableFile:close()
-      
+
       for line in string.gmatch(tableContent, "[^" .. lineDelimiter .. "]+") do
         local delimiter = string.find(line, " = ")
         local key = nil
         local value = nil
-        
+
         if (string.sub(line, 1, 3) ~= "[#]") then -- If line starts with [#] then it will be recognized as comment and ignored.
           if (delimiter) then
             local keyMarker = string.sub(line, 1, 3)
             local keyRaw = string.sub(line, 5, delimiter - 1)
             local valueMarker = string.sub(line, delimiter + 3, delimiter + 5)
             local valueRaw = string.sub(line, delimiter + 7)
-            
+
             if (keyMarker == "[S]") then
               key = tostring(keyRaw)
             elseif (keyMarker == "[N]") then
@@ -283,7 +302,7 @@ function XafCore:getTableInstance()
             else
               error("[XAF Error] Invalid table line syntax - invalid key marker")
             end
-            
+
             if (valueMarker == "[S]") then
               value = tostring(valueRaw)
             elseif (valueMarker == "[N]") then
@@ -299,7 +318,7 @@ function XafCore:getTableInstance()
             else
               error("[XAF Error] Invalid table line syntax - invalid value marker")
             end
-            
+
             if (key) then
               loadTable[key] = value
             end
@@ -311,10 +330,10 @@ function XafCore:getTableInstance()
     else
       error("[XAF Error] File '" .. loadPath .. "' does not exist")
     end
-    
+
     return loadTable
   end
-  
+
   public.saveToFile = function(self, array, filePath, append)                       -- [!] Function: saveToFile(array, filePath, append) - Saves table in a file with specified path.
     assert(type(array) == "table", "[XAF Core] Expected TABLE as argument #1")      -- [!] Parameter: array - Table which will be saved in file.
     assert(type(filePath) == "string", "[XAF Core] Expected STRING as argument #2") -- [!] Parameter: filePath - Absolute path of file in which table will be saved.
@@ -324,27 +343,27 @@ function XafCore:getTableInstance()
     local savePath = filePath
     local saveMode = (append == true) and 'a' or 'w'
     local saveFile = filesystem.open(savePath, saveMode)
-    
+
     for key, value in public:sortByKey(saveTable, false) do
       local keyType = type(key)
       local keyMarker = ''
       local valueType = type(value)
       local valueMarker = ''
-      
+
       keyMarker = (keyType == "string") and "[S]" or (keyType == "number")
       and "[N]" or (keyType == "boolean") and "[B]" or "[?]"
-      
+
       valueMarker = (valueType == "string") and "[S]" or (valueType == "number")
       and "[N]" or (valueType == "boolean") and "[B]" or "[?]"
-      
+
       saveFile:write(keyMarker .. ' ' .. tostring(key) .. " = ")
       saveFile:write(valueMarker .. ' ' .. tostring(value) .. '\n')
     end
-    
+
     saveFile:close()
     return true
   end
-  
+
   public.searchByValue = function(self, array, value, option)                     -- [!] Function: searchByValue(array, value, option) - Returns table of keys of whose values meets search criteria.
     assert(type(array) == "table", "[XAF Core] Expected TABLE as argument #1")    -- [!] Parameter: array - Table to search for values.
     assert(type(value) ~= "nil", "[XAF Core] Expected ANYTHING as argument #2")   -- [!] Parameter: value - For this value function will search.
@@ -354,7 +373,7 @@ function XafCore:getTableInstance()
     local searchedValue = value
     local searchOption = option
     local keyTable = {}
-    
+
     for key, value in pairs(searchedTable) do
       if (searchOption == 0) then
         if (value == searchedValue) then
@@ -370,10 +389,10 @@ function XafCore:getTableInstance()
         end
       end
     end
-  
+
     return keyTable
   end
-  
+
   public.sortByKey = function(self, unsorted, reversed)                               -- [!] Function: sortByKey(unsorted, reversed) - Returns an iterator which returns next key-value pairs from given table in sorted order.
     assert(type(unsorted) == "table", "[XAF Core] Expected TABLE as argument #1")     -- [!] Parameter: unsorted - Table to sort.
     assert(type(reversed) == "boolean", "[XAF Core] Expected BOOLEAN as argument #2") -- [!] Parameter: reversed - Reversion flag - if 'true' then iterator will return next pairs in reversed Z-A order, if 'false' then A-Z order.
@@ -389,10 +408,10 @@ function XafCore:getTableInstance()
     local iteratorTable = {}
     local iteratorLength = 1
     local iteratorIndex = 0
-    
+
     for key, value in pairs(sortingTable) do
       local keyType = type(key)
-      
+
       if (keyType == "number") then
         table.insert(typeNumbers, key)
       elseif (keyType == "string") then
@@ -402,10 +421,10 @@ function XafCore:getTableInstance()
       else
         table.insert(typeUndefined, key)
       end
-      
+
       iteratorLength = iteratorLength + 1
     end
-    
+
     if (reversionFlag == true) then
       table.sort(typeNumbers, sortingFunctionReversed)
       table.sort(typeStrings, sortingFunctionReversed)
@@ -415,12 +434,12 @@ function XafCore:getTableInstance()
       table.sort(typeStrings, sortingFunctionDefault)
       table.sort(typeBooleans, sortingFunctionDefault)
     end
-    
+
     if (reversionFlag == true) then -- Inserting all sorted keys to one iterator table in reversed order.
       for key, value in ipairs(typeUndefined) do
         table.insert(iteratorTable, value)
       end
-      
+
       for key, value in ipairs(typeBooleans) do
         if (value == "true") then
           table.insert(iteratorTable, true)
@@ -428,11 +447,11 @@ function XafCore:getTableInstance()
           table.insert(iteratorTable, false)
         end
       end
-      
+
       for key, value in ipairs(typeStrings) do
         table.insert(iteratorTable, value)
       end
-      
+
       for key, value in ipairs(typeNumbers) do
         table.insert(iteratorTable, value)
       end
@@ -440,11 +459,11 @@ function XafCore:getTableInstance()
       for key, value in ipairs(typeNumbers) do
         table.insert(iteratorTable, value)
       end
-      
+
       for key, value in ipairs(typeStrings) do
         table.insert(iteratorTable, value)
       end
-      
+
       for key, value in ipairs(typeBooleans) do
         if (value == "true") then
           table.insert(iteratorTable, true)
@@ -452,30 +471,30 @@ function XafCore:getTableInstance()
           table.insert(iteratorTable, false)
         end
       end
-      
+
       for key, value in ipairs(typeUndefined) do
         table.insert(iteratorTable, value)
       end
     end
-    
+
     return function()
       iteratorIndex = iteratorIndex + 1
-      
+
       if (iteratorIndex < iteratorLength) then
         local key = iteratorTable[iteratorIndex]
         local value = sortingTable[key]
-        
+
         return key, value
       end
     end
   end
-  
+
   return public
 end
 
 function XafCore:getTextInstance()
   local public = {}
-  
+
   public.convertLinesToString = function(self, linesTable, mode)                                   -- [!] Function: convertLinesToString(linesTable, mode) - Converts table with string lines to one concatenated string.
     assert(type(linesTable) == "table", "[XAF Core] Expected TABLE as argument #1")                -- [!] Parameter: linesTable - Table with lines to concatenate.
     assert(type(mode) == "number", "[XAF Core] Expected NUMBER as argument #2")                    -- [!] Parameter: mode - Concatenation mode (0 - default, 1 - space, 2 - no space, 3 - new line character).
@@ -484,15 +503,15 @@ function XafCore:getTextInstance()
     local concatenationMode = mode
     local concatenatedString = ""
     local concatenationLink = ""
-    
+
     if (concatenationMode >= 0 and concatenationMode <= 3) then
       concatenationLink = (concatenationMode == 0 or concatenationMode == 1)
       and ' ' or (concatenationMode == 2) and '' or (concatenationMode == 3) and '\n'
-      
+
       for key, value in pairs(linesTable) do
         concatenatedString = concatenatedString .. tostring(value) .. concatenationLink
       end
-      
+
       concatenatedString = string.sub(concatenatedString, 1, unicode.wlen(concatenatedString) - 1)
       return concatenatedString
     else
@@ -507,14 +526,14 @@ function XafCore:getTextInstance()
     local inputText = text
     local fixedWidth = width
     local linesTable = {}
-    
+
     for text in textapi.wrappedLines(inputText, fixedWidth, fixedWidth) do
       table.insert(linesTable, text)
     end
-    
+
     return linesTable
   end
-  
+
   public.padCenter = function(self, text, width)                                                 -- [!] Function: padCenter(text, width) - Adds padding to given text to center it at specified width.
     assert(type(text) == "string", "[XAF Core] Expected STRING as argument #1")                  -- [!] Parameter: text - Text to add padding into.
     assert(type(width) == "number", "[XAF Core] Expected NUMBER as argument #2")                 -- [!] Parameter: width - To this fixed width text will be centered.
@@ -526,10 +545,10 @@ function XafCore:getTextInstance()
     local paddingLeft = math.floor(padding / 2)
     local paddingRight = padding - paddingLeft
     local paddedText = string.rep(" ", paddingLeft) .. rawText .. string.rep(" ", paddingRight)
-    
+
     return paddedText
   end
-  
+
   public.padLeft = function(self, text, width)                                   -- [!] Function: padLeft(text, width) - Adds padding to given text to align it left-side at specified width.
     assert(type(text) == "string", "[XAF Core] Expected STRING as argument #1")  -- [!] Parameter: text - Text to be aligned left-side.
     assert(type(width) == "number", "[XAF Core] Expected NUMBER as argument #2") -- [!] Parameter: width - Fixed width to which text will be aligned.
@@ -539,10 +558,10 @@ function XafCore:getTextInstance()
     local rawTextLength = unicode.wlen(rawText)
     local padding = fixedWidth - rawTextLength
     local paddedText = rawText .. string.rep(" ", padding)
-    
+
     return paddedText
   end
-  
+
   public.padRight = function(self, text, width)                                  -- [!] Function: padRight(text, width) - Adds padding to given text to align it right-side at specified width.
     assert(type(text) == "string", "[XAF Core] Expected STRING as argument #1")  -- [!] Parameter: text - Text to be aligned right-side.
     assert(type(width) == "number", "[XAF Core] Expected NUMBER as argument #2") -- [!] Parameter: width - Fixed width to which text will be aligned.
@@ -552,10 +571,10 @@ function XafCore:getTextInstance()
     local rawTextLength = unicode.wlen(rawText)
     local padding = fixedWidth - rawTextLength
     local paddedText = string.rep(" ", padding) .. rawText
-    
+
     return paddedText
   end
-  
+
   public.split = function(self, text, delimiter)                                     -- [!] Function: split(text, delimiter) - Splits given string to tokens by given delimiters.
     assert(type(text) == "string", "[XAF Core] Expected STRING as argument #1")      -- [!] Parameter: text - String data text to be split.
     assert(type(delimiter) == "string", "[XAF Core] Expected STRING as argument #2") -- [!] Parameter: delimiter - String which contains set of delimiters to splitting (for space use - ' ').
@@ -563,14 +582,14 @@ function XafCore:getTextInstance()
     local textString = text
     local delimiterChars = (delimiter == '') and ' ' or delimiter
     local tokensTable = {}
-    
+
     for token in string.gmatch(textString, "[^" .. delimiterChars .. "]+") do
       table.insert(tokensTable, token)
     end
-    
+
     return tokensTable
   end
-  
+
   return public
 end
 

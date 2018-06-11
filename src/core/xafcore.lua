@@ -101,6 +101,24 @@ function XafCore:getMathInstance()
     end
   end
 
+  public.checkNatural = function(self, number, positive)                              -- [!] Function: checkNatural(number, positive) - Checks that is entered number natural (non-negative integer).
+    assert(type(number) == "number", "[XAF Core] Expected NUMBER as argument #1")     -- [!] Parameter: number - Number to check its naturality.
+    assert(type(positive) == "boolean", "[XAF Core] Expected BOOLEAN as argument #2") -- [!] Parameter: positive - If 'true' then function will not consider zero as natural number.
+                                                                                      -- [!] Return: 'true' or 'false' - Flag, is the entered number natural.
+    local approximationLower = math.floor(number)
+    local approximationUpper = math.ceil(number)
+
+    if (approximationLower == approximationUpper) then
+      if (positive == true) then
+        return number > 0
+      else
+        return number >= 0
+      end
+    else
+      return false
+    end
+  end
+
   return public
 end
 

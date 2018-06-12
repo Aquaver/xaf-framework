@@ -119,6 +119,15 @@ function XafCore:getMathInstance()
     end
   end
 
+  public.getAdditiveInverse = function(self, number)                              -- [!] Function: getAdditiveInverse(number) - Trivial function, which returns the additive inverse of entered real number.
+    assert(type(number) == "number", "[XAF Core] Expected NUMBER as argument #1") -- [!] Parameter: number - Number to get its additive inverse.
+                                                                                  -- [!] Return: additiveInverse - Additive inverse of given number.
+    local rawNumber = number
+    local additiveInverse = rawNumber * (-1)
+
+    return additiveInverse
+  end
+
   return public
 end
 

@@ -128,6 +128,15 @@ function XafCore:getMathInstance()
     return additiveInverse
   end
 
+  public.getMultiplicativeInverse = function(self, number)                        -- [!] Function: getMultiplicativeInverse(number) - Trivial function, which returns the multiplicative inverse of entered real number.
+    assert(type(number) == "number", "[XAF Core] Expected NUMBER as argument #1") -- [!] Parameter: number - Number to get its multiplicative inverse.
+                                                                                  -- [!] Return: multiplicativeInverse - Multiplicative inverse of given number (number * multiplicativeInverse = 1 for any real number).
+    local rawNumber = number
+    local multiplicativeInverse = 1 / rawNumber
+
+    return multiplicativeInverse
+  end
+
   return public
 end
 

@@ -128,6 +128,26 @@ function XafCore:getMathInstance()
     return additiveInverse
   end
 
+  public.getGreatestCommonDivisor = function(self, numberA, numberB)                         -- [!] Function: getGreatestCommonDivisor(numberA, numberB) - Calculates GCD (greatest common divisor) on two integer numbers.
+    assert(type(numberA) == "number", "[XAF Core] Expected NUMBER as argument #1")           -- [!] Parameter: numberA - First pair number, must be an integer.
+    assert(type(numberB) == "number", "[XAF Core] Expected NUMBER as argument #2")           -- [!] Parameter: numberB - Second pair number, also must be an integer.
+                                                                                             -- [!] Return: resultGcd - Calculated GCD result number.
+    if (public:checkInteger(numberA) == false or public:checkInteger(numberB) == false) then
+      error("[XAF Error] Greates common divisor must be calculated on integer numbers")
+    else
+      local helperVar = 0
+      local resultGcd = numberA
+
+      while (numberB ~= 0) do
+        helperVar = resultGcd % numberB
+        resultGcd = numberB
+        numberB = helperVar
+      end
+
+      return resultGcd
+    end
+  end
+
   public.getMultiplicativeInverse = function(self, number)                        -- [!] Function: getMultiplicativeInverse(number) - Trivial function, which returns the multiplicative inverse of entered real number.
     assert(type(number) == "number", "[XAF Core] Expected NUMBER as argument #1") -- [!] Parameter: number - Number to get its multiplicative inverse.
                                                                                   -- [!] Return: multiplicativeInverse - Multiplicative inverse of given number (number * multiplicativeInverse = 1 for any real number).

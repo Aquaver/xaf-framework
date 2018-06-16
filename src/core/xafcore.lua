@@ -133,7 +133,7 @@ function XafCore:getMathInstance()
     assert(type(numberB) == "number", "[XAF Core] Expected NUMBER as argument #2")           -- [!] Parameter: numberB - Second pair number, also must be an integer.
                                                                                              -- [!] Return: resultGcd - Calculated GCD result number.
     if (public:checkInteger(numberA) == false or public:checkInteger(numberB) == false) then
-      error("[XAF Error] Greates common divisor must be calculated on integer numbers")
+      error("[XAF Error] Greatest common divisor must be calculated on integer numbers")
     else
       local helperVar = 0
       local resultGcd = numberA
@@ -144,7 +144,21 @@ function XafCore:getMathInstance()
         numberB = helperVar
       end
 
-      return resultGcd
+      return math.abs(resultGcd)
+    end
+  end
+
+  public.getLowestCommonMultiple = function(self, numberA, numberB)                          -- [!] Function: getLowestCommonMultiple(numberA, numberB) - Calculates LCM (lowest/least common multiple) on two integer numbers.
+    assert(type(numberA) == "number", "[XAF Core] Expected NUMBER as argument #1")           -- [!] Parameter: numberA - First pair number, must be an integer.
+    assert(type(numberB) == "number", "[XAF Core] Expected NUMBER as argument #2")           -- [!] Parameter: numberB - Second pair number, also must be an integer.
+                                                                                             -- [!] Return: resultLcm - Calculated LCM result number.
+    if (public:checkInteger(numberA) == false or public:checkInteger(numberB) == false) then
+      error("[XAF Error] Lowest common multiple must be calculated on integer numbers")
+    else
+      local productAbs = math.abs(numberA * numberB)
+      local resultLcm = productAbs / public:getGreatestCommonDivisor(numberA, numberB)
+
+      return resultLcm
     end
   end
 

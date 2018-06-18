@@ -3,6 +3,7 @@
 XAFCore is framework core library as its name says. This class provides five sub-cores (called *instances*), where each of them has several useful functionalities for executing specific tasks. It includes among others executing external programs in protected mode, generating secure random hexadecimal strings, searching for control characters, sorting tables by key or wrapping text string into table. These modules are listed below with short description:
 
 * **Executor instance** - `XAFCore:getExecutorInstance()` - This sub-core is responsible for executing program internal functions safely in protected mode (that prevents your program from being unexpectedly interrupted and let you handle potential errors), running scripts from external files (also in protected mode) and stopping programs safely and exiting to shell. The last one is perfect alternative to native `os.exit()` - it stops current coroutine and runs new one.
+* **Math instance** - `XAFCore:getMathInstance()` - Simple library with trivial functions, that were designed to just replace few lines of code into one, when dealing with common mathematical tasks like getting additive or multiplicative inverses, checking is given number natural or just integer. This instace does also more functional tasks, for example calculates the greatest common divisor or the lowest common multiple of two numbers.
 * **Security instance** - `XAFCore:getSecurityInstance()` - Instance which provides data security related functionality like converting plain binary strings to its hexadecimal representation, generating secure (but not true) pseudorandom hexadecimal strings (called *hashes*) with specified length, generating and checking universally unique identifiers.
 * **String instance** - `XAFCore:getStringInstance()` - That small module comes with three functions for searching strings for control non-printable ASCII characters (from range 0 to 31 and 127), finding special pattern-related characters like `\n`, `\t` or `\\` and also checking strings for white spaces.
 * **Table instance** - `XAFCore:getTableInstance()` - It seems to me that this instance is the most functional in that library. It provides many table manipulation methods like sorting by key, searching for specific value, checking total length of the table (with indexed and non-indexed keys) which may replace the standard `#` operator and the most useful functionality - saving tables to external files and reading from them. Very nice solution when building some kind of key-value pairs database.
@@ -40,6 +41,41 @@ XAFCore is framework core library as its name says. This class provides five sub
 * **Function:** `stop(clear)` - Stops running program and safely exits it.
 
   * **Parameter:** `clear` - Terminal clearing flag: if 'true' then screen will clear itself.
+
+### Math instance
+
+* **Function:** `checkInteger(number)` - Checks that is entered number integer (has not fractional component).
+
+  * **Parameter:** `number` - Number to check.
+  * **Return:** `'true' or 'false'` - Flag, is the given number an integer.
+
+* **Function:** `checkNatural(number, positive)` - Checks that is entered number natural (non-negative integer).
+
+  * **Parameter:** `number` - Number to check its naturality.
+  * **Parameter:** `positive` - If 'true' then function will not consider zero as natural number.
+  * **Return:** `'true' or 'false'` - Flag, is the entered number natural.
+
+* **Function:** `getAdditiveInverse(number)` - Trivial function, which returns the additive inverse of entered real number.
+
+  * **Parameter:** `number` - Number to get its additive inverse.
+  * **Return:** `additiveInverse` - Additive inverse of given number.
+
+* **Function:** `getGreatestCommonDivisor(numberA, numberB)` - Calculates GCD (greatest common divisor) on two integer numbers.
+
+  * **Parameter:** `numberA` - First pair number, must be an integer.
+  * **Parameter:** `numberB` - Second pair number, also must be an integer.
+  * **Return:** `resultGcd` - Calculated GCD result number.
+
+* **Function:** `getLowestCommonMultiple(numberA, numberB)` - Calculates LCM (lowest/least common multiple) on two integer numbers.
+
+  * **Parameter:** `numberA` - First pair number, must be an integer.
+  * **Parameter:** `numberB` - Second pair number, also must be an integer.
+  * **Return:** `resultLcm` - Calculated LCM result number.
+
+* **Function:** `getMultiplicativeInverse(number)` - Trivial function, which returns the multiplicative inverse of entered real number.
+
+  * **Parameter:** `number` - Number to get its multiplicative inverse.
+  * **Return:** `multiplicativeInverse` - Multiplicative inverse of given number (number * multiplicativeInverse = 1 for any real number).
 
 ### Security instance
 

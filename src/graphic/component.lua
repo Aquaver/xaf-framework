@@ -5,6 +5,9 @@
 -- [>] It provides generic functions that are used by all graphic component classes.
 -- [>] This class behaves as interface - it cannot be instanced, only for extending.
 
+local xafcore = require("xaf/core/xafcore")
+local xafcoreMath = xafcore:getMathInstance()
+
 local Component = {
   C_NAME = "Abstract Graphic Component",
   C_INSTANCE = false,
@@ -96,13 +99,13 @@ function Component:initialize()
     assert(type(newX) == "number", "[XAF Graphic] Expected NUMBER as argument #1") -- [!] Parameter: newX - New horizontal position number.
     assert(type(newY) == "number", "[XAF Graphic] Expected NUMBER as argument #2") -- [!] Parameter: newY - New vertical position number.
                                                                                    -- [!] Return: 'true' - If new coordinates have been changed successfully.
-    if (math.floor(newX) == newX and math.ceil(newX) == newX) then
+    if (xafcoreMath:checkInteger(newX) == true) then
       private.positionX = newX
     else
       error("[XAF Error] Invalid X position number - must be an integer")
     end
     
-    if (math.floor(newY) == newY and math.ceil(newY) == newY) then
+    if (xafcoreMath:checkInteger(newY) == true) then
       private.positionY = newY
     else
       error("[XAF Error] Invalid Y position number - must be an integer")

@@ -385,7 +385,7 @@ function List:new(positionX, positionY, columns, rows, showScroll)
   public:setPosition(positionX, positionY)
   assert(type(columns) == "number", "[XAF Graphic] Expected NUMBER as argument #3")
   
-  if (xafcoreMath:checkNatural(columns) == true) then
+  if (xafcoreMath:checkNatural(columns, true) == true) then
     private.columns = columns
   else
     error("[XAF Error] Invalid columns number - must be a positive integer")
@@ -393,7 +393,7 @@ function List:new(positionX, positionY, columns, rows, showScroll)
   
   assert(type(rows) == "number", "[XAF Graphic] Expected NUMBER as argument #4")
   
-  if (xafcoreMath:checkNatural(rows) == true) then
+  if (xafcoreMath:checkNatural(rows, true) == true) then
     private.rows = rows
   else
     error("[XAF Error] Invalid rows number - must be a positive integer")

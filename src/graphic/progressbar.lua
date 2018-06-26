@@ -6,6 +6,8 @@
 -- [!] Accepted events: no events
 
 local component = require("xaf/graphic/component")
+local xafcore = require("xaf/core/xafcore")
+local xafcoreMath = xafcore:getMathInstance()
 
 local ProgressBar = {
   C_NAME = "Generic GUI Progress Bar",
@@ -59,10 +61,10 @@ function ProgressBar:initialize()
     assert(type(mode) == "number", "[XAF Graphic] Expected NUMBER as argument #1") -- [!] Parameter: mode - New progress bar layout mode (0 - default, 1 - horizontal, 2 - vertical).
                                                                                    -- [!] Return: 'true' - If the new progress bar layout mode has been set correctly.
     if (mode >= 0 and mode <= 2) then
-      if (math.floor(mode) == mode and math.ceil(mode) == mode) then
+      if (xafcoreMath:checkInteger(mode) == true) then
         private.barLayout = mode
       else
-        error("[XAF Error] Invalid progress bar layout mode - must be a integer")
+        error("[XAF Error] Invalid progress bar layout mode - must be an integer")
       end
     else
       error("[XAF Error] Invalid progress bar layout mode")
@@ -208,7 +210,7 @@ function ProgressBar:new(positionX, positionY, columns, rows, layoutMode)
   public:setPosition(positionX, positionY)
   assert(type(columns) == "number", "[XAF Graphic] Expected NUMBER as argument #3")
   
-  if (math.floor(columns) == columns and math.ceil(columns) == columns and columns > 0) then
+  if (xafcoreMath:checkNatural(columns, true) == true) then
     private.columns = columns
   else
     error("[XAF Error] Invalid columns number - must be a positive integer")
@@ -216,7 +218,7 @@ function ProgressBar:new(positionX, positionY, columns, rows, layoutMode)
   
   assert(type(rows) == "number", "[XAF Graphic] Expected NUMBER as argument #4")
   
-  if (math.floor(rows) == rows and math.ceil(rows) == rows and rows > 0) then
+  if (xafcoreMath:checkNatural(rows, true) == true) then
     private.rows = rows
   else
     error("[XAF Error] Invalid rows number - must be a positive integer")
@@ -225,7 +227,7 @@ function ProgressBar:new(positionX, positionY, columns, rows, layoutMode)
   assert(type(layoutMode) == "number", "[XAF Graphic] Expected NUMBER as argument #5")
   
   if (layoutMode >= 0 and layoutMode <= 2) then
-    if (math.floor(layoutMode) == layoutMode and math.ceil(layoutMode) == layoutMode) then
+    if (xafcoreMath:checkInteger(layoutMode) == true) then
       private.barLayout = layoutMode
     else
       error("[XAF Error] Invalid bar layout mode - must be a integer")

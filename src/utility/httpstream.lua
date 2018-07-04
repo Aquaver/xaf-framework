@@ -9,6 +9,7 @@
 
 local unicode = require("unicode")
 local xafcore = require("xaf/core/xafcore")
+local xafcoreMath = xafcore:getMathInstance()
 local xafcoreText = xafcore:getTextInstance()
 
 local HttpStream = {
@@ -217,7 +218,7 @@ function HttpStream:initialize()
   public.setMaxTries = function(self, newTries)                                                     -- [!] Function: setMaxTries(newTries) - Sets maximum connection tries number.
     assert(type(newTries) == "number", "[XAF Utility] Expected NUMBER as argument #1")              -- [!] Parameter: newTries - New attempts number value.
                                                                                                     -- [!] Return: 'true' - If attempts number has been changed properly.
-    if (math.ceil(newTries) == newTries and math.floor(newTries) == newTries and newTries > 0) then
+    if (xafcoreMath:checkNatural(newTries, true) == true) then
       private.maxTries = newTries
     else
       error("[XAF Error] Invalid connection tries number - must be a positive integer")

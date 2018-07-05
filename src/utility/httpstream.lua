@@ -215,9 +215,9 @@ function HttpStream:initialize()
     return true
   end
   
-  public.setMaxTries = function(self, newTries)                                                     -- [!] Function: setMaxTries(newTries) - Sets maximum connection tries number.
-    assert(type(newTries) == "number", "[XAF Utility] Expected NUMBER as argument #1")              -- [!] Parameter: newTries - New attempts number value.
-                                                                                                    -- [!] Return: 'true' - If attempts number has been changed properly.
+  public.setMaxTries = function(self, newTries)                                         -- [!] Function: setMaxTries(newTries) - Sets maximum connection tries number.
+    assert(type(newTries) == "number", "[XAF Utility] Expected NUMBER as argument #1")  -- [!] Parameter: newTries - New attempts number value.
+                                                                                        -- [!] Return: 'true' - If attempts number has been changed properly.
     if (xafcoreMath:checkNatural(newTries, true) == true) then
       private.maxTries = newTries
     else

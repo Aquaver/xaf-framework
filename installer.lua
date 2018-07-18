@@ -27,7 +27,7 @@ local sourceScripts = {}
 sourceModules["core"] = {"xafcore"}
 sourceModules["graphic"] = {"button", "checkbox", "component", "list", "passwordfield", "progressbar", "slider", "spinner", "switch", "textfield"}
 sourceModules["network"] = {"client", "dnsclient", "dnsserver", "dtpclient", "dtpserver", "ftpclient", "ftpserver", "server"}
-sourceModules["utility"] = {"httpstream", "redstream"}
+sourceModules["utility"] = {"httpstream", "jsonparser", "redstream"}
 
 -- Target installation directories in absolute paths.
 local pathRoot = "aquaver.github.io"

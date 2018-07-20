@@ -31,8 +31,10 @@ function MyClass:initialize()                       -- [!] Internal class initia
   
   -- [>] Place for class members: fields, methods in class visibility.
   -- [>] Usage: modifier.name = value/function()
+  -- [>] Object's methods can return new objects using class constructor.
   -- [?] Example: private.myValue = 100
   -- [?] Example: public.getValue = function(self) return private.myValue end
+  -- [?] Example: public.getObject = function(self) return MyClass:new(parameters) end
   
   return {
     private = private,

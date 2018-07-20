@@ -8,6 +8,7 @@
 
 local component = require("xaf/graphic/component")
 local xafcore = require("xaf/core/xafcore")
+local xafcoreMath = xafcore:getMathInstance()
 local xafcoreTable = xafcore:getTableInstance()
 
 local List = {
@@ -384,7 +385,7 @@ function List:new(positionX, positionY, columns, rows, showScroll)
   public:setPosition(positionX, positionY)
   assert(type(columns) == "number", "[XAF Graphic] Expected NUMBER as argument #3")
   
-  if (math.floor(columns) == columns and math.ceil(columns) == columns and columns > 0) then
+  if (xafcoreMath:checkNatural(columns, true) == true) then
     private.columns = columns
   else
     error("[XAF Error] Invalid columns number - must be a positive integer")
@@ -392,7 +393,7 @@ function List:new(positionX, positionY, columns, rows, showScroll)
   
   assert(type(rows) == "number", "[XAF Graphic] Expected NUMBER as argument #4")
   
-  if (math.floor(rows) == rows and math.ceil(rows) == rows and rows > 0) then
+  if (xafcoreMath:checkNatural(rows, true) == true) then
     private.rows = rows
   else
     error("[XAF Error] Invalid rows number - must be a positive integer")

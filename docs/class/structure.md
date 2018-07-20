@@ -9,7 +9,7 @@ XAF Class Structure is just a model for building classes that are used in range 
   * `C_INSTANCE` - Class instantiability flag - it permits or prohibits creating object of this class.
   * `C_INHERIT` - Class inheritance flag - it works as above one, but it concerns inheritance.
 
-* Main initialization function - `function MyClass:initialize()` - it is used for creating new class instances in constructing and inheriting.
+* Main initialization function - `function MyClass:initialize()` - it is used for creating new class instances in constructing and inheriting. In its body class private or public variables and methods are defined. Note that object methods support class self-returning and it is possible to use the constructor with `return` keyword. For example if user wants to exchange data between different class instances.
 * Class inheritance function - `function MyClass:extend()` - used obviously to inherit from this class. In this framework inheritance consists of copying all members (private and public) to the derived class. It will throw an error when try to inherit from class where it was disabled.
 **Important!** Class static fields are not inherited, it concerns only object-related members.
 * Class object constructor - `function MyClass:new(parameters)` - function used to create new class instances. It will throw an error when try to create object in class where instantiation is prohibited and disabled.
@@ -50,8 +50,10 @@ function MyClass:initialize()                       -- [!] Internal class initia
   
   -- [>] Place for class members: fields, methods in class visibility.
   -- [>] Usage: modifier.name = value/function()
+  -- [>] Object's methods can return new objects using class constructor.
   -- [?] Example: private.myValue = 100
   -- [?] Example: public.getValue = function(self) return private.myValue end
+  -- [?] Example: public.getObject = function(self) return MyClass:new(parameters) end
   
   return {
     private = private,

@@ -8,6 +8,8 @@
 
 local component = require("xaf/graphic/component")
 local unicode = require("unicode")
+local xafcore = require("xaf/core/xafcore")
+local xafcoreMath = xafcore:getMathInstance()
 
 local PasswordField = {
   C_NAME = "Generic GUI Password Field",
@@ -343,7 +345,7 @@ function PasswordField:new(positionX, positionY, columns)
   public:setPosition(positionX, positionY)
   assert(type(columns) == "number", "[XAF Graphic] Expected NUMBER as argument #3")
   
-  if (math.floor(columns) == columns and math.ceil(columns) == columns and columns > 0) then
+  if (xafcoreMath:checkNatural(columns, true) == true) then
     private.columns = columns
     private.totalWidth = columns + 4
     private.totalHeight = 3

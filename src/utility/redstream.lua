@@ -5,6 +5,9 @@
 -- [>] As it supports analog signal manipulation from tier 1 as bundled (colored) signals from tier 2 too.
 -- [>] To use this module there is no original OC Redstone API knowledge needed - for plain 'switches' you will need only two functions from this module.
 
+local xafcore = require("xaf/core/xafcore")
+local xafcoreMath = xafcore:getMathInstance()
+
 local RedStream = {
   C_NAME = "Generic Redstone Stream",
   C_INSTANCE = true,
@@ -225,7 +228,7 @@ function RedStream:new(component, mode)
   public:setComponent(component)
   assert(type(mode) == "number", "[XAF Utility] Expected NUMBER as argument #2")
   
-  if (mode >= 0 and mode <= 2) then
+  if (mode >= 0 and mode <= 2 and xafcoreMath:checkInteger(mode) == true) then
     private.streamMode = mode
   else
     error("[XAF Error] Invalid redstone stream mode")

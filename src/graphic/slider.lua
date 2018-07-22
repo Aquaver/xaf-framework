@@ -6,6 +6,8 @@
 -- [!] Accepted events: 'drag'
 
 local component = require("xaf/graphic/component") -- As this class describes top-level graphic component it must inherit from Component class.
+local xafcore = require("xaf/core/xafcore")
+local xafcoreMath = xafcore:getMathInstance()
 
 local Slider = {
   C_NAME = "Generic GUI Slider",
@@ -143,7 +145,7 @@ function Slider:initialize()
     local posX = private.positionX
     local posY = private.positionY
     
-    if (math.floor(skip) == skip and math.ceil(skip) == skip and skip > 0) then
+    if (xafcoreMath:checkNatural(skip, true) == true) then
       sliderShift = skip
     else
       error("[XAF Error] Invalid slider bar incremental number - must be a positive integer")
@@ -262,7 +264,7 @@ function Slider:new(positionX, positionY, sliderLength, sliderRotation)
   public:setPosition(positionX, positionY)
   assert(type(sliderLength) == "number", "[XAF Graphic] Expected NUMBER as argument #3")
   
-  if (math.floor(sliderLength) == sliderLength and math.ceil(sliderLength) == sliderLength and sliderLength > 0) then
+  if (xafcoreMath:checkNatural(sliderLength, true) == true) then
     private.length = sliderLength
   else
     error("[XAF Error] Invalid slider length number - must be a positive integer")
@@ -270,8 +272,7 @@ function Slider:new(positionX, positionY, sliderLength, sliderRotation)
   
   assert(type(sliderRotation) == "number", "[XAF Graphic] Expected NUMBER as argument #4")
   
-  if ((math.floor(sliderRotation) == sliderRotation and math.ceil(sliderRotation) == sliderRotation)
-  and (sliderRotation >= 0 and sliderRotation <= 2)) then
+  if ((xafcoreMath:checkInteger(sliderRotation) == true) and (sliderRotation >= 0 and sliderRotation <= 2)) then
     private.rotation = sliderRotation
   else
     error("[XAF Error] Invalid slider rotation mode")

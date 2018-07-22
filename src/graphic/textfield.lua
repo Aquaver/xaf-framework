@@ -8,6 +8,8 @@
 
 local component = require("xaf/graphic/component")
 local unicode = require("unicode")
+local xafcore = require("xaf/core/xafcore")
+local xafcoreMath = xafcore:getMathInstance()
 
 local TextField = {
   C_NAME = "Generic GUI Text Field",
@@ -375,7 +377,7 @@ function TextField:new(positionX, positionY, columns, rows)
   public:setPosition(positionX, positionY)
   assert(type(columns) == "number", "[XAF Graphic] Expected NUMBER as argument #3")
   
-  if (math.floor(columns) == columns and math.ceil(columns) == columns and columns > 0) then
+  if (xafcoreMath:checkNatural(columns, true) == true) then
     private.columns = columns
     private.totalWidth = columns + 4
   else
@@ -384,7 +386,7 @@ function TextField:new(positionX, positionY, columns, rows)
   
   assert(type(rows) == "number", "[XAF Graphic] Expected NUMBER as argument #4")
   
-  if (math.floor(rows) == rows and math.ceil(rows) == rows and rows > 0) then
+  if (xafcoreMath:checkNatural(rows, true) == true) then
     private.rows = rows
     private.totalHeight = rows + 2
     

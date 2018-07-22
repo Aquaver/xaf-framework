@@ -7,6 +7,8 @@
 -- [!] Accepted events: 'click', 'scroll'
 
 local component = require("xaf/graphic/component")
+local xafcore = require("xaf/core/xafcore")
+local xafcoreMath = xafcore:getMathInstance()
 
 local Spinner = {
   C_NAME = "Generic GUI Spinner",
@@ -312,7 +314,7 @@ function Spinner:new(positionX, positionY, columns, mode)
   public:setPosition(positionX, positionY)
   assert(type(columns) == "number", "[XAF Graphic] Expected NUMBER as argument #3")
   
-  if (math.floor(columns) == columns and math.ceil(columns) == columns and columns > 0) then
+  if (xafcoreMath:checkNatural(columns, true) == true) then
     private.columns = columns
   else
     error("[XAF Error] Invalid columns number - must be a positive integer")
@@ -321,7 +323,7 @@ function Spinner:new(positionX, positionY, columns, mode)
   assert(type(mode) == "number", "[XAF Graphic] Expected NUMBER as argument #4")
   
   if (mode >= 0 and mode <= 2) then
-    if (math.floor(mode) == mode and math.ceil(mode) == mode) then
+    if (xafcoreMath:checkInteger(mode) == true) then
       private.spinnerMode = mode
     else
       error("[XAF Error] Invalid spinner mode - must be a integer")

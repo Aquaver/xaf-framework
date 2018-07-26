@@ -41,6 +41,27 @@ function BigNumber:initialize()
     '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
   }
 
+  private.buildFromTable = function(self, buildDecimalDigits, buildIntegerDigits, buildNumberSign) -- [!] Function: buildFromTable(buildDecimalDigits, buildIntegerDigits, buildNumberSign) - Creates new BigNumber object based on digit tables and number sign.
+    assert(type(buildDecimalDigits) == "table", "[XAF Utility] Expected TABLE as argument #1")     -- [!] Parameter: buildDecimalDigits - Table with decimal component digits for new BigNumber object.
+    assert(type(buildIntegerDigits) == "table", "[XAF Utility] Expected TABLE as argument #2")     -- [!] Parameter: buildIntegerDigits - Table with integer digits for new BigNumber object.
+    assert(type(buildNumberSign) == "number", "[XAF Utility] Expected NUMBER as argument #3")      -- [!] Parameter: buildNumberSign - New sign value for created BigNumber object.
+                                                                                                   -- [!] Return: BigNumber - Newly created BigNumber number object.
+    local newObject = BigNumber:extend()
+    newObject.private.decimalDigits = buildDecimalDigits
+    newObject.private.decimalLength = #buildDecimalDigits
+    newObject.private.integerDigits = buildIntegerDigits
+    newObject.private.integerLength = #buildIntegerDigits
+
+    if (buildNumberSign == 0 or buildNumberSign == 1) then
+      newObject.private.numberSign = buildNumberSign
+      newObject.private:normalizeNumber()
+    else
+      error("[XAF Error] Invalid BigNumber sign value - must be equal to zero '0' or one '1'")
+    end
+
+    return newObject.public
+  end
+
   return {
     private = private,
     public = public

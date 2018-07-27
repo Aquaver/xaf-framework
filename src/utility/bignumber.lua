@@ -62,6 +62,28 @@ function BigNumber:initialize()
     return newObject.public
   end
 
+  private.checkPrecision = function(self, firstObject, secondObject, digitCount)                    -- [!] Function: checkPrecision(firstObject, secondObject, digitCount) - Checks whether computed number has reached specified precision (used in functions).
+    assert(type(firstObject) == "table", "[XAF Utility] Expected TABLE as argument #1")             -- [!] Parameter: firstObject - Previous result of calculated number value.
+    assert(type(secondObject) == "table", "[XAF Utility] Expected TABLE as argument #2")            -- [!] Parameter: secondObject - Next result (more precise) of calculated number value.
+    assert(type(digitCount) == "number", "[XAF Utility] Expected NUMBER as argument #3")            -- [!] Parameter: digitCount - Number of decimal digits of precision limit (for example '3' means precision equal to 0.001).
+                                                                                                    -- [!] Return: precisionResult - Boolean flag of reaching specified precision.
+    if (firstObject.returnValue == nil) then
+      error("[XAF Error] Required valid BigNumber object to check precision (first)")
+    elseif (secondObject.returnValue == nil) then
+      error("[XAF Error] Required valid BigNumber object to check precision (second)")
+    elseif (xafcoreMath:checkNatural(digitCount, false) == false) then
+      error("[XAF Error] Digit count value must be natural number (including zero)")
+    else
+      local limitString = '0' .. private.separatorDecimal .. string.rep('0', digitCount - 1) .. '1'
+      local limitObject = BigNumber:new(limitString)
+      local objectDifference = firstObject:subtract(secondObject)
+      local objectAbsolute = objectDifference:absoluteValue()
+      local precisionResult = objectAbsolute:isLower(limitObject)
+
+      return precisionResult
+    end
+  end
+
   return {
     private = private,
     public = public

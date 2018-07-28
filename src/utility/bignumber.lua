@@ -84,6 +84,91 @@ function BigNumber:initialize()
     end
   end
 
+  private.convertString = function(self, numberString)                                                     -- [!] Function: convertString(numberString) - Creates new BigNumber by converting string in number notation to BigNumber object.
+    assert(type(numberString) == "string", "[XAF Utility] Expected STRING as argument #1")                 -- [!] Parameter: numberString - Valid string in Lua number notation (supports exponential notation).
+                                                                                                           -- [!] Return: 'true' - If the string has been converted to BigNumber without errors.
+    local newDecimalDigits = {}
+    local newDecimalLength = 0
+    local newIntegerDigits = {}
+    local newIntegerLength = 0
+    local newNumberSign = 0
+    local isDecimal = false
+    local stringLength = #numberString
+
+    if (stringLength == 0) then
+      error("[XAF Error] Number string for initializing BigNumber must not be empty")
+    else
+      local firstCharacter = string.sub(numberString, 1, 1)
+
+      if (firstCharacter == '-') then
+        if (stringLength == 1) then
+          error("[XAF Error] Invalid string for BigNumber object - required digits after minus character")
+        else
+          newNumberSign = 1
+          numberString = string.sub(numberString, 2)
+          stringLength = stringLength - 1
+        end
+      end
+
+      for i = 1, stringLength do
+        local currentCharacter = string.sub(numberString, i, i)
+
+        if (tonumber(currentCharacter)) then
+          if (isDecimal == true) then
+            table.insert(newDecimalDigits, tonumber(currentCharacter))
+            newDecimalLength = newDecimalLength + 1
+          else
+            table.insert(newIntegerDigits, 1, tonumber(currentCharacter))
+            newIntegerLength = newIntegerLength + 1
+          end
+        elseif (currentCharacter == private.separatorDecimal) then
+          if (newIntegerLength == 0) then
+            newIntegerDigits = {0}
+            newIntegerLength = 1
+          end
+
+          if (isDecimal == false) then
+            isDecimal = true
+          else
+            error("[XAF Error] Invalid string for BigNumber object - encountered two decimal separators")
+          end
+        elseif (currentCharacter == 'e' or currentCharacter == 'E') then
+          local exponentString = ''
+          local exponentValue = 0
+
+          for j = (i + 1), stringLength do
+            currentCharacter = string.sub(numberString, j, j)
+
+            if (tonumber(currentCharacter) or currentCharacter == '+' or currentCharacter == '-') then
+              exponentString = exponentString .. currentCharacter
+            else
+              error("[XAF Error] Invalid string for BigNumber object - encountered non-number exponent")
+            end
+          end
+
+          if (tonumber(exponentString)) then
+            exponentValue = tonumber(exponentString)
+            private.initialExponent = exponentValue
+          else
+            error("[XAF Error] Invalid string for BigNumber object - encountered non-number exponent")
+          end
+
+          break
+        else
+          error("[XAF Error] Invalid string for BigNumber object - encountered non-digit character")
+        end
+      end
+
+      private.decimalDigits = newDecimalDigits
+      private.decimalLength = newDecimalLength
+      private.integerDigits = newIntegerDigits
+      private.integerLength = newIntegerLength
+      private.numberSign = newNumberSign
+
+      return true
+    end
+  end
+
   return {
     private = private,
     public = public

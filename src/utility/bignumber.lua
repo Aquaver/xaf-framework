@@ -169,6 +169,119 @@ function BigNumber:initialize()
     end
   end
 
+  private.convertStringRadix = function(self, numberString, radixValue)                                                    -- [!] Function: convertStringRadix(numberString, radixValue) - Converts given string into new BigNumber object with given radix (base).
+    assert(type(numberString) == "string", "[XAF Utility] Expected STRING as argument #1")                                 -- [!] Parameter: numberString - New object number value as string representation (this function does not support exponential notation).
+    assert(type(radixValue) == "number", "[XAF Utility] Expected NUMBER as argument #2")                                   -- [!] Parameter: radixValue - Number value of entered string base (radix), must be integer from 2 (binary) to 16 (hexadecimal).
+                                                                                                                           -- [!] Return: 'true' - If the entered string has been converted into new BigNumber without errors.
+    local radixMax = private.radixMaximumValue
+    local radixMin = private.radixMinimumValue
+    local radixTable = private.radixCharacterTable
+    local radixNumber = BigNumber:new(tostring(radixValue))
+
+    if (xafcoreMath:checkInteger(radixValue) == true and radixValue >= radixMin and radixValue <= radixMax) then
+      local newDecimalDigits = {}
+      local newDecimalLength = 0
+      local newIntegerDigits = {}
+      local newIntegerLength = 0
+      local newNumberSign = 0
+      local isDecimal = false
+      local stringLength = #numberString
+      numberString = string.lower(numberString)
+
+      if (stringLength == 0) then
+        error("[XAF Error] Number string for initializing BigNumber must not be empty")
+      else
+        local firstCharacter = string.sub(numberString, 1, 1)
+
+        if (firstCharacter == '-') then
+          if (stringLength == 1) then
+            error("[XAF Error] Invalid string for BigNumber object - required digits after minus character")
+          else
+            newNumberSign = 1
+            numberString = string.sub(numberString, 2)
+            stringLength = stringLength - 1
+          end
+        end
+
+        for i = 1, stringLength do
+          local currentCharacter = string.sub(numberString, i, i)
+          local indexTable = xafcoreTable:searchByValue(radixTable, currentCharacter, 0)
+          local indexLength = #indexTable
+
+          if (indexLength == 1) then
+            if (indexTable[1] > radixValue) then
+              error("[XAF Error] Invalid string for BigNumber object - encountered non-digit character (for this radix)")
+            else
+              if (isDecimal == true) then
+                table.insert(newDecimalDigits, 1, currentCharacter)
+                newDecimalLength = newDecimalLength + 1
+              else
+                table.insert(newIntegerDigits, 1, currentCharacter)
+                newIntegerLength = newIntegerLength + 1
+              end
+            end
+          elseif (currentCharacter == private.separatorDecimal) then
+            if (newIntegerLength == 0) then
+              newIntegerDigits = {0}
+              newIntegerLength = 1
+            end
+
+            if (isDecimal == false) then
+              isDecimal = true
+            else
+              error("[XAF Error] Invalid string for BigNumber object - encountered two decimal separators")
+            end
+          elseif (indexLength == 0) then
+            error("[XAF Error] Invalid string for BigNumber object - encountered non-digit character")
+          else
+            error("[XAF Error] Invalid string for BigNumber object - encountered non-digit character")
+          end
+        end
+
+        local newNumberTable = nil
+        local newNumberObject = BigNumber:new('0')
+        local decimalDenominator = radixNumber:power(newDecimalLength)
+        local decimalNumerator = BigNumber:new('0')
+
+        for i = 1, newIntegerLength do
+          local characterRaw = newIntegerDigits[i]
+          local characterTable = xafcoreTable:searchByValue(radixTable, characterRaw, 0)
+          local characterIndex = BigNumber:new(tostring(characterTable[1] - 1))
+          local characterValue = characterIndex:multiply(radixNumber:power(i - 1))
+
+          newNumberObject = newNumberObject:add(characterValue)
+        end
+
+        if (decimalDenominator:isEqual(decimalNumerator) == false) then
+          for i = 1, newDecimalLength do
+            local characterRaw = newDecimalDigits[i]
+            local characterTable = xafcoreTable:searchByValue(radixTable, characterRaw, 0)
+            local characterIndex = BigNumber:new(tostring(characterTable[1] - 1))
+            local characterValue = characterIndex:multiply(radixNumber:power(i - 1))
+
+            decimalNumerator = decimalNumerator:add(characterValue)
+          end
+
+          decimalNumerator:setMaxPrecision(public:getMaxPrecision())
+          decimalDenominator:setMaxPrecision(public:getMaxPrecision())
+          newNumberObject = newNumberObject:add(decimalNumerator:divide(decimalDenominator))
+          newNumberObject:setNumberSign(newNumberSign)
+          newNumberTable = newNumberObject:returnValue()
+
+          private.decimalDigits = newNumberTable.decimalDigits
+          private.decimalLength = newNumberTable.decimalLength
+          private.integerDigits = newNumberTable.integerDigits
+          private.integerLength = newNumberTable.integerLength
+          private.numberSign = newNumberTable.numberSign
+
+          return true
+        end
+      end
+    else
+      error("[XAF Error] Invalid BigNumber radix value, must be integer in range from " .. radixMin .. " to " .. radixMax)
+    end
+  end
+
   return {
     private = private,
     public = public

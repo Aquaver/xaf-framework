@@ -282,6 +282,42 @@ function BigNumber:initialize()
     end
   end
 
+  private.normalizeNumber = function(self)                -- [!] Function: normalizeNumber() - Normalizes the number by removing unnecessary leading and trailing zeros.
+    local decimalLength = private.decimalLength           -- [!] Return: 'true' - If the number has been normalized properly.
+    local integerLength = private.integerLength
+
+    for i = integerLength, 2, -1 do
+      if (private.integerDigits[i] == 0) then
+        table.remove(private.integerDigits, i)
+        private.integerLength = private.integerLength - 1
+      else
+        break
+      end
+    end
+
+    for i = decimalLength, 1, -1 do
+      if (private.decimalDigits[i] == 0) then
+        table.remove(private.decimalDigits, i)
+        private.decimalLength = private.decimalLength - 1
+      else
+        break
+      end
+    end
+
+    if (private.integerLength < 1) then
+      private.integerDigits = {0}
+      private.integerLength = 1
+    end
+
+    if (private.integerLength == 1 and private.decimalLength == 0) then
+      if (private.integerDigits[1] == 0) then
+        private.numberSign = 0 -- Change number sign to 0 if integer component is equal to zero and it has no fraction (there are no 'negative zeros').
+      end
+    end
+
+    return true
+  end
+
   return {
     private = private,
     public = public
@@ -328,6 +364,7 @@ function BigNumber:new(numberString, numberRadix)
 
     local newObject = BigNumber:new(numberObject:getValue())
     local newTable = newObject:returnValue()
+    
     private.decimalDigits = newTable.decimalDigits
     private.decimalLength = newTable.decimalLength
     private.integerDigits = newTable.integerDigits

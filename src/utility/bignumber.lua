@@ -318,6 +318,71 @@ function BigNumber:initialize()
     return true
   end
 
+  private.rawAdd = function(self, numberObject)                                                                 -- [!] Function: rawAdd(numberObject) - Calculates raw sum of two BigNumber values without considering the sign, used in normal operations.
+    assert(type(numberObject) == "table", "[XAF Utility] Expected TABLE as argument #1")                        -- [!] Parameter: numberObject - Valid BigNumber object to compute the sum of them.
+                                                                                                                -- [!] Return: BigNumber - Newly created BigNumber object which holds sum of these two objects.
+    if (numberObject.returnValue == nil) then
+      error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+    else
+      local numberTable = numberObject:returnValue()
+      local decimalDigits = numberTable.decimalDigits
+      local decimalLength = numberTable.decimalLength
+      local integerDigits = numberTable.integerDigits
+      local integerLength = numberTable.integerLength
+      local numberSign = numberTable.numberSign
+
+      if (decimalDigits and decimalLength and integerDigits and integerLength and numberSign) then
+        local integerLimit = (private.integerLength > integerLength) and private.integerLength or integerLength
+        local decimalLimit = (private.decimalLength > decimalLength) and private.decimalLength or decimalLength
+        local newDecimalDigits = {}
+        local newDecimalLength = 0
+        local newIntegerDigits = {}
+        local newIntegerLength = 0
+        local newNumberSign = 0 -- This function will always return positive (neutral) number.
+        local digitCarry = 0
+
+        for i = decimalLimit, 1, -1 do
+          local localDecimal = (private.decimalDigits[i] == nil) and 0 or private.decimalDigits[i]
+          local otherDecimal = (decimalDigits[i] == nil) and 0 or decimalDigits[i]
+          local sumNumber = digitCarry + localDecimal + otherDecimal
+          local sumDigit = sumNumber % 10
+          local sumCarry = sumNumber / 10
+
+          if (newDecimalDigits[i] == nil) then
+            newDecimalDigits[i] = sumDigit
+            newDecimalLength = newDecimalLength + 1
+          end
+
+          digitCarry = math.floor(sumCarry)
+        end
+
+        for i = 1, integerLimit do
+          local localInteger = (private.integerDigits[i] == nil) and 0 or private.integerDigits[i]
+          local otherInteger = (integerDigits[i] == nil) and 0 or integerDigits[i]
+          local sumNumber = digitCarry + localInteger + otherInteger
+          local sumDigit = sumNumber % 10
+          local sumCarry = sumNumber / 10
+
+          if (newIntegerDigits[i] == nil) then
+            newIntegerDigits[i] = sumDigit
+            newIntegerLength = newIntegerLength + 1
+          end
+
+          digitCarry = math.floor(sumCarry)
+        end
+
+        if (digitCarry > 0) then
+          table.insert(newIntegerDigits, digitCarry)
+          newIntegerLength = newIntegerLength + 1
+        end
+
+        return private:buildFromTable(newDecimalDigits, newIntegerDigits, newNumberSign)
+      else
+        error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+      end
+    end
+  end
+
   return {
     private = private,
     public = public

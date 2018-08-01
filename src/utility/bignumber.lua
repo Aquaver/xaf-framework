@@ -383,6 +383,128 @@ function BigNumber:initialize()
     end
   end
 
+  private.rawSubtract = function(self, numberObject)                                                            -- [!] Function: rawSubtract(numberObject) - Calculates raw difference of two BigNumber values without considering the sign, used in normal operations.
+    assert(type(numberObject) == "table", "[XAF Utility] Expected TABLE as argument #1")                        -- [!] Parameter: numberObject - Valid BigNumber object to calculate the difference of them.
+                                                                                                                -- [!] Return: BigNumber - Created BigNumber object which stores difference between this object and 'numberObject'.
+    if (numberObject.returnValue == nil) then
+      error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+    else
+      local absoluteThis = public:absoluteValue()
+      local absoluteOther = numberObject:absoluteValue()
+      local numberTable = absoluteOther:returnValue()
+      local decimalDigits = numberTable.decimalDigits
+      local decimalLength = numberTable.decimalLength
+      local integerDigits = numberTable.integerDigits
+      local integerLength = numberTable.integerLength
+      local numberSign = numberTable.numberSign
+
+      if (decimalDigits and decimalLength and integerDigits and integerLength and numberSign) then
+        local integerLimit = (private.integerLength > integerLength) and private.integerLength or integerLength
+        local decimalLimit = (private.decimalLength > decimalLength) and private.decimalLength or decimalLength
+        local newDecimalDigits = {}
+        local newDecimalLength = 0
+        local newIntegerDigits = {}
+        local newIntegerLength = 0
+        local newNumberSign = 0 -- This function will always return positive (neutral) number.
+        local digitCarry = 0
+
+        if (absoluteThis:isEqual(absoluteOther) == true) then
+          return private:buildFromTable({}, {0}, 0) -- If two numbers for subtract are equal then return BigNumber with value zero.
+        elseif (absoluteThis:isGreater(absoluteOther) == true) then
+          for i = decimalLimit, 1, -1 do
+            local localDecimal = (private.decimalDigits[i] == nil) and 0 or private.decimalDigits[i]
+            local otherDecimal = (decimalDigits[i] == nil) and 0 or decimalDigits[i]
+            local subNumber = ((digitCarry + localDecimal) - otherDecimal)
+            local subDigit = nil
+
+            if (subNumber < 0) then
+              digitCarry = -1
+              subNumber = subNumber + 10
+              subDigit = subNumber % 10
+            else
+              digitCarry = 0
+              subDigit = subNumber % 10
+            end
+
+            if (newDecimalDigits[i] == nil) then
+              newDecimalDigits[i] = subDigit
+              newDecimalLength = newDecimalLength + 1
+            end
+          end
+
+          for i = 1, integerLimit do
+            local localInteger = (private.integerDigits[i] == nil) and 0 or private.integerDigits[i]
+            local otherInteger = (integerDigits[i] == nil) and 0 or integerDigits[i]
+            local subNumber = ((digitCarry + localInteger) - otherInteger)
+            local subDigit = nil
+
+            if (subNumber < 0) then
+              digitCarry = -1
+              subNumber = subNumber + 10
+              subDigit = subNumber % 10
+            else
+              digitCarry = 0
+              subDigit = subNumber % 10
+            end
+
+            if (newIntegerDigits[i] == nil) then
+              newIntegerDigits[i] = subDigit
+              newIntegerLength = newIntegerLength + 1
+            end
+          end
+
+          return private:buildFromTable(newDecimalDigits, newIntegerDigits, newNumberSign)
+        elseif (absoluteThis:isLower(absoluteOther) == true) then
+          for i = decimalLimit, 1, -1 do
+            local localDecimal = (decimalDigits[i] == nil) and 0 or decimalDigits[i]
+            local otherDecimal = (private.decimalDigits[i] == nil) and 0 or private.decimalDigits[i]
+            local subNumber = ((digitCarry + localDecimal) - otherDecimal)
+            local subDigit = nil
+
+            if (subNumber < 0) then
+              digitCarry = -1
+              subNumber = subNumber + 10
+              subDigit = subNumber % 10
+            else
+              digitCarry = 0
+              subDigit = subNumber % 10
+            end
+
+            if (newDecimalDigits[i] == nil) then
+              newDecimalDigits[i] = subDigit
+              newDecimalLength = newDecimalLength + 1
+            end
+          end
+
+          for i = 1, integerLimit do
+            local localInteger = (integerDigits[i] == nil) and 0 or integerDigits[i]
+            local otherInteger = (private.integerDigits[i] == nil) and 0 or private.integerDigits[i]
+            local subNumber = ((digitCarry + localInteger) - otherInteger)
+            local subDigit = nil
+
+            if (subNumber < 0) then
+              digitCarry = -1
+              subNumber = subNumber + 10
+              subDigit = subNumber % 10
+            else
+              digitCarry = 0
+              subDigit = subNumber % 10
+            end
+
+            if (newIntegerDigits[i] == nil) then
+              newIntegerDigits[i] = subDigit
+              newIntegerLength = newIntegerLength + 1
+            end
+          end
+
+          return private:buildFromTable(newDecimalDigits, newIntegerDigits, newNumberSign)
+        end
+      else
+        error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+      end
+    end
+  end
+
   return {
     private = private,
     public = public

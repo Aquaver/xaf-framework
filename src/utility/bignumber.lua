@@ -504,6 +504,14 @@ function BigNumber:initialize()
       end
     end
   end
+  
+  public.absoluteValue = function(self)         -- [!] Function: absoluteValue() - Returns absolute value of present BigNumber object.
+    local decimalDigits = private.decimalDigits -- [!] Return: BigNumber - New object which holds the absolute value of this object.
+    local integerDigits = private.integerDigits
+    local newNumberSign = 0 -- Absolute value of any number is always positive (neutral).
+
+    return private:buildFromTable(decimalDigits, integerDigits, newNumberSign)
+  end
 
   return {
     private = private,

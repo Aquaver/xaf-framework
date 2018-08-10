@@ -512,6 +512,51 @@ function BigNumber:initialize()
 
     return private:buildFromTable(decimalDigits, integerDigits, newNumberSign)
   end
+  
+  public.add = function(self, numberObject)                                                -- [!] Function: add(numberObject) - Computes sum on two BigNumber object, it considers their signs.
+    assert(type(numberObject) == "table", "[XAF Utility] Expected TABLE as argument #1")   -- [!] Parameter: numberObject - Valid BigNumber object to calculate the sum with present object.
+                                                                                           -- [!] Return: resultObject - BigNumber object which stores the sum of it and given number object.
+    if (numberObject.returnValue == nil) then
+      error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+    else
+      local absoluteThis = public:absoluteValue()
+      local absoluteOther = numberObject:absoluteValue()
+      local localSign = public:getNumberSign()
+      local otherSign = numberObject:getNumberSign()
+
+      if (absoluteOther and otherSign) then
+        if (localSign == 0 and otherSign == 0) then
+          local resultObject = private:rawAdd(numberObject)
+          local resultSign = 0
+
+          resultObject:setNumberSign(resultSign)
+          return resultObject
+        elseif (localSign == 1 and otherSign == 1) then
+          local resultObject = private:rawAdd(numberObject)
+          local resultSign = 1
+
+          resultObject:setNumberSign(resultSign)
+          return resultObject
+        else
+          local resultObject = private:rawSubtract(numberObject)
+          local resultSign = nil
+
+          if (absoluteThis:isEqual(absoluteOther) == true) then
+            resultSign = 0 -- Equal numbers with opposite signs always sum to zero.
+          elseif (absoluteThis:isGreater(absoluteOther) == true) then
+            resultSign = localSign
+          elseif (absoluteThis:isLower(absoluteOther) == true) then
+            resultSign = otherSign
+          end
+
+          resultObject:setNumberSign(resultSign)
+          return resultObject
+        end
+      else
+        error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+      end
+    end
+  end
 
   return {
     private = private,

@@ -557,6 +557,22 @@ function BigNumber:initialize()
       end
     end
   end
+  
+  public.ceiling = function(self)                                              -- [!] Function: ceiling() - Returns lowest integer greater than or equal to this BigNumber.
+    local constantOne = BigNumber:new('1')                                     -- [!] Return: resultObject - Newly created BigNumber object that holds result of ceiling function.
+    local decimalLength = private.decimalLength
+    local integerDigits = private.integerDigits
+    local numberSign = public:getNumberSign()
+    local resultObject = private:buildFromTable({}, integerDigits, numberSign)
+
+    if (decimalLength > 0) then
+      if (numberSign == 0) then
+        resultObject = resultObject:add(constantOne)
+      end
+    end
+
+    return resultObject
+  end
 
   return {
     private = private,

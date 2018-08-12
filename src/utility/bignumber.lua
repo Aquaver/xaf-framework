@@ -573,6 +573,105 @@ function BigNumber:initialize()
 
     return resultObject
   end
+  
+  public.divide = function(self, numberObject)                                                -- [!] Function: divide(numberObject) - Calculates quotient of two BigNumber numbers, where the present one is dividend.
+    assert(type(numberObject) == "table", "[XAF Utility] Expected TABLE as argument #1")      -- [!] Parameter: numberObject - Valid BigNumber object which is a divisor.
+                                                                                              -- [!] Return: quotientObject - Calculated quotient with maximum decimal digit precision equal to dividend's maximum precision property.
+    if (numberObject.returnValue == nil) then
+      error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+    else
+      local absoluteThis = public:absoluteValue()
+      local absoluteOther = numberObject:absoluteValue()
+      local constantOne = BigNumber:new('1')
+      local constantTen = BigNumber:new("10")
+      local localSign = public:getNumberSign()
+      local otherSign = numberObject:getNumberSign()
+      local quotientObject = nil
+      local quotientSign = 0
+      local quotientString = '0'
+
+      if (absoluteOther and otherSign) then
+        if (absoluteOther:getValue() == '0') then
+          error("[XAF Error] BigNumber divisor must not be equal to zero (division by zero)")
+        else
+          local divisorTable = absoluteOther:returnValue()
+          local divisorDecimalLength = divisorTable.decimalLength
+          local numberIndex = 1
+          local numberTable = {}
+
+          for i = 1, divisorDecimalLength do
+            absoluteThis = absoluteThis:multiply(constantTen) -- Shifts 'comma' to remove decimal component in divisor, it makes calculating easier.
+            absoluteOther = absoluteOther:multiply(constantTen)
+          end
+
+          local dividendTable = absoluteThis:returnValue()
+          local dividendDecimalDigits = dividendTable.decimalDigits
+          local dividendDecimalLength = dividendTable.decimalLength
+          local dividendIntegerDigits = dividendTable.integerDigits
+          local dividendIntegerLength = dividendTable.integerLength
+
+          for i = dividendIntegerLength, 1, -1 do
+            table.insert(numberTable, dividendIntegerDigits[i])
+          end
+
+          for i = 1, dividendDecimalLength do
+            table.insert(numberTable, dividendDecimalDigits[i])
+          end
+
+          local isDecimal = false
+          local interObject = BigNumber:new('0')
+          local partialResultDigit = nil
+          local partialResult = nil
+          local precision = 0
+          local precisionMax = public:getMaxPrecision()
+          local resultString = tostring(numberTable[1]) -- First leftmost digit of dividend.
+          local resultObject = BigNumber:new(resultString)
+
+          while (precision < precisionMax) do -- Repeat calculating until maximum decimal precision reached.
+            if (resultObject:isEqual(absoluteOther) == true) then
+              partialResultDigit = BigNumber:new('1')
+              quotientString = quotientString .. '1'
+            elseif (resultObject:isGreater(absoluteOther) == true) then
+              partialResultDigit = BigNumber:new('0')
+              partialResult = resultObject:absoluteValue()
+
+              while (not partialResult:isLower(absoluteOther) == true) do
+                partialResultDigit = partialResultDigit:add(constantOne)
+                partialResult = partialResult:subtract(absoluteOther)
+              end
+
+              quotientString = quotientString .. partialResultDigit:getValue()
+            elseif (resultObject:isLower(absoluteOther) == true) then
+              partialResultDigit = BigNumber:new('0')
+              quotientString = quotientString .. '0'
+            end
+
+            numberIndex = numberIndex + 1
+            numberDigit = (numberTable[numberIndex] == nil) and 0 or numberTable[numberIndex]
+            interObject = partialResultDigit:multiply(absoluteOther)
+            precision = (isDecimal == true) and precision + 1 or precision
+
+            if ((numberIndex - 1) == dividendIntegerLength) then
+              isDecimal = true
+              quotientString = quotientString .. private.separatorDecimal
+            end
+
+            resultObject = resultObject:subtract(interObject)
+            resultString = resultObject:getValue() .. numberDigit
+            resultObject = BigNumber:new(resultString)
+          end
+        end
+
+        quotientSign = (localSign == otherSign) and 0 or 1
+        quotientObject = BigNumber:new(quotientString)
+        quotientObject:setNumberSign(quotientSign)
+
+        return quotientObject
+      else
+        error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+      end
+    end
+  end
 
   return {
     private = private,

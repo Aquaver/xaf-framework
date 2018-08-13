@@ -672,6 +672,22 @@ function BigNumber:initialize()
       end
     end
   end
+  
+  public.floor = function(self)                                                -- [!] Function: floor() - Returns greatest integer less than or equal to this BigNumber object.
+    local constantOne = BigNumber:new('1')                                     -- [!] Return: resultObject - BigNumber object which stores value of floor function computed on this object.
+    local decimalLength = private.decimalLength
+    local integerDigits = private.integerDigits
+    local numberSign = public:getNumberSign()
+    local resultObject = private:buildFromTable({}, integerDigits, numberSign)
+
+    if (decimalLength > 0) then
+      if (numberSign == 1) then
+        resultObject = resultObject:subtract(constantOne)
+      end
+    end
+
+    return resultObject
+  end
 
   return {
     private = private,

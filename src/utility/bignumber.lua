@@ -688,6 +688,10 @@ function BigNumber:initialize()
 
     return resultObject
   end
+  
+  public.getMaxPrecision = function(self) -- [!] Function: getMaxPrecision() - Returns maximum computable precision value, the number of decimal digits in operations.
+    return private.decimalPrecisionMax    -- [!] Return: decimalPrecisionMax - Maximum decimal precision property value.
+  end
 
   return {
     private = private,

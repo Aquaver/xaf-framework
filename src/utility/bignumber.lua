@@ -692,6 +692,10 @@ function BigNumber:initialize()
   public.getMaxPrecision = function(self) -- [!] Function: getMaxPrecision() - Returns maximum computable precision value, the number of decimal digits in operations.
     return private.decimalPrecisionMax    -- [!] Return: decimalPrecisionMax - Maximum decimal precision property value.
   end
+  
+  public.getNumberSign = function(self) -- [!] Function: getNumberSign() - Returns BigNumber object's current sign value (0 means neutral or positive, 1 means negative).
+    return private.numberSign           -- [!] Return: numberSign - Number sign value of this object as Lua number.
+  end
 
   return {
     private = private,

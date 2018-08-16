@@ -696,6 +696,15 @@ function BigNumber:initialize()
   public.getNumberSign = function(self) -- [!] Function: getNumberSign() - Returns BigNumber object's current sign value (0 means neutral or positive, 1 means negative).
     return private.numberSign           -- [!] Return: numberSign - Number sign value of this object as Lua number.
   end
+  
+  public.getObjectValue = function(self)                                                 -- [!] Function: getObjectValue() - Returns full copy of this BigNumber object (mostly used in functions).
+    local decimalDigits = private.decimalDigits                                          -- [!] Return: objectValue - Newly created BigNumber based on this object.
+    local integerDigits = private.integerDigits
+    local numberSign = private.numberSign
+    local objectValue = private:buildFromTable(decimalDigits, integerDigits, numberSign)
+
+    return objectValue
+  end
 
   return {
     private = private,

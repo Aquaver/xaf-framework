@@ -705,6 +705,10 @@ function BigNumber:initialize()
 
     return objectValue
   end
+  
+  public.getPrecision = function(self) -- [!] Function: getPrecision() - Returns BigNumber current precision value (number of decimal digits returned in 'getValue()' function).
+    return private.decimalPrecision    -- [!] Return: decimalPrecision - Value of current precision property.
+  end
 
   return {
     private = private,

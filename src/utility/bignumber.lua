@@ -709,6 +709,13 @@ function BigNumber:initialize()
   public.getPrecision = function(self) -- [!] Function: getPrecision() - Returns BigNumber current precision value (number of decimal digits returned in 'getValue()' function).
     return private.decimalPrecision    -- [!] Return: decimalPrecision - Value of current precision property.
   end
+  
+  public.getThousandsSeparators = function(self)               -- [!] Function: getThousandsSeparators() - Returns BigNumber thousands group separators (after each three digits), both decimal and integer.
+    local separatorInteger = private.separatorThousandsInteger -- [!] Return: separatorInteger, separatorDecimal - Separator characters for both thousands integer and fraction component.
+    local separatorDecimal = private.separatorThousandsDecimal
+
+    return separatorInteger, separatorDecimal
+  end
 
   return {
     private = private,

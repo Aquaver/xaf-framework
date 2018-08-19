@@ -716,6 +716,62 @@ function BigNumber:initialize()
 
     return separatorInteger, separatorDecimal
   end
+  
+  public.getValue = function(self)                                                                          -- [!] Function: getValue() - Returns BigNumber object's current number value as string.
+    local decimalDigits = private.decimalDigits                                                             -- [!] Return: stringValue - String representation of BigNumber value.
+    local decimalLength = private.decimalLength
+    local decimalPrecision = (private.decimalPrecision == -1) and decimalLength or private.decimalPrecision
+    local integerDigits = private.integerDigits
+    local integerLength = private.integerLength
+    local numberSign = private.numberSign
+    local stringValue = ''
+
+    if (numberSign == 1) then
+      stringValue = stringValue .. '-'
+    end
+
+    for i = integerLength, 1, -1 do
+      if (i % 3 == 0) then
+        stringValue = stringValue .. private.separatorThousandsInteger
+      end
+
+      stringValue = stringValue .. integerDigits[i]
+    end
+
+    if (decimalLength > 0 and decimalPrecision > 0) then
+      stringValue = stringValue .. private.separatorDecimal
+
+      for i = 1, decimalLength do
+        decimalPrecision = decimalPrecision - 1
+        stringValue = stringValue .. decimalDigits[i]
+
+        if (i % 3 == 0) then
+          stringValue = stringValue .. private.separatorThousandsDecimal
+        end
+
+        if (decimalPrecision == 0) then
+          break
+        end
+      end
+    end
+
+    if (numberSign == 0 and string.sub(stringValue, 1, 1) == ' ') then
+      stringValue = string.sub(stringValue, 2)
+    elseif (numberSign == 1 and string.sub(stringValue, 2, 2) == ' ') then -- Consider negative numbers with leading minus character.
+      stringValue = '-' .. string.sub(stringValue, 3)
+    end
+
+    if (string.sub(stringValue, -1) == ' ') then
+      stringValue = string.sub(stringValue, 1, -2)
+    end
+
+    if (decimalPrecision > 0) then
+      stringValue = (decimalLength == 0) and stringValue .. private.separatorDecimal or stringValue
+      stringValue = stringValue .. string.rep('0', decimalPrecision)
+    end
+
+    return stringValue
+  end
 
   return {
     private = private,

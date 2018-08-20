@@ -772,6 +772,84 @@ function BigNumber:initialize()
 
     return stringValue
   end
+  
+  public.getValueRadix = function(self, radixValue)                                                                        -- [!] Function: getValueRadix(radixValue) - Returns current BigNumber object's number value in specified radix (base).
+    assert(type(radixValue) == "number", "[XAF Utility] Expected NUMBER as argument #1")                                   -- [!] Parameter: radixValue - Number base value, must be integer from 2 (binary) to 16 (hexadecimal).
+                                                                                                                           -- [!] Return: numberString - String representation of this number object in given radix.
+    local constantZero = BigNumber:new('0')
+    local fractionPrecision = 0
+    local radixMax = private.radixMaximumValue
+    local radixMin = private.radixMinimumValue
+    local radixTable = private.radixCharacterTable
+    local radixNumber = BigNumber:new(tostring(radixValue))
+
+    if (xafcoreMath:checkInteger(radixValue) == true and radixValue >= radixMin and radixValue <= radixMax) then
+      local numberValue = public:absoluteValue()
+      local numberInteger = numberValue:floor()
+      local numberFraction = numberValue:subtract(numberInteger)
+      local numberRemainder = BigNumber:new('1')
+      local numberIndex = 0
+      local numberCharacter = ''
+      local numberString = ''
+      local numberSign = public:getNumberSign()
+
+      if (numberInteger:isEqual(constantZero) == 0) then
+        numberString = numberString .. '0'
+      else
+        while (numberInteger:isEqual(constantZero) == false) do
+          numberRemainder = numberInteger:modulo(radixNumber)
+          numberInteger = numberInteger:divide(radixNumber)
+          numberInteger = numberInteger:floor()
+
+          numberCharacter = radixTable[tonumber(numberRemainder:getValue()) + 1]
+          numberString = numberCharacter .. numberString
+          numberIndex = numberIndex + 1
+
+          if (numberIndex % 3 == 0) then
+            numberString = private.separatorThousandsInteger .. numberString
+          end
+        end
+      end
+
+      if (numberFraction:isEqual(constantZero) == false) then
+        numberString = numberString .. private.separatorDecimal
+        numberIndex = 0
+
+        while (fractionPrecision < private.decimalPrecisionMax and numberFraction:isEqual(constantZero) == false) do
+          numberFraction = numberFraction:multiply(radixNumber)
+          numberRemainder = numberFraction:floor()
+          numberFraction = numberFraction:subtract(numberRemainder)
+
+          numberCharacter = radixTable[tonumber(numberRemainder:getValue()) + 1]
+          numberString = numberString .. numberCharacter
+          numberIndex = numberIndex + 1
+          fractionPrecision = fractionPrecision + 1
+
+          if (numberIndex % 3 == 0) then
+            numberString = numberString .. private.separatorThousandsDecimal
+          end
+        end
+      end
+
+      if (numberSign == 0 and string.sub(numberString, 1, 1) == ' ') then
+        numberString = string.sub(numberString, 2)
+      elseif (numberSign == 1 and string.sub(numberString, 2, 2) == ' ') then -- Consider negative numbers with leading minus character.
+        numberString = '-' .. string.sub(numberString, 3)
+      end
+
+      if (string.sub(numberString, -1) == ' ') then
+        numberString = string.sub(numberString, 1, -2)
+      end
+
+      if (numberSign == 1) then
+        numberString = '-' .. numberString
+      end
+
+      return numberString
+    else
+      error("[XAF Error] Invalid BigNumber radix value, must be integer in range from " .. radixMin .. " to " .. radixMax)
+    end
+  end
 
   return {
     private = private,

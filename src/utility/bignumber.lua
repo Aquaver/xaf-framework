@@ -850,6 +850,36 @@ function BigNumber:initialize()
       error("[XAF Error] Invalid BigNumber radix value, must be integer in range from " .. radixMin .. " to " .. radixMax)
     end
   end
+  
+  public.greatestCommonDivisor = function(self, numberObject)                                   -- [!] Function: greatestCommonDivisor(numberObject) - Calculates GCD (greatest common divisor) of present BigNumber and parameter.
+    assert(type(numberObject) == "table", "[XAF Utility] Expected TABLE as argument #1")        -- [!] Parameter: numberObject - Valid BigNumber object as second pair number for GCD function.
+                                                                                                -- [!] Return: resultObject - Computed greatest common divisor of this object and parameter's one.
+    if (numberObject.returnValue == nil) then
+      error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+    else
+      local absoluteThis = public:absoluteValue()
+      local absoluteOther = numberObject:absoluteValue()
+      local constantZero = BigNumber:new('0')
+      local resultObject = absoluteThis:getObjectValue()
+      local helperObject = nil
+
+      if (absoluteOther) then
+        if (absoluteThis:isInteger() == false or absoluteOther:isInteger() == false) then
+          error("[XAF Error] Greatest common divisor must be calculated on integer BigNumbers")
+        else
+          while (absoluteOther:isEqual(constantZero) == false) do
+            helperObject = resultObject:modulo(absoluteOther)
+            resultObject = absoluteOther:getObjectValue()
+            absoluteOther = helperObject:getObjectValue()
+          end
+
+          return resultObject
+        end
+      else
+        error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+      end
+    end
+  end
 
   return {
     private = private,

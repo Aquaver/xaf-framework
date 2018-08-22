@@ -880,6 +880,53 @@ function BigNumber:initialize()
       end
     end
   end
+  
+  public.isEqual = function(self, numberObject)                                                    -- [!] Function: isEqual(numberObject) - Checks is this BigNumber equal to given as parameter one.
+    assert(type(numberObject) == "table", "[XAF Utility] Expected TABLE as argument #1")           -- [!] Parameter: numberObject - Valid BigNumber object to check it is equal to this one.
+                                                                                                   -- [!] Return: 'true' or 'false' - Boolean flag is this BigNumber equal to 'numberObject'.
+    if (numberObject.returnValue == nil) then
+      error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+    else
+      local numberTable = numberObject:returnValue()
+      local decimalDigits = numberTable.decimalDigits
+      local decimalLength = numberTable.decimalLength
+      local integerDigits = numberTable.integerDigits
+      local integerLength = numberTable.integerLength
+      local numberSign = numberTable.numberSign
+
+      if (decimalDigits and decimalLength and integerDigits and integerLength and numberSign) then
+        if (private.numberSign ~= numberSign) then
+          return false
+        elseif (private.integerLength ~= integerLength) then
+          return false
+        elseif (private.decimalLength ~= decimalLength) then
+          return false
+        else
+          for i = integerLength, 1, -1 do
+            local localInteger = private.integerDigits[i]
+            local otherInteger = integerDigits[i]
+
+            if (localInteger ~= otherInteger) then
+              return false
+            end
+          end
+
+          for i = 1, decimalLength do
+            local localDecimal = private.decimalDigits[i]
+            local otherDecimal = decimalDigits[i]
+
+            if (localDecimal ~= otherDecimal) then
+              return false
+            end
+          end
+        end
+
+        return true
+      else
+        error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+      end
+    end
+  end
 
   return {
     private = private,

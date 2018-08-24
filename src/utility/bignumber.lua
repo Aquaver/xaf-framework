@@ -989,6 +989,14 @@ function BigNumber:initialize()
       end
     end
   end
+  
+  public.isInteger = function(self)                                  -- [!] Function: isInteger() - Checks whether this BigNumber object is an integer (has not fraction component).
+    local approximationLower = public:floor()                        -- [!] Return: isInteger - Boolean flag, is the present object an integer value.
+    local approximationUpper = public:ceiling()
+    local isInteger = approximationLower:isEqual(approximationUpper)
+
+    return isInteger
+  end
 
   return {
     private = private,

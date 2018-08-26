@@ -1059,6 +1059,21 @@ function BigNumber:initialize()
       end
     end
   end
+  
+  public.isNatural = function(self, positive)                            -- [!] Function: isNatural(positive) - Checks whether the present BigNumber object belongs to set of natural numbers.
+    local approximationLower = public:floor()                            -- [!] Parameter: positive - If 'true' then zero will not be treated as natural number.
+    local approximationUpper = public:ceiling()                          -- [!] Return: isNatural - Boolean flag is this BigNumber value natural.
+    local constantNegative = BigNumber:new('-1')
+    local constantZero = BigNumber:new('0')
+    local isInteger = approximationLower:isEqual(approximationUpper)
+    local isNatural = (isInteger and public:isGreater(constantNegative))
+
+    if (positive == true) then
+      isNatural = (isNatural and public:isGreater(constantZero))
+    end
+
+    return isNatural
+  end
 
   return {
     private = private,

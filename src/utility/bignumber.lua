@@ -1074,6 +1074,31 @@ function BigNumber:initialize()
 
     return isNatural
   end
+  
+  public.lowestCommonMultiple = function(self, numberObject)                                   -- [!] Function: lowestCommonMultiple(numberObject) - Computes LCM (lowest common multiple) of two BigNumber objects.
+    assert(type(numberObject) == "table", "[XAF Utility] Expected TABLE as argument #1")       -- [!] Parameter: numberObject - Valid BigNumber object as second pair number for LCM function.
+                                                                                               -- [!] Return: resultObject - Newly created BigNumber which holds value of calculated lowest common multiple.
+    if (numberObject.returnValue == nil) then
+      error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+    else
+      local absoluteThis = public:absoluteValue()
+      local absoluteOther = numberObject:absoluteValue()
+
+      if (absoluteOther) then
+        if (absoluteThis:isInteger() == false or absoluteOther:isInteger() == false) then
+          error("[XAF Error] Lowest common multiple must be calculates on integer BigNumbers")
+        else
+          local divisorObject = absoluteThis:greatestCommonDivisor(absoluteOther)
+          local helperObject = absoluteThis:multiply(absoluteOther)
+          local resultObject = helperObject:divide(divisorObject)
+
+          return resultObject
+        end
+      else
+        error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+      end
+    end
+  end
 
   return {
     private = private,

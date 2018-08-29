@@ -1123,6 +1123,40 @@ function BigNumber:initialize()
       end
     end
   end
+  
+  public.modularInverse = function(self, modulusObject)                                            -- [!] Function: modularInverse(modulusObject) - Finds modular arithmetic multiplicative inverse of this BigNumber.
+    assert(type(modulusObject) == "table", "[XAF Utility] Expected TABLE as argument #1")          -- [!] Parameter: modulusObject - Modulo value of the inversion, upper bound for the result.
+                                                                                                   -- [!] Return: modulusResult - Value of '(thisObject ^ -1) mod modulusObject' result (returns -1 if there is no inverse).
+    if (modulusObject.returnValue == nil) then
+      error("[XAF Error] Invalid BigNumber (modulus) object - use instance(s) of this class only")
+    else
+      if (public:isInteger() == false) then
+        error("[XAF Error] BigNumber modular inversion requires this number to be integer")
+      elseif (modulusObject:isNatural(false) == false) then
+        error("[XAF Error] BigNumber modulus must be natural number (including zero)")
+      else
+        local constantNegative = BigNumber:new('-1')
+        local constantOne = BigNumber:new('1')
+        local modulusIndex = constantOne:getObjectValue()
+
+        if (public:greatestCommonDivisor(modulusObject):isEqual(constantOne) == true) then
+          while (modulusIndex:isEqual(modulusObject) == false) do
+            local modulusResult = modulusIndex:subtract(constantOne)
+            local modulusProduct = public:multiply(modulusResult)
+            local modulusValue = modulusProduct:modulo(modulusObject)
+
+            if (modulusValue:isEqual(constantOne) == true) then
+              return modulusResult
+            else
+              modulusIndex = modulusIndex:add(constantOne)
+            end
+          end
+        else
+          return constantNegative -- This BigNumber has not modular multiplicative inverse, returning BigNumber equal to -1.
+        end
+      end
+    end
+  end
 
   return {
     private = private,

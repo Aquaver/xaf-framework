@@ -1157,6 +1157,30 @@ function BigNumber:initialize()
       end
     end
   end
+  
+  public.modularMultiply = function(self, numberObject, modulusObject)                             -- [!] Function: modularMultiply(numberObject, modulusObject) - Calculates modular arithmetic multiplication on parameter number object.
+    assert(type(numberObject) == "table", "[XAF Utility] Expected TABLE as argument #1")           -- [!] Parameter: numberObject - BigNumber object, acts as multiplicand in this operation.
+    assert(type(modulusObject) == "table", "[XAF Utility] Expected TABLE as argument #2")          -- [!] Parameter: modulusObject - Modulo value for this multiplication, also upper bound for the result.
+                                                                                                   -- [!] Return: modulusResult - Calculated value of '(thisObject * numberObject) mod modulusObject' result.
+    if (numberObject.returnValue == nil) then
+      error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+    elseif (modulusObject.returnValue == nil) then
+      error("[XAF Error] Invalid BigNumber (modulus) object - use instance(s) of this class only")
+    else
+      if (public:isInteger() == false or numberObject:isInteger() == false) then
+        error("[XAF Error] BigNumber modular operations require both numbers to be integer")
+      elseif (modulusObject:isNatural(false) == false) then
+        error("[XAF Error] BigNumber modulus must be natural number (including zero)")
+      else
+        local modulusFirst = public:modulo(modulusObject)
+        local modulusSecond = numberObject:modulo(modulusObject)
+        local modulusProduct = modulusFirst:multiply(modulusSecond)
+        local modulusResult = modulusProduct:modulo(modulusObject)
+
+        return modulusResult
+      end
+    end
+  end
 
   return {
     private = private,

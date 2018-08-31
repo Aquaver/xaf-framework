@@ -1181,6 +1181,39 @@ function BigNumber:initialize()
       end
     end
   end
+  
+  public.modularPower = function(self, exponent, modulusObject)                                          -- [!] Function: modularPower(exponent, modulusObject) - Performs modular arithmetic exponentiation on parameter exponent.
+    assert(type(exponent) == "number", "[XAF Utility] Expected NUMBER as argument #1")                   -- [!] Parameter: exponent - Power exponent, as primitive Lua number, which must be natural (including zero).
+    assert(type(modulusObject) == "table", "[XAF Utility] Expected TABLE as argument #2")                -- [!] Parameter: modulusObject - Modulo value for this exponentiation, also upper bound for the result.
+                                                                                                         -- [!] Return: modulusResult - Computed value of '(thisObject ^ exponent) mod modulusObject' result.
+    if (modulusObject.returnValue == nil) then
+      error("[XAF Error] Invalid BigNumber (modulus) object - use instance(s) of this class only")
+    else
+      if (public:isInteger() == false) then
+        error("[XAF Error] BigNumber modular exponentiation requires this number to be integer")
+      elseif (xafcoreMath:checkNatural(exponent, false) == false) then
+        error("[XAF Error] BigNumber modular exponentiation requires natural exponent (including zero)")
+      elseif (modulusObject:isNatural(false) == false) then
+        error("[XAF Error] BigNumber modulus must be natural number (including zero)")
+      else
+        local constantOne = BigNumber:new('1')
+        local constantZero = BigNumber:new('0')
+        local modulusResult = constantOne:getObjectValue()
+        local modulusValue = nil
+
+        if (modulusObject:isEqual(constantOne) == true) then
+          return constantZero
+        else
+          for i = 1, exponent do
+            modulusValue = public:multiply(modulusResult)
+            modulusResult = modulusValue:modulo(modulusObject)
+          end
+
+          return modulusResult
+        end
+      end
+    end
+  end
 
   return {
     private = private,

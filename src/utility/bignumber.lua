@@ -1238,6 +1238,25 @@ function BigNumber:initialize()
       end
     end
   end
+  
+  public.modulo = function(self, numberObject)                                           -- [!] Function: modulo(numberObject) - Calculates remainder after division of this BigNumber by divisor.
+    assert(type(numberObject) == "table", "[XAF Utility] Expected TABLE as argument #1") -- [!] Parameter: numberObject - Valid BigNumber object as divisor for the modulo (modulus).
+                                                                                         -- [!] Return: moduloResult - BigNumber object which stores computed modulo.
+    if (numberObject.returnValue == nil) then
+      error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+    else
+      if (public:isInteger() == true and numberObject:isInteger() == true) then
+        local quotientRaw = public:divide(numberObject)
+        local quotientFloor = quotientRaw:floor()
+        local moduloMultiply = numberObject:multiply(quotientFloor)
+        local moduloResult = public:subtract(moduloMultiply)
+
+        return moduloResult
+      else
+        error("[XAF Error] BigNumber modulo requires both values to be integer")
+      end
+    end
+  end
 
   return {
     private = private,

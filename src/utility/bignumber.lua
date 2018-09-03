@@ -1257,6 +1257,108 @@ function BigNumber:initialize()
       end
     end
   end
+  
+  public.multiply = function(self, numberObject)                                                          -- [!] Function: multiply(numberObject) - Performs a multiplication with present object as multiplier and given one as multiplicand.
+    assert(type(numberObject) == "table", "[XAF Utility] Expected TABLE as argument #1")                  -- [!] Parameter: numberObject - Valid BigNumber object which will be multiplied with this object.
+                                                                                                          -- [!] Return: resultObject - Result of the multiplication as newly created BigNumber.
+    if (numberObject.returnValue == nil) then
+      error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+    else
+      local absoluteThis = public:absoluteValue()
+      local absoluteOther = numberObject:absoluteValue()
+      local localSign = public:getNumberSign()
+      local otherSign = numberObject:getNumberSign()
+      local numberFirst = nil
+      local numberSecond = nil
+
+      if (absoluteOther and otherSign) then
+        local digitsFirst = {}
+        local digitsSecond = {}
+        local shiftNumbers = {}
+        local totalResult = private:buildFromTable({}, {0}, 0) -- Sum of all shift numbers gives the result of multiplication.
+        numberFirst = (absoluteThis:isGreater(absoluteOther) == true) and absoluteThis or absoluteOther
+        numberSecond = (absoluteThis:isGreater(absoluteOther) == true) and absoluteOther or absoluteThis
+
+        local firstNumberTable = numberFirst:returnValue()
+        local firstDecimalDigits = firstNumberTable.decimalDigits
+        local firstDecimalLength = firstNumberTable.decimalLength
+        local firstIntegerDigits = firstNumberTable.integerDigits
+        local firstIntegerLength = firstNumberTable.integerLength
+
+        local secondNumberTable = numberSecond:returnValue()
+        local secondDecimalDigits = secondNumberTable.decimalDigits
+        local secondDecimalLength = secondNumberTable.decimalLength
+        local secondIntegerDigits = secondNumberTable.integerDigits
+        local secondIntegerLength = secondNumberTable.integerLength
+
+        for i = firstDecimalLength, 1, -1 do
+          table.insert(digitsFirst, firstDecimalDigits[i])
+        end
+
+        for i = 1, firstIntegerLength do
+          table.insert(digitsFirst, firstIntegerDigits[i])
+        end
+
+        for i = secondDecimalLength, 1, -1 do
+          table.insert(digitsSecond, secondDecimalDigits[i])
+        end
+
+        for i = 1, secondIntegerLength do
+          table.insert(digitsSecond, secondIntegerDigits[i])
+        end
+
+        for i = 1, #digitsSecond do
+          local digitCarry = 0
+          local digitMultiply = 0
+          local result = 0
+          local resultCarry = 0
+          shiftNumbers[i] = {}
+
+          for j = 1, #digitsFirst do
+            result = (digitsSecond[i] * digitsFirst[j]) + digitCarry
+            resultCarry = result / 10
+            digitMultiply = result % 10
+
+            digitCarry = math.floor(resultCarry)
+            table.insert(shiftNumbers[i], digitMultiply)
+          end
+
+          if (digitCarry > 0) then
+            table.insert(shiftNumbers[i], digitCarry)
+          end
+
+          for j = 1, i - 1 do
+            table.insert(shiftNumbers[i], 1, 0) -- Filling shifted numbers with trailing zeros to sum them later.
+          end
+
+          shiftNumbers[i] = private:buildFromTable({}, shiftNumbers[i], 0)
+        end
+
+        for i = 1, #shiftNumbers do
+          totalResult = totalResult:add(shiftNumbers[i])
+        end
+
+        local resultObject = nil
+        local resultTable = totalResult:returnValue()
+        local resultDecimalDigits = {}
+        local resultDecimalLength = firstDecimalLength + secondDecimalLength
+        local resultIntegerDigits = resultTable.integerDigits
+        local resultNumberSign = (localSign == otherSign) and 0 or 1
+
+        for i = 1, resultDecimalLength do
+          local resultDigitRaw = table.remove(resultIntegerDigits, 1)
+          local resultDigit = (resultDigitRaw == nil) and 0 or resultDigitRaw
+
+          table.insert(resultDecimalDigits, 1, resultDigit)
+        end
+
+        resultObject = private:buildFromTable(resultDecimalDigits, resultIntegerDigits, resultNumberSign)
+        return resultObject
+      else
+        error("[XAF Error] Invalid BigNumber object - use instance(s) of this class only")
+      end
+    end
+  end
 
   return {
     private = private,

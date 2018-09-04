@@ -1359,6 +1359,45 @@ function BigNumber:initialize()
       end
     end
   end
+  
+  public.power = function(self, exponent)                                              -- [!] Function: power(exponent) - Calculates result of exponentiation of this BigNumber to parameter.
+    assert(type(exponent) == "number", "[XAF Utility] Expected NUMBER as argument #1") -- [!] Parameter: exponent - Power exponent, as primitive Lua number (must be integer, may be negative to inverse).
+                                                                                       -- [!] Return: resultValue - New BigNumber which stores computed exponentiation result.
+    if (xafcoreMath:checkInteger(exponent) == true) then
+      local constantOne = BigNumber:new('1')
+      local exponentAbs = math.abs(exponent)
+      local powerResult = public:getObjectValue()
+      local powerValue = constantOne:getObjectValue()
+      local resultValue = nil
+
+      if (exponent == 0) then
+        return constantOne
+      else
+        while (exponentAbs > 1) do
+          if (exponentAbs % 2 == 0) then
+            powerResult = powerResult:multiply(powerResult)
+            exponentAbs = exponentAbs / 2
+          else
+            powerValue = powerResult:multiply(powerValue)
+            powerResult = powerResult:multiply(powerResult)
+            exponentAbs = (exponentAbs - 1) / 2
+          end
+        end
+
+        if (exponent < 0) then
+          constantOne:setMaxPrecision(public:getMaxPrecision())
+          resultValue = powerResult:multiply(powerValue)
+          resultValue = constantOne:divide(resultValue)
+        else
+          resultValue = powerResult:multiply(powerValue)
+        end
+
+        return resultValue
+      end
+    else
+      error("[XAF Error] Invalid BigNumber power exponent - required integer value")
+    end
+  end
 
   return {
     private = private,

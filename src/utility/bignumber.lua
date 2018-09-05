@@ -1398,6 +1398,16 @@ function BigNumber:initialize()
       error("[XAF Error] Invalid BigNumber power exponent - required integer value")
     end
   end
+  
+  public.returnValue = function(self)            -- [!] Function: returnValue() - Returns BigNumber object's private values, used in operations (not intended to normal use).
+    return {                                     -- [!] Return: ... - Table with object's private values.
+      ["decimalDigits"] = private.decimalDigits,
+      ["decimalLength"] = private.decimalLength,
+      ["integerDigits"] = private.integerDigits,
+      ["integerLength"] = private.integerLength,
+      ["numberSign"] = private.numberSign
+    }
+  end
 
   return {
     private = private,

@@ -1408,6 +1408,44 @@ function BigNumber:initialize()
       ["numberSign"] = private.numberSign
     }
   end
+  
+  public.rootCube = function(self)                                                        -- [!] Function: rootCube() - Computes approximation of cube (third degree) root of this BigNumber.
+    local absoluteThis = public:absoluteValue()                                           -- [!] Return: rootResult - BigNumber result of calculated cube root of this object.
+    local constantDegree = BigNumber:new('3')
+    local constantMultiplier = BigNumber:new('2')
+    local rootInitial = math.pow(absoluteThis:getValue(), 1 / 3)
+    local rootApproximation = (math.ceil(rootInitial) + math.floor(rootInitial)) / 2
+    local rootResult = BigNumber:new(tostring(rootApproximation))
+    local rootPrecision = public:getMaxPrecision()
+    local rootPrevious = rootResult:getObjectValue()
+    local rootQuotient = public:getObjectValue()
+    local rootProduct = nil
+    local rootSum = nil
+
+    rootQuotient:setMaxPrecision(rootPrecision)
+
+    repeat
+      rootPrevious = rootResult:getObjectValue()
+      rootProduct = rootPrevious:multiply(constantMultiplier)
+      rootSum = rootProduct:add(rootQuotient:divide(rootPrevious:power(2)))
+      rootResult = rootSum:divide(constantDegree)
+    until (private:checkPrecision(rootPrevious, rootResult, rootPrecision) == true)
+
+    local decimalLength = private.decimalLength
+    local integerLength = private.integerLength
+    local digitLimit = (decimalLength > integerLength) and decimalLength or integerLength
+
+    for i = 1, digitLimit do
+      rootPrevious = rootResult:getObjectValue()
+      rootProduct = rootPrevious:multiply(constantMultiplier)
+      rootSum = rootProduct:add(rootQuotient:divide(rootPrevious:power(2)))
+      rootResult = rootSum:divide(constantDegree)
+    end
+
+    rootResult:setNumberSign(public:getNumberSign())
+    rootResult:trimDecimal(rootPrecision)
+    return rootResult
+  end
 
   return {
     private = private,

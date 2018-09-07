@@ -1446,6 +1446,46 @@ function BigNumber:initialize()
     rootResult:trimDecimal(rootPrecision)
     return rootResult
   end
+  
+  public.rootFourth = function(self)                                                        -- [!] Function: rootFourth() - Calculates approximated value of fourth degree root of present BigNumber number object.
+    if (public:getNumberSign() == 1) then                                                   -- [!] Return: rootResult - Computed result value of fourth degree root of this BigNumber.
+      error("[XAF Error] Attempt to calculate fourth degree root of negative number")
+    else
+      local constantDegree = BigNumber:new('4')
+      local constantMultiplier = BigNumber:new('3')
+      local rootInitial = math.pow(public:getValue(), 1 / 4)
+      local rootApproximation = (math.ceil(rootInitial) + math.floor(rootInitial)) / 2
+      local rootResult = BigNumber:new(tostring(rootApproximation))
+      local rootPrecision = public:getMaxPrecision()
+      local rootPrevious = rootResult:getObjectValue()
+      local rootQuotient = public:getObjectValue()
+      local rootProduct = nil
+      local rootSum = nil
+
+      rootQuotient:setMaxPrecision(rootPrecision)
+
+      repeat
+        rootPrevious = rootResult:getObjectValue()
+        rootProduct = rootPrevious:multiply(constantMultiplier)
+        rootSum = rootProduct:add(rootQuotient:divide(rootPrevious:power(3)))
+        rootResult = rootSum:divide(constantDegree)
+      until (private:checkPrecision(rootPrevious, rootResult, rootPrecision) == true)
+
+      local decimalLength = private.decimalLength
+      local integerLength = private.integerLength
+      local digitLimit = (decimalLength > integerLength) and decimalLength or integerLength
+
+      for i = 1, digitLimit do
+        rootPrevious = rootResult:getObjectValue()
+        rootProduct = rootPrevious:multiply(constantMultiplier)
+        rootSum = rootProduct:add(rootQuotient:divide(rootPrevious:power(3)))
+        rootResult = rootSum:divide(constantDegree)
+      end
+
+      rootResult:trimDecimal(rootPrecision)
+      return rootResult
+    end
+  end
 
   return {
     private = private,

@@ -1486,6 +1486,42 @@ function BigNumber:initialize()
       return rootResult
     end
   end
+  
+  public.rootSquare = function(self)                                                        -- [!] Function: rootSquare() - Calculates approximation of square (second degree) root of this BigNumber.
+    if (public:getNumberSign() == 1) then                                                   -- [!] Return: rootResult - Result of computed square root of present number object.
+      error("[XAF Error] Attempt to calculate square root of negative number")
+    else
+      local constantDegree = BigNumber:new('2')
+      local rootInitial = math.pow(public:getValue(), 1 / 2)
+      local rootApproximation = (math.ceil(rootInitial) + math.floor(rootInitial)) / 2
+      local rootResult = BigNumber:new(tostring(rootApproximation))
+      local rootPrecision = public:getMaxPrecision()
+      local rootPrevious = rootResult:getObjectValue()
+      local rootQuotient = public:getObjectValue()
+      local rootSum = nil
+
+      rootQuotient:setMaxPrecision(rootPrecision)
+
+      repeat
+        rootPrevious = rootResult:getObjectValue()
+        rootSum = rootPrevious:add(rootQuotient:divide(rootPrevious))
+        rootResult = rootSum:divide(constantDegree)
+      until (private:checkPrecision(rootPrevious, rootResult, rootPrecision) == true)
+
+      local decimalLength = private.decimalLength
+      local integerLength = private.integerLength
+      local digitLimit = (decimalLength > integerLength) and decimalLength or integerLength
+
+      for i = 1, digitLimit do
+        rootPrevious = rootResult:getObjectValue()
+        rootSum = rootPrevious:add(rootQuotient:divide(rootPrevious))
+        rootResult = rootSum:divide(constantDegree)
+      end
+
+      rootResult:trimDecimal(rootPrecision)
+      return rootResult
+    end
+  end
 
   return {
     private = private,

@@ -1522,6 +1522,18 @@ function BigNumber:initialize()
       return rootResult
     end
   end
+  
+  public.setMaxPrecision = function(self, newPrecision)                                      -- [!] Function: setMaxPrecision(newPrecision) - Changes maximum decimal precision property value.
+    assert(type(newPrecision) == "number", "[XAF Utility] Expected NUMBER as argument #1")   -- [!] Parameter: newPrecision - New maximum precision value, must be positive natural number.
+                                                                                             -- [!] Return: 'true' - Returned if this property has been changed correctly.
+    if (xafcoreMath:checkNatural(newPrecision, true) == true) then
+      private.decimalPrecisionMax = newPrecision
+    else
+      error("[XAF Error] Invalid maximum precision value - must be positive natural number")
+    end
+
+    return true
+  end
 
   return {
     private = private,

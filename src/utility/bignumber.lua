@@ -1534,6 +1534,18 @@ function BigNumber:initialize()
 
     return true
   end
+  
+  public.setNumberSign = function(self, newSign)                                               -- [!] Function: setNumberSign(newSign) - Changes sign value of current BigNumber object.
+    assert(type(newSign) == "number", "[XAF Utility] Expected NUMBER as argument #1")          -- [!] Parameter: newSign - New sign value (0 as neutral/positive, 1 as negative number).
+                                                                                               -- [!] Return: 'true' - If the new BigNumber sign value has been set without errors.
+    if (newSign == 0 or newSign == 1) then
+      private.numberSign = newSign
+    else
+      error("[XAF Error] Invalid BigNumber sign value - must be equal to zero '0' or one '1'")
+    end
+
+    return true
+  end
 
   return {
     private = private,

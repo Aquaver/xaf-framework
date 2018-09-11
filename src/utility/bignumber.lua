@@ -1546,6 +1546,18 @@ function BigNumber:initialize()
 
     return true
   end
+  
+  public.setPrecision = function(self, newPrecision)                                       -- [!] Function: setPrecision(newPrecision) - Changes the number of decimal digits returned in 'getValue()' function.
+    assert(type(newPrecision) == "number", "[XAF Utility] Expected NUMBER as argument #1") -- [!] Parameter: newPrecision - New precision property value.
+                                                                                           -- [!] Return: 'true' - If new precision value has been set correctly.
+    if (xafcoreMath:checkNatural(newPrecision, false) == true or newPrecision == -1) then
+      private.decimalPrecision = newPrecision
+    else
+      error("[XAF Error] Invalid precision value - must be natural number or equal to -1")
+    end
+
+    return true
+  end
 
   return {
     private = private,

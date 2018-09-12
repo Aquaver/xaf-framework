@@ -1558,6 +1558,16 @@ function BigNumber:initialize()
 
     return true
   end
+  
+  public.setThousandsSeparators = function(self, integer, decimal)                    -- [!] Function: setThousandsSeparators(integer, decimal) - Changes BigNumber thousands separators characters.
+    assert(type(integer) == "string", "[XAF Utility] Expected STRING as argument #1") -- [!] Parameter: integer - New separator character for integer component.
+    assert(type(decimal) == "string", "[XAF Utility] Expected STRING as argument #2") -- [!] Parameter: decimal - New separator character for fraction part of the number.
+                                                                                      -- [!] Return: 'true' - If the characters have been set without errors.
+    private.separatorThousandsInteger = integer
+    private.separatorThousandsDecimal = decimal
+
+    return true
+  end
 
   return {
     private = private,

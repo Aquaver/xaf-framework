@@ -1568,6 +1568,43 @@ function BigNumber:initialize()
 
     return true
   end
+  
+  public.shiftCommaLeftwise = function(self, digitCount)                                          -- [!] Function: shiftCommaLeftwise(digitCount) - Creates new BigNumber with shifted decimal point leftwise, very useful when dealing with exponential notation.
+    assert(type(digitCount) == "number", "[XAF Utility] Expected NUMBER as argument #1")          -- [!] Parameter: digitCount - Number of digits to shift decimal point by them.
+                                                                                                  -- [!] Return: newNumberObject - New BigNumber object which stores the value of result of 'thisObject * 10 ^ (-1 * digitCount)' operation.
+    if (xafcoreMath:checkNatural(digitCount, true) == true) then
+      local numberObject = BigNumber:new(public:getValue())
+      local numberTable = numberObject:returnValue()
+      local newDecimalDigits = numberTable.decimalDigits
+      local newDecimalLength = numberTable.decimalLength
+      local newIntegerDigits = numberTable.integerDigits
+      local newIntegerLength = numberTable.integerLength
+      local newNumberSign = numberTable.numberSign
+      local newNumberObject = nil
+
+      for i = 1, digitCount do
+        if (newIntegerLength > 1) then
+          local digitValue = table.remove(newIntegerDigits, 1)
+
+          table.insert(newDecimalDigits, 1, digitValue)
+          newDecimalLength = newDecimalLength + 1
+          newIntegerLength = newIntegerLength - 1
+        else
+          local digitValue = table.remove(newIntegerDigits, 1)
+
+          table.insert(newDecimalDigits, 1, digitValue)
+          newDecimalLength = newDecimalLength + 1
+          newIntegerDigits = {0}
+          newIntegerLength = 1
+        end
+      end
+
+      newNumberObject = private:buildFromTable(newDecimalDigits, newIntegerDigits, newNumberSign)
+      return newNumberObject
+    else
+      error("[XAF Error] Invalid shift digit count, must be natural number (except zero)")
+    end
+  end
 
   return {
     private = private,

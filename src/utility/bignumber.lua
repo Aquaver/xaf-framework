@@ -1605,6 +1605,39 @@ function BigNumber:initialize()
       error("[XAF Error] Invalid shift digit count, must be natural number (except zero)")
     end
   end
+  
+  public.shiftCommaRightwise = function(self, digitCount)                                         -- [!] Function: shiftCommaRightwise(digitCount) - Makes new BigNumbers instance with shifted decimal point rightwise, useful in exponential notation.
+    assert(type(digitCount) == "number", "[XAF Utility] Expected NUMBER as argument #1")          -- [!] Parameter: digitCount - Number of digits to shift decimal point by them.
+                                                                                                  -- [!] Return: newNumberObject - New BigNumber instance that holds the value of result of 'thisObject * 10 ^ digitCount' operation.
+    if (xafcoreMath:checkNatural(digitCount, true) == true) then
+      local numberObject = BigNumber:new(public:getValue())
+      local numberTable = numberObject:returnValue()
+      local newDecimalDigits = numberTable.decimalDigits
+      local newDecimalLength = numberTable.decimalLength
+      local newIntegerDigits = numberTable.integerDigits
+      local newIntegerLength = numberTable.integerLength
+      local newNumberSign = numberTable.numberSign
+      local newNumberObject = nil
+
+      for i = 1, digitCount do
+        if (newDecimalLength > 0) then
+          local digitValue = table.remove(newDecimalDigits, 1)
+
+          table.insert(newIntegerDigits, 1, digitValue)
+          newDecimalLength = newDecimalLength - 1
+          newIntegerLength = newIntegerLength + 1
+        else
+          table.insert(newIntegerDigits, 1, 0)
+          newIntegerLength = newIntegerLength + 1
+        end
+      end
+
+      newNumberObject = private:buildFromTable(newDecimalDigits, newIntegerDigits, newNumberSign)
+      return newNumberObject
+    else
+      error("[XAF Error] Invalid shift digit count, must be natural number (except zero)")
+    end
+  end
 
   return {
     private = private,

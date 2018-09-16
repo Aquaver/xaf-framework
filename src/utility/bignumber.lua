@@ -1683,6 +1683,26 @@ function BigNumber:initialize()
       end
     end
   end
+  
+  public.trimDecimal = function(self, digitCount)                                            -- [!] Function: trimDecimal(digitCount) - Trims decimal component of this BigNumber object to specified length (digits).
+    assert(type(digitCount) == "number", "[XAF Utility] Expected NUMBER as argument #1")     -- [!] Parameter: digitCount - Number of decimal digits to which the fraction component should be trimmed.
+                                                                                             -- [!] Return: 'true' or 'false' - Boolean flag, whether the number object has been modified.
+    if (xafcoreMath:checkNatural(digitCount, false) == true) then
+      if (private.decimalLength > digitCount) then
+        for i = private.decimalLength, digitCount + 1, -1 do
+          table.remove(private.decimalDigits, i)
+          private.decimalLength = private.decimalLength - 1
+        end
+
+        private:normalizeNumber()
+        return true
+      else
+        return false
+      end
+    else
+      error("[XAF Error] Decimal digits trim count must be natural number (including zero)")
+    end
+  end
 
   return {
     private = private,

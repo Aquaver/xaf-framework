@@ -583,7 +583,6 @@ function BigNumber:initialize()
       local absoluteThis = public:absoluteValue()
       local absoluteOther = numberObject:absoluteValue()
       local constantOne = BigNumber:new('1')
-      local constantTen = BigNumber:new("10")
       local localSign = public:getNumberSign()
       local otherSign = numberObject:getNumberSign()
       local quotientObject = nil
@@ -599,9 +598,9 @@ function BigNumber:initialize()
           local numberIndex = 1
           local numberTable = {}
 
-          for i = 1, divisorDecimalLength do
-            absoluteThis = absoluteThis:multiply(constantTen) -- Shifts 'comma' to remove decimal component in divisor, it makes calculating easier.
-            absoluteOther = absoluteOther:multiply(constantTen)
+          if (divisorDecimalLength > 0) then
+            absoluteThis = absoluteThis:shiftCommaRightwise(divisorDecimalLength) -- Shifts 'comma' to remove decimal component in divisor, it makes calculating easier.
+            absoluteOther = absoluteOther:shiftCommaRightwise(divisorDecimalLength)
           end
 
           local dividendTable = absoluteThis:returnValue()

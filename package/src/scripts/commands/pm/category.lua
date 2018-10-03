@@ -11,6 +11,22 @@ local xafcore = require("xaf/core/xafcore")
 local xafcoreTable = xafcore:getTableInstance()
 
 if (options.h == true or options.help == true) then
+  print("----------------------------------")
+  print("-- XAF Package Manager - Manual --")
+  print("----------------------------------")
+  print("  >> NAME")
+  print("    >> xaf-pm category - Repository category viewer")
+  print()
+  print("  >> SYNOPSIS")
+  print("    >> xaf-pm category")
+  print("    >> xaf-pm category [-c | --content] <index> <name>")
+  print("    >> xaf-pm category [-h | --help]")
+  print("    >> xaf-pm category [-l | --list] <index>")
+  print()
+  print("  >> DESCRIPTION")
+  print("    >> This command is mainly used to retrieve the XAF PM source repository category list, or get add-on list in specified category.")
+
+  os.exit()
 end
 
 if (options.c == true or options.content == true or options.l == true or options.list == true) then

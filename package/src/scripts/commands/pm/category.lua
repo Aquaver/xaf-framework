@@ -68,6 +68,124 @@ if (options.c == true or options.content == true or options.l == true or options
   end
 
   if (options.c == true or options.content == true) then
+    local repositoryIndexRaw = arguments[1]
+    local repositoryIndex = 0
+    local categoryName = arguments[2]
+
+    if (tonumber(repositoryIndexRaw) == nil and repositoryIndexRaw ~= "default") then
+      print("    >> Invalid repository index value")
+      print("    >> This value must be natural number (of 'default')")
+      print("    >> Use 'xaf-pm category [-c | --content]' again with proper index")
+
+      os.exit()
+    else
+      repositoryIndex = (tonumber(repositoryIndexRaw) == nil) and "default" or tonumber(repositoryIndexRaw)
+    end
+
+    if (type(categoryName) == "string") then
+      if (string.find(categoryName, '/')) then
+        print("    >> Invalid repository category name")
+        print("    >> Enter valid category name without '/' characters")
+
+        os.exit()
+      end
+    else
+      print("    >> Invalid repository category name - must not be empty")
+      print("    >> Enter valid category name without '/' characters")
+
+      os.exit()
+    end
+
+    if (sourceData[repositoryIndex] == nil) then
+      print("    >> Repository with index '" .. repositoryIndex .. "' is not registered")
+      print("    >> Register mote repositories using 'xaf-pm repository [-a | --add]'")
+    else
+      print("    >> Found repository with index: " .. repositoryIndex)
+      print("    >> Repository registered with this index: " .. sourceData[repositoryIndex])
+      print("    >> Trying to retrieve category content list...")
+
+      local targetAddress = "https://api.github.com/repos/"
+      local targetSuffix = "/git/trees/master"
+      local inetAddress = targetAddress .. sourceData[repositoryIndex] .. targetSuffix
+      local inetComponent = component.getPrimary("internet")
+      local inetConnection = httpstream:new(inetComponent, inetAddress)
+
+      if (inetConnection:connect() == true) then
+        local packageCount = 0
+        local totalCount = 0
+        local jsonData = ''
+        local jsonObject = nil
+        local jsonTable = {}
+
+        for dataChunk in inetConnection:getData() do
+          jsonData = jsonData .. dataChunk
+        end
+
+        inetConnection:disconnect()
+        jsonObject = jsonparser:new()
+        jsonTable = jsonObject:parse(jsonData)
+
+        for i = 1, #jsonTable["tree"] do
+          if (jsonTable["tree"][i]["path"] == categoryName) then
+            inetAddress = jsonTable["tree"][i]["url"]
+            inetConnection = httpstream:new(inetComponent, inetAddress)
+
+            if (inetConnection:connect() == true) then
+              jsonData = ''
+              jsonTable = {}
+
+              for dataChunk in inetConnection:getData() do
+                jsonData = jsonData .. dataChunk
+              end
+
+              inetConnection:disconnect()
+              jsonTable = jsonObject:parse(jsonData)
+
+              for i = 1, #jsonTable["tree"] do
+                local objectPath = jsonTable["tree"][i]["path"]
+                local objectType = jsonTable["tree"][i]["type"]
+
+                if (objectType == "tree") then
+                  local configAddress = "https://raw.githubusercontent.com/"
+                  local configBranch = "/master/"
+                  local configPath = "/_config/package.info"
+
+                  inetAddress = configAddress .. sourceData[repositoryIndex] .. configBranch .. categoryName .. '/' .. objectPath .. configPath
+                  inetConnection = httpstream:new(inetComponent, inetAddress)
+
+                  if (inetConnection:connect() == true) then
+                    print("      >> Object found: " .. objectPath .. " (valid PM package)")
+                    packageCount = packageCount + 1
+                    totalCount = totalCount + 1
+                    inetConnection:disconnect()
+                  else
+                    print("      >> Object found: " .. objectPath .. " (unknown item - missing configuration file)")
+                    totalCount = totalCount + 1
+                  end
+                else
+                  print("      >> Object found: " .. objectPath .. " (unknown object)")
+                  totalCount = totalCount + 1
+                end
+              end
+
+              print("    >> Valid XAF PM packages found: " .. packageCount)
+              print("    >> Total (also unknown) objects found: " .. totalCount)
+              os.exit()
+            else
+              print("      >> Cannot connect to category content package tree")
+              print("      >> Ensure you have not lost internet access")
+            end
+          end
+        end
+
+        print("      >> Cannot find the following category: " .. categoryName)
+        print("      >> Ensure you have choosen right repository")
+        print("      >> Try running 'xaf-pm category [-c | --content]' again with another parameters")
+      else
+        print("      >> Cannot connect to target repository")
+        print("      >> Ensure you have not lost internet access")
+      end
+    end
   elseif (options.l == true or options.list == true) then
   end
 

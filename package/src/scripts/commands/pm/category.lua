@@ -187,6 +187,63 @@ if (options.c == true or options.content == true or options.l == true or options
       end
     end
   elseif (options.l == true or options.list == true) then
+    local repositoryIndexRaw = arguments[1]
+    local repositoryIndex = 0
+
+    if (tonumber(repositoryIndexRaw) == nil and repositoryIndexRaw ~= "default") then
+      print("    >> Invalid repository index value")
+      print("    >> This value must be natural number (or 'default')")
+      print("    >> Use 'xaf-pm category [-l | --list]' again with proper index")
+
+      os.exit()
+    else
+      repositoryIndex = (tonumber(repositoryIndexRaw) == nil) and "default" or tonumber(repositoryIndexRaw)
+    end
+
+    if (sourceData[repositoryIndex] == nil) then
+      print("    >> Repository with index '" .. repositoryIndex .. "' is not registered")
+      print("    >> Register more repositories using 'xaf-pm repository [-a | -add]'")
+    else
+      print("    >> Found repository with index: " .. repositoryIndex)
+      print("    >> Repository registered with this index: " .. sourceData[repositoryIndex])
+      print("    >> Trying to retrieve the category list...")
+
+      local targetAddress = "https://api.github.com/repos/"
+      local targetSuffix = "/git/trees/master"
+      local inetAddress = targetAddress .. sourceData[repositoryIndex] .. targetSuffix
+      local inetComponent = component.getPrimary("internet")
+      local inetConnection = httpstream:new(inetComponent, inetAddress)
+
+      if (inetConnection:connect() == true) then
+        local categoryCount = 0
+        local jsonData = ''
+        local jsonObject = nil
+        local jsonTable = {}
+
+        for dataChunk in inetConnection:getData() do
+          jsonData = jsonData .. dataChunk
+        end
+
+        inetConnection:disconnect()
+        jsonObject = jsonparser:new()
+        jsonTable = jsonObject:parse(jsonData)
+
+        for i = 1, #jsonTable["tree"] do
+          local objectPath = jsonTable["tree"][i]["path"]
+          local objectType = jsonTable["tree"][i]["type"]
+
+          if (objectPath ~= "_config" and objectType == "tree") then
+            categoryCount = categoryCount + 1
+            print("      >> Category found: " .. objectPath)
+          end
+        end
+
+        print("    >> Total categories found: " .. categoryCount)
+      else
+        print("      >> Cannot connect to '" .. sourceData[repositoryIndex] .. "' repository")
+        print("      >> Ensure you have not lost internet access")
+      end
+    end
   end
 
   os.exit()

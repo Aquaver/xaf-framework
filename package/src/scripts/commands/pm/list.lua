@@ -8,6 +8,22 @@ local listTable = {}
 local maxListPages = 1
 
 if (options.h == true or options.help == true) then
+  print("----------------------------------")
+  print("-- XAF Package Manager - Manual --")
+  print("----------------------------------")
+  print()
+  print("  >> NAME")
+  print("    >> xaf-pm list - Package Manager controller command list")
+  print()
+  print("  >> SYNOPSIS")
+  print("    >> xaf-pm list")
+  print("    >> xaf-pm list [page]")
+  print("    >> xaf-pm list [-h | --help]")
+  print()
+  print("  >> DESCRIPTION")
+  print("    >> This command prints information about all commands and keywords that allow controlling and managing the XAF Package Manager.")
+
+  os.exit()
 end
 
 if (listPage == nil) then

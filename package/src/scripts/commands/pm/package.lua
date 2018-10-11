@@ -19,6 +19,24 @@ local gpu = component.getPrimary("gpu")
 local gpuWidth, gpuHeight = gpu.getResolution()
 
 if (options.h == true or options.help == true) then
+  print("----------------------------------")
+  print("-- XAF Package Manager - Manual --")
+  print("----------------------------------")
+  print("  >> NAME")
+  print("    >> xaf-pm package - Add-on packages management program")
+  print()
+  print("  >> SYNOPSIS")
+  print("    >> xaf-pm package")
+  print("    >> xaf-pm package [-a | --add] <identifier>")
+  print("    >> xaf-pm package [-h | --help]")
+  print("    >> xaf-pm package [-i | --info] <identifier>")
+  print("    >> xaf-pm package [-l | --list] [page]")
+  print("    >> xaf-pm package [-r | --remove] <identifier>")
+  print()
+  print("  >> DESCRIPTION")
+  print("    >> This script allows the user XAF PM add-on packages management, like installation, uninstallation and retrieving information about specific package.")
+
+  os.exit()
 end
 
 if (options.l == true or options.list == true or options.r == true or options.remove == true) then

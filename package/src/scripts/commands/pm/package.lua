@@ -44,6 +44,84 @@ if (options.l == true or options.list == true or options.r == true or options.re
   local pathPackages = "xaf-packages"
 
   if (options.l == true or options.list == true) then
+    local listIndexRaw = arguments[1]
+    local listIndex = 0
+    local listIteration = 0 -- Default iteration indices, on 'nil' entered list page index.
+    local listIterationMin = 1
+    local listIterationMax = 10
+    local listPath = filesystem.concat(pathRoot, pathPackages)
+    local packageCount = 0
+    local totalCount = 0
+
+    if (listIndexRaw == nil) then
+      listIndex = 1
+    elseif (tonumber(listIndexRaw) == nil) then
+      print("--------------------------------------")
+      print("-- XAF Package Manager - Controller --")
+      print("--------------------------------------")
+      print("  >> Invalid package list index value")
+      print("  >> This value must be natural number (or empty as 1)")
+      print("  >> Use 'xaf-pm package [-l | --list]' again with proper index")
+
+      os.exit()
+    else
+      if (xafcoreMath:checkNatural(tonumber(listIndexRaw), true) == false) then
+        print("--------------------------------------")
+        print("-- XAF Package Manager - Controller --")
+        print("--------------------------------------")
+        print("  >> Invalid package list index value")
+        print("  >> This value must be natural number (or empty as 1)")
+        print("  >> Use 'xaf-pm package [-l | --list]' again with proper index")
+
+        os.exit()
+      else
+        listIndex = tonumber(listIndexRaw)
+        listIterationMin = (listIndex - 1) * 10 + 1
+        listIterationMax = (listIndex - 1) * 10 + 10
+      end
+    end
+
+    if (filesystem.exists(listPath) == false) then
+      print("--------------------------------------")
+      print("-- XAF Package Manager - Controller --")
+      print("--------------------------------------")
+      print("  >> Cannot list XAF PM packages")
+      print("  >> Unable to find master PM directory")
+      print("  >> Missing directory name: " .. pathPackages)
+    else
+      print("--------------------------------------")
+      print("-- XAF Package Manager - Controller --")
+      print("--------------------------------------")
+      print("  >> Master PM directory found")
+      print("  >> Listing installed PM add-on packages...")
+
+      for item in filesystem.list(listPath) do
+        listIteration = listIteration + 1
+
+        if (string.sub(item, -1, -1) == '/') then
+          item = string.sub(item, 1, -2)
+        end
+
+        if (listIteration >= listIterationMin and listIteration <= listIterationMax) then
+          if (filesystem.exists(filesystem.concat(listPath, item, "_config", "package.info")) == true) then
+            print("    >> [" .. listIteration .. "] " .. item .. " (valid PM package)")
+            packageCount = packageCount + 1
+            totalCount = totalCount + 1
+          else
+            print("    >> [" .. listIteration .. "] " .. item .. " (unknown item - missing configuration file)")
+            totalCount = totalCount + 1
+          end
+        end
+
+        if (listIteration == listIterationMax + 1) then
+          print("  >> More packages on 'xaf-pm package [-l | --list] " .. listIndex + 1 .. "'")
+          break
+        end
+      end
+
+      print("  >> Valid XAF PM packages found: " .. packageCount)
+      print("  >> Total (also unknown) objects found: " .. totalCount)
+    end
   elseif (options.r == true or options.remove == true) then
   end
 

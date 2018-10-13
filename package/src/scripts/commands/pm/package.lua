@@ -123,6 +123,39 @@ if (options.l == true or options.list == true or options.r == true or options.re
       print("  >> Total (also unknown) objects found: " .. totalCount)
     end
   elseif (options.r == true or options.remove == true) then
+    local packageName = arguments[1]
+    local packagePath = ''
+
+    if (packageName == nil) then
+      print("--------------------------------------")
+      print("-- XAF Package Manager - Controller --")
+      print("--------------------------------------")
+      print("  >> Invalid package name for removal")
+      print("  >> Use 'xaf-pm package [-r | --remove]' again with proper package name")
+
+      os.exit()
+    else
+      packagePath = filesystem.concat(pathRoot, pathPackages, tostring(packageName))
+    end
+
+    if (filesystem.exists(packagePath) == false) then
+      print("--------------------------------------")
+      print("-- XAF Package Manager - Controller --")
+      print("--------------------------------------")
+      print("  >> Package with entered name does not exist")
+      print("  >> Use 'xaf-pm package [-r | --remove]' again with proper package name")
+
+      os.exit()
+    end
+
+    filesystem.remove(packagePath)
+
+    print("--------------------------------------")
+    print("-- XAF Package Manager - Controller --")
+    print("--------------------------------------")
+    print("  >> Successfully removed following XAF PM package: " .. packageName)
+    print("  >> This program could no longer be started via PM controller")
+    print("  >> Another package with that name can be installed now")
   end
 
   os.exit()

@@ -471,6 +471,128 @@ if (options.a == true or options.add == true or options.i == true or options.inf
       end
     end
   elseif (options.i == true or options.info == true) then
+    local packageIdentifier = arguments[1]
+    local packageNameIndex = string.find(tostring(packageIdentifier), '/')
+    local packageName = (packageNameIndex) and string.sub(tostring(packageIdentifier), packageNameIndex + 1, -1) or ''
+
+    if (packageIdentifier == nil or packageNameIndex == nil) then
+      print("    >> Invalid package identifier, must not be empty")
+      print("    >> Required format: categoryName/packageName")
+
+      os.exit()
+    else
+      print("    >> Searching for following package: " .. packageIdentifier)
+    end
+
+    for repositoryIndex, repositoryIdentifier in xafcoreTable:sortByKey(sourceData, false) do
+      local targetAddress = "https://api.github.com/repos/"
+      local targetSuffix = "/git/trees/master"
+      local targetFlag = "?recursive=1"
+
+      print("    >> Checking repository: " .. repositoryIdentifier)
+
+      local inetAddress = targetAddress .. repositoryIdentifier .. targetSuffix .. targetFlag
+      local inetComponent = component.getPrimary("internet")
+      local inetConnection = httpstream:new(inetComponent, inetAddress)
+
+      if (inetConnection:connect() == true) then
+        local jsonData = ''
+        local jsonObject = nil
+        local jsonTable = {}
+
+        for dataChunk in inetConnection:getData() do
+          jsonData = jsonData .. dataChunk
+        end
+
+        inetConnection:disconnect()
+        jsonObject = jsonparser:new()
+        jsonTable = jsonObject:parse(jsonData)
+
+        for i = 1, #jsonTable["tree"] do
+          if (jsonTable["tree"][i]["path"] == packageIdentifier) then
+            inetAddress = jsonTable["tree"][i]["url"]
+            inetConnection = httpstream:new(inetComponent, inetAddress)
+
+            if (inetConnection:connect() == true) then
+              jsonData = ''
+              jsonTable = {}
+
+              for dataChunk in inetConnection:getData() do
+                jsonData = jsonData .. dataChunk
+              end
+
+              inetConnection:disconnect()
+              jsonTable = jsonObject:parse(jsonData)
+
+              if (#jsonTable["tree"] == 2 and jsonTable["tree"][1]["path"] == "_bin" and jsonTable["tree"][2]["path"] == "_config") then
+                local dataAddress = "https://raw.githubusercontent.com/"
+                local dataPath = "/_config/package.info"
+                local dataBranch = "/master/"
+
+                inetAddress = dataAddress .. repositoryIdentifier .. dataBranch .. packageIdentifier .. dataPath
+                inetConnection = httpstream:new(inetComponent, inetAddress)
+
+                if (inetConnection:connect() == true) then
+                  local infoData = ''
+                  local infoTable = {}
+
+                  for dataChunk in inetConnection:getData() do
+                    infoData = infoData .. dataChunk
+                  end
+
+                  local infoPath = "/aquaver.github.io/xaf-framework/package.info"
+                  local infoFile = filesystem.open(infoPath, 'w')
+
+                  infoFile:write(infoData)
+                  infoFile:close()
+                  infoTable = xafcoreTable:loadFromFile(infoPath)
+                  filesystem.remove(infoPath)
+
+                  if (infoTable["package-description"] and infoTable["package-identifier"] and infoTable["package-index"] and
+                      infoTable["package-owner"] and infoTable["package-title"] and infoTable["package-version"] and infoTable["package-xaf"]) then
+                        if (packageName == infoTable["package-identifier"]) then
+                          print("      >> Successfully found information data of package: " .. packageIdentifier)
+                          print("      >> This package exists on repository: " .. repositoryIdentifier)
+                          print("        >> Package title: " .. infoTable["package-title"])
+                          print("        >> Package owner: " .. infoTable["package-owner"])
+                          print("        >> Package version: " .. infoTable["package-version"])
+                          print("        >> Package required XAF version: " .. infoTable["package-xaf"])
+
+                          print(string.rep('-', gpuWidth))
+                          print(infoTable["package-description"])
+
+                          os.exit()
+                        else
+                          print("      >> Package identifier mismatch detected")
+                          print("      >> Identifier from configuration file and package directory name must be equal")
+                          print("      >> This package cannot be installed")
+                        end
+                  else
+                    print("      >> Invalid package description file detected")
+                    print("      >> If this message appears again, contact the package owner")
+                  end
+                else
+                  print("      >> Cannot retrieve package description file")
+                  print("      >> Ensure you have not lost internet access")
+                end
+              else
+                print("      >> Invalid XAF PM package structure")
+                print("      >> Encountered unexpected files in package master directory")
+                print("      >> This package cannot be installed")
+              end
+            else
+              print("      >> Cannot connect to package content tree...")
+              print("      >> Ensure you have not lost internet access")
+            end
+          end
+        end
+      else
+        print("      >> Cannot connect to '" .. repositoryIdentifier .. "' repository")
+        print("      >> Ensure you have not lost internet access")
+      end
+
+      print("      >> Cannot find package '" .. packageIdentifier .. "' on repository: " .. repositoryIdentifier)
+    end
   end
 
   os.exit()

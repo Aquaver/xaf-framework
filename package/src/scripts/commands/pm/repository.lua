@@ -14,6 +14,25 @@ local gpu = component.getPrimary("gpu")
 local gpuWidth, gpuHeight = gpu.getResolution()
 
 if (options.h == true or options.help == true) then
+  print("----------------------------------")
+  print("-- XAF Package Manager - Manual --")
+  print("----------------------------------")
+  print("  >> NAME")
+  print("    >> xaf-pm repository - Source repository management program")
+  print()
+  print("  >> SYNOPSIS")
+  print("    >> xaf-pm repository")
+  print("    >> xaf-pm repository [-a | --add] <identifier> [priority]")
+  print("    >> xaf-pm repository [-h | --help]")
+  print("    >> xaf-pm repository [-i | --info] <identifier>")
+  print("    >> xaf-pm repository [-l | --list] [page]")
+  print("    >> xaf-pm repository [-p | --priority] <index> <priority>")
+  print("    >> xaf-pm repository [-r | --remove] <index>")
+  print()
+  print("  >> DESCRIPTION")
+  print("    >> This script let the user manage XAF PM add-on package source repositories.")
+
+  os.exit()
 end
 
 if (options.l == true or options.list == true or options.p == true or options.priority == true or -- First group, offline (local only) commands - do not need internet component.

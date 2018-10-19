@@ -59,6 +59,58 @@ if (options.l == true or options.list == true or options.p == true or options.pr
       end
 
       if (options.l == true or options.list == true) then
+        local indexLength = #sourceData
+        local indexRaw = arguments[1]
+        local index = 0
+
+        if (indexRaw == nil) then
+          index = 1
+        elseif (tonumber(indexRaw) == nil) then
+          print("--------------------------------------")
+          print("-- XAF Package Manager - Controller --")
+          print("--------------------------------------")
+          print("  >> Invalid repository list index value")
+          print("  >> This value must be natural number (or empty as 1)")
+          print("  >> Use 'xaf-pm repository [-l | --list]' again with proper index")
+
+          os.exit()
+        else
+          if (xafcoreMath:checkNatural(tonumber(indexRaw), true) == false) then
+            print("--------------------------------------")
+            print("-- XAF Package Manager - Controller --")
+            print("--------------------------------------")
+            print("  >> Invalid repository list index value")
+            print("  >> This value must be natural number (or empty as 1)")
+            print("  >> Use 'xaf-pm repository [-l | --list]' again with proper index")
+
+            os.exit()
+          else
+            index = tonumber(indexRaw)
+          end
+        end
+
+        print("--------------------------------------")
+        print("-- XAF Package Manager - Controller --")
+        print("--------------------------------------")
+        print("  >> Retrieving source repository list")
+
+        if (sourceData["default"] == nil) then
+          print("  >> Default repository not found")
+        else
+          print("  >> Default repository: " .. sourceData["default"])
+        end
+
+        for i = (index - 1) * 10 + 1, (index - 1) * 10 + 10 do
+          if (sourceData[i]) then
+            print("    >> [" .. i .. "] " .. sourceData[i])
+          else
+            break
+          end
+        end
+
+        if (sourceData[(index - 1) * 10 + 11]) then
+          print("  >> More repositories on 'xaf-pm repository [-l | --list] " .. index + 1 .. "'")
+        end
       elseif (options.p == true or options.priority == true) then
       elseif (options.r == true or options.remove == true) then
       end

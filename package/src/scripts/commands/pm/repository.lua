@@ -112,6 +112,76 @@ if (options.l == true or options.list == true or options.p == true or options.pr
           print("  >> More repositories on 'xaf-pm repository [-l | --list] " .. index + 1 .. "'")
         end
       elseif (options.p == true or options.priority == true) then
+        local indexLength = #sourceData
+        local indexRaw = arguments[1]
+        local index = 0
+        local priorityRaw = arguments[2]
+        local priority = 0
+
+        if (tonumber(indexRaw) == nil) then
+          print("--------------------------------------")
+          print("-- XAF Package Manager - Controller --")
+          print("--------------------------------------")
+          print("  >> Invalid repository index value")
+          print("  >> This value must be natural number (up to: " .. indexLength .. ')')
+          print("  >> Use 'xaf-pm repository [-p | --priority]' again with proper index")
+
+          os.exit()
+        else
+          if (xafcoreMath:checkNatural(tonumber(indexRaw), true) == false or tonumber(indexRaw) > indexLength) then
+            print("--------------------------------------")
+            print("-- XAF Package Manager - Controller --")
+            print("--------------------------------------")
+            print("  >> Invalid repository index value")
+            print("  >> This value must be natural number (up to: " .. indexLength .. ')')
+            print("  >> Use 'xaf-pm repository [-p | --priority]' again with proper index")
+
+            os.exit()
+          else
+            index = tonumber(indexRaw)
+          end
+        end
+
+        if (tonumber(priorityRaw) == nil) then
+          print("--------------------------------------")
+          print("-- XAF Package Manager - Controller --")
+          print("--------------------------------------")
+          print("  >> Invalid repository new priority value")
+          print("  >> This value must be natural number (up to: " .. indexLength .. ')')
+          print("  >> Use 'xaf-pm repository [-p | --priority]' again with proper priority value")
+
+          os.exit()
+        else
+          if (xafcoreMath:checkNatural(tonumber(priorityRaw), true) == false or tonumber(indexRaw) > indexLength) then
+            print("--------------------------------------")
+            print("-- XAF Package Manager - Controller --")
+            print("--------------------------------------")
+            print("  >> Invalid repository new priority value")
+            print("  >> This value must be natural number (up to: " .. indexLength .. ')')
+            print("  >> Use 'xaf-pm repository [-p | --priority]' again with proper priority value")
+
+            os.exit()
+          else
+            priority = tonumber(priorityRaw)
+          end
+        end
+
+        local listFile = filesystem.open(sourcePath, 'w')
+        local removedEntry = table.remove(sourceData, index)
+
+        listFile:write("[#] Extensible Application Framework Package Manager source repository list." .. '\n')
+        listFile:write("[#] This file is used to store user added custom XAF add-on package repositories." .. '\n')
+        listFile:write("[#] Data represented in XAF Table Format." .. '\n' .. '\n')
+        listFile:close()
+
+        table.insert(sourceData, priority, removedEntry)
+        xafcoreTable:saveToFile(sourceData, sourcePath, true)
+
+        print("--------------------------------------")
+        print("-- XAF Package Manager - Controller --")
+        print("--------------------------------------")
+        print("  >> Successfully changed priority of repository: " .. removedEntry)
+        print("  >> It is available now under index '" .. priority .. "' instead of '" .. index .. "'")
       elseif (options.r == true or options.remove == true) then
       end
 

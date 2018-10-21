@@ -183,6 +183,49 @@ if (options.l == true or options.list == true or options.p == true or options.pr
         print("  >> Successfully changed priority of repository: " .. removedEntry)
         print("  >> It is available now under index '" .. priority .. "' instead of '" .. index .. "'")
       elseif (options.r == true or options.remove == true) then
+        local indexLength = #sourceData
+        local indexRaw = arguments[1]
+        local index = 0
+
+        if (tonumber(indexRaw) == nil) then
+          print("--------------------------------------")
+          print("-- XAF Package Manager - Controller --")
+          print("--------------------------------------")
+          print("  >> Invalid repository removal index value")
+          print("  >> This value must be natural number (up to: " .. indexLength .. ')')
+          print("  >> Use 'xaf-pm repository [-r | --remove]' again with proper index")
+
+          os.exit()
+        else
+          if (xafcoreMath:checkNatural(tonumber(indexRaw), true) == false or tonumber(indexRaw) > indexLength) then
+            print("--------------------------------------")
+            print("-- XAF Package Manager - Controller --")
+            print("--------------------------------------")
+            print("  >> Invalid repository removal index value")
+            print("  >> This value must be natural number (up to: " .. indexLength .. ')')
+            print("  >> Use 'xaf-pm repository [-r | --remove]' again with proper index")
+
+            os.exit()
+          else
+            index = tonumber(indexRaw)
+          end
+
+          local listFile = filesystem.open(sourcePath, 'w')
+          local removedEntry = table.remove(sourceData, index)
+
+          listFile:write("[#] Extensible Application Framework Package Manager source repository list." .. '\n')
+          listFile:write("[#] This file is used to store user added custom XAF add-on package repositories." .. '\n')
+          listFile:write("[#] Data represented in XAF Table Format." .. '\n' .. '\n')
+          listFile:close()
+
+          xafcoreTable:saveToFile(sourceData, sourcePath, true)
+
+          print("--------------------------------------")
+          print("-- XAF Package Manager - Controller --")
+          print("--------------------------------------")
+          print("  >> Successfully removed following repository: " .. removedEntry)
+          print("  >> Package Manager will no longer install add-ons from it")
+        end
       end
 
       os.exit()

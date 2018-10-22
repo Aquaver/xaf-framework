@@ -254,6 +254,113 @@ if (options.a == true or options.add == true or options.i == true or options.inf
   local targetPath = "/master/_config/repository.info"
 
   if (options.a == true or options.add == true) then
+    if (targetRepository == nil) then
+      print("    >> Invalid target repository identifier, must not be empty")
+      print("    >> Required format: userName/repositoryName")
+
+      os.exit()
+    end
+
+    local inetAddress = targetAddress .. targetRepository .. targetPath
+    local inetComponent = component.getPrimary("internet")
+    local inetConnection = httpstream:new(inetComponent, inetAddress)
+    local inetResponse = 0
+
+    if (inetConnection:connect() == true) then
+      local infoData = ''
+
+      for dataChunk in inetConnection:getData() do
+        infoData = infoData .. dataChunk
+      end
+
+      inetResponse = inetConnection:getResponseCode()
+      inetConnection:disconnect()
+      inetComponent = nil
+
+      if (inetResponse == 404) then
+        print("    >> Target repository does not exist on GitHub service")
+        print("    >> Ensure you entered valid repository identifier")
+        print("    >> Required format: userName/repositoryName")
+
+        os.exit()
+      else
+        local infoPath = "/aquaver.github.io/xaf-framework/repository.info"
+        local infoFile = filesystem.open(infoPath, 'w')
+        local infoTable = nil
+
+        infoFile:write(infoData)
+        infoFile:close()
+        infoTable = xafcoreTable:loadFromFile(infoPath)
+        filesystem.remove(infoPath)
+
+        if (infoTable["repository-description"] and infoTable["repository-owner"] and infoTable["repository-title"] and infoTable["repository-xaf"]) then
+          local pathRoot = "aquaver.github.io"
+          local pathProject = "xaf-framework"
+          local pathData = "data"
+          local pathName = "pm-source.info"
+
+          local sourcePath = filesystem.concat(pathRoot, pathProject, pathData, pathName)
+          local sourceData = {}
+          local sourceLength = 0
+
+          if (filesystem.exists(sourcePath) == true) then
+            sourceData = xafcoreTable:loadFromFile(sourcePath)
+            sourceLength = #sourceData
+          else
+            print("    >> Cannot find the source repositories list file")
+            print("    >> Reinstall XAF package or download this file manually")
+            print("    >> Missing file name: " .. pathName)
+
+            os.exit()
+          end
+
+          if (targetPriority == nil) then
+            targetPriority = 1
+            table.insert(sourceData, 1, targetRepository)
+          elseif (tonumber(targetPriority) == nil) then
+            print("    >> Invalid new repository priority value")
+            print("    >> This value must be natural number (up to: " .. sourceLength + 1 .. ')')
+            print("    >> Use 'xaf-pm repository [-a | --add]' again with proper priority value")
+
+            os.exit()
+          else
+            if (xafcoreMath:checkNatural(tonumber(targetPriority), true) == false or tonumber(targetPriority) > sourceLength + 1) then
+              print("    >> Invalid new repository priority value")
+              print("    >> This value must be natural number (up to: " .. sourceLength + 1 .. ')')
+              print("    >> Use 'xaf-pm repository [-a | --add]' again with proper priority value")
+
+              os.exit()
+            else
+              table.insert(sourceData, tonumber(targetPriority), targetRepository)
+            end
+          end
+
+          local listFile = filesystem.open(sourcePath, 'w')
+          local addedRepository = targetRepository
+
+          listFile:write("[#] Extensible Application Framework Package Manager source repository list." .. '\n')
+          listFile:write("[#] This file is used to store user added custom XAF add-on package repositories." .. '\n')
+          listFile:write("[#] Data represented in XAF Table Format." .. '\n' .. '\n')
+          listFile:close()
+
+          xafcoreTable:saveToFile(sourceData, sourcePath, true)
+
+          print("    >> Successfully added following repository: " .. addedRepository)
+          print("    >> Package Manager will install programs from it with '" .. targetPriority .. "' priority")
+        else
+          print("    >> Invalid repository description file detected")
+          print("    >> Try running 'xaf-pm repository [-a | --add]' again")
+          print("    >> If this message appears again, contact the repository owner")
+
+          os.exit()
+        end
+      end
+    else
+      print("    >> Cannot connect to target repository")
+      print("    >> Try running 'xaf-pm repository [-a | --add]' again")
+
+      os.exit()
+    end
   elseif (options.i == true or options.info == true) then
   end
 

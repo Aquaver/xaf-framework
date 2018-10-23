@@ -362,6 +362,65 @@ if (options.a == true or options.add == true or options.i == true or options.inf
       os.exit()
     end
   elseif (options.i == true or options.info == true) then
+    if (targetRepository == nil) then
+      print("    >> Invalid target repository identifier, must not be empty")
+      print("    >> Required format: userName/repositoryName")
+
+      os.exit()
+    end
+
+    local inetAddress = targetAddress .. targetRepository .. targetPath
+    local inetComponent = component.getPrimary("internet")
+    local inetConnection = httpstream:new(inetComponent, inetAddress)
+    local inetResponse = 0
+
+    if (inetConnection:connect() == true) then
+      local infoData = ''
+
+      for dataChunk in inetConnection:getData() do
+        infoData = infoData .. dataChunk
+      end
+
+      inetResponse = inetConnection:getResponseCode()
+      inetConnection:disconnect()
+      inetComponent = nil
+
+      if (inetResponse == 404) then
+        print("    >> Target repository does not exist on GitHub service")
+        print("    >> Ensure you entered valid repository identifier")
+        print("    >> Required format: userName/repositoryName")
+
+        os.exit()
+      else
+        local infoPath = "/aquaver.github.io/xaf-framework/repository.info"
+        local infoFile = filesystem.open(infoPath, 'w')
+        local infoTable = nil
+
+        infoFile:write(infoData)
+        infoFile:close()
+        infoTable = xafcoreTable:loadFromFile(infoPath)
+        filesystem.remove(infoPath)
+
+        if (infoTable["repository-description"] and infoTable["repository-owner"] and infoTable["repository-title"] and infoTable["repository-xaf"]) then
+          print("  >> Successfully connected to target repository:")
+          print("    >> Repository title: " .. infoTable["repository-title"])
+          print("    >> Repository owner: " .. infoTable["repository-owner"])
+          print("    >> Repository required XAF version: " .. infoTable["repository-xaf"])
+
+          print(string.rep('-', gpuWidth))
+          print(infoTable["repository-description"])
+        else
+          print("    >> Invalid repository description file detected")
+          print("    >> Try running 'xaf-pm repository [-i | --info]' again")
+          print("    >> If this message appears again, contact the repository owner")
+        end
+      end
+    else
+      print("    >> Cannot connect to target repository")
+      print("    >> Try running 'xaf-pm repository [-i | --info]' again")
+
+      os.exit()
+    end
   end
 
   os.exit()

@@ -9,6 +9,22 @@ local xafcoreExecutor = xafcore:getExecutorInstance()
 local xafcoreTable = xafcore:getTableInstance()
 
 if (options.h == true or options.help == true) then
+  print("----------------------------------")
+  print("-- XAF Package Manager - Manual --")
+  print("----------------------------------")
+  print("  >> NAME")
+  print("    >> xaf-pm run - Package program starting script")
+  print()
+  print("  >> SYNOPSIS")
+  print("    >> xaf-pm run")
+  print("    >> xaf-pm run <name>")
+  print("    >> xaf-pm run [-h | --help]")
+  print("    >> xaf-pm run [-p | --pass] <name> [arguments] [options]")
+  print()
+  print("  >> DESCRIPTION")
+  print("    >> This program is generally used for PM add-on package starting, and passing optional arguments or flags to it.")
+
+  os.exit()
 end
 
 local pathRoot = "aquaver.github.io"

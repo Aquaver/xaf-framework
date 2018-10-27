@@ -87,5 +87,11 @@ if (filesystem.exists(indexPath) == false) then
   print("  >> Missing file name: " .. indexName)
 else
   if (options.p == true or options.pass == true) then
+    options.p = nil
+    options.pass = nil
+
+    return xafcoreExecutor:runExternal(indexPath, arguments, options)
+  else
+    return xafcoreExecutor:runExternal(indexPath)
   end
 end

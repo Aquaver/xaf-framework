@@ -27,6 +27,14 @@ function PackageManager:initialize()
   private.pathPackages = "xaf-packages"
   private.pathPackageBinary = "_bin"
   private.pathPackageConfig = "_config"
+  
+  public.checkTable = function(self)                    -- [!] Function: checkTable() - Checks whether XAF application data table of this package exists.
+    if (configAppdata[private.pathPackage] == nil) then -- [!] Return: 'true' or 'false' - If present package's table exists.
+      return false
+    else
+      return true
+    end
+  end
 
   return {
     private = private,

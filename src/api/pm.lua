@@ -35,6 +35,15 @@ function PackageManager:initialize()
       return true
     end
   end
+  
+  public.createTable = function(self)                   -- [!] Function: createTable() - Tries to create XAF application data table for this package.
+    if (configAppdata[private.pathPackage] == nil) then -- [!] Return: 'true' or 'false' - If the table has been created successfully.
+      _G._XAF._APPDATA[private.pathPackage] = {}
+      return true
+    else
+      return false
+    end
+  end
 
   return {
     private = private,

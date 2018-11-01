@@ -44,6 +44,15 @@ function PackageManager:initialize()
       return false
     end
   end
+  
+  public.dropTable = function(self)                     -- [!] Function: dropTable() - Tries to remove XAF application data table for this package.
+    if (configAppdata[private.pathPackage] == nil) then -- [!] Return: 'true' or 'false' - If the table has been dropped (removed) without errors.
+      return false
+    else
+      _G._XAF._APPDATA[private.pathPackage] = nil
+      return true
+    end
+  end
 
   return {
     private = private,

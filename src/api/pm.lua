@@ -53,6 +53,15 @@ function PackageManager:initialize()
       return true
     end
   end
+  
+  public.getPackagePath = function(self, relativePath)                                                       -- [!] Function: getPackagePath(relativePath) - Returns absolute path of this package built on parameter relative path.
+    assert(type(relativePath) == "string", "[XAF Core] Expected STRING as argument #1")                      -- [!] Parameter: relativePath - Relative path of given target file.
+                                                                                                             -- [!] Return: pathBinary - Created absolute path of given target object file.
+    local pathAbsolute = filesystem.concat('/', private.pathRoot, private.pathPackages, private.pathPackage)
+    local pathBinary = filesystem.concat(pathAbsolute, private.pathPackageBinary, relativePath)
+
+    return pathBinary
+  end
 
   return {
     private = private,

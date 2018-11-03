@@ -62,6 +62,16 @@ function PackageManager:initialize()
 
     return pathBinary
   end
+  
+  public.getTableValue = function(self, tableKey)                                   -- [!] Function: getTableValue(tableKey) - Returns specified data value from XAF application data table of this package.
+    assert(type(tableKey) == "string", "[XAF Core] Expected STRING as argument #1") -- [!] Parameter: tableKey - Table index (key) of data value you would like to get from.
+                                                                                    -- [!] Return: 'true' or 'false' - Boolean flag is the application data table exists (If 'true' then second returned value is retrieved data value).
+    if (configAppdata[private.pathPackage] == nil) then
+      return false
+    else
+      return true, configAppdata[private.pathPackage][tableKey]
+    end
+  end
 
   return {
     private = private,

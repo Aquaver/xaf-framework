@@ -72,6 +72,17 @@ function PackageManager:initialize()
       return true, configAppdata[private.pathPackage][tableKey]
     end
   end
+  
+  public.setTableValue = function(self, tableKey, tableValue)                       -- [!] Function: setTableValue(tableKey, tableValue) - Changes (sets or removes) value stored under specified key in package's XAF application data table.
+    assert(type(tableKey) == "string", "[XAF Core] Expected STRING as argument #1") -- [!] Parameter: tableKey - Table index (key) under which the new data will be stored.
+                                                                                    -- [!] Parameter: tableValue - New data value that will be stored under given key, leave empty (`nil`) to remove.
+    if (configAppdata[private.pathPackage] == nil) then
+      return false
+    else
+      _G._XAF._APPDATA[private.pathPackage][tableKey] = tableValue
+      return true
+    end
+  end
 
   return {
     private = private,

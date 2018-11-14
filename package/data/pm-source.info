@@ -1,0 +1,5 @@
+[#] Extensible Application Framework Package Manager source repository list.
+[#] This file is used to store user added custom XAF add-on package repositories.
+[#] Data represented in XAF Table Format.
+
+[S] default = [S] Aquaver/xaf-packages

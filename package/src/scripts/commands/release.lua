@@ -14,6 +14,22 @@ local gpu = component.getPrimary("gpu")
 local gpuWidth, gpuHeight = gpu.getResolution()
 
 if (options.h == true or options.help == true) then
+  print("-----------------------------------------------")
+  print("-- Extensible Application Framework - Manual --")
+  print("-----------------------------------------------")
+  print("  >> NAME")
+  print("    >> xaf release - XAF release information program")
+  print()
+  print("  >> SYNOPSIS")
+  print("    >> xaf release")
+  print("    >> xaf release [-h | --help]")
+  print("    >> xaf release [-i | --info] <version>")
+  print("    >> xaf release [-l | --list] [page]")
+  print()
+  print("  >> DESCRIPTION")
+  print("    >> This program lets the user listing all current XAF releases and retrieving information about specified release version.")
+
+  os.exit()
 end
 
 if (options.i == nil and options.info == nil and options.l == nil and options.list == nil) then

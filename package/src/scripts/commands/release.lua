@@ -33,6 +33,13 @@ if (options.h == true or options.help == true) then
 end
 
 if (options.i == nil and options.info == nil and options.l == nil and options.list == nil) then
+  print("---------------------------------------------------")
+  print("-- Extensible Application Framework - Controller --")
+  print("---------------------------------------------------")
+  print("  >> Release data retrieving program")
+  print("  >> Use 'xaf release [-h | --help]' for command manual")
+
+  os.exit()
 end
 
 if (component.isAvailable("internet") == false) then

@@ -68,5 +68,43 @@ local inetComponent = component.getPrimary("internet")
 local inetConnection = nil
 
 if (options.i == true or options.info == true) then
+  inetAddress = sourceAddress .. sourceReleases .. '/' .. sourceTags .. '/' .. tostring(argument)
+  inetConnection = httpstream:new(inetComponent, inetAddress)
+
+  if (argument == nil) then
+    print("    >> Empty XAF version identifier")
+    print("    >> Use correct 'xaf release [-i | --info]' with correct release tag")
+    print("    >> Use 'xaf release [-h | --help] for command manual'")
+
+    os.exit()
+  end
+
+  if (inetConnection:connect() == true) then
+    local jsonData = ''
+    local jsonObject = nil
+    local jsonTable = {}
+
+    for dataChunk in inetConnection:getData() do
+      jsonData = jsonData .. dataChunk
+    end
+
+    inetConnection:disconnect()
+    jsonObject = jsonparser:new()
+    jsonTable = jsonObject:parse(jsonData)
+
+    print("    >> Retrieved release data from version: " .. argument)
+    print("      >> Release name: " .. jsonTable["name"])
+    print("      >> Release tag: " .. jsonTable["tag_name"])
+    print("      >> Release author: " .. jsonTable["author"]["login"])
+    print("      >> Release downloads: " .. jsonTable["assets"][1]["download_count"])
+    print("      >> Release installer size: " .. string.format("%.2f", tonumber(jsonTable["assets"][1]["size"]) / 1024) .. " kB")
+
+    print(string.rep('-', gpuWidth))
+    print(jsonTable["body"])
+  else
+    print("    >> Cannot connect to project repository")
+    print("    >> Ensure the release identifier (" .. argument .. ") is correct")
+    print("    >> Try running 'xaf release' again")
+  end
 elseif (options.l == true or options.list == true) then
 end

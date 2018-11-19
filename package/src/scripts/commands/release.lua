@@ -107,4 +107,46 @@ if (options.i == true or options.info == true) then
     print("    >> Try running 'xaf release' again")
   end
 elseif (options.l == true or options.list == true) then
+  inetAddress = sourceAddress .. sourceReleases .. sourceFlags
+  inetConnection = httpstream:new(inetComponent, inetAddress)
+
+  if (argument == nil) then
+    argument = 1
+  elseif (tonumber(argument) == nil) then
+    print("    >> Invalid release list index, must be natural number")
+    print("    >> Try running 'xaf release' again with correct index")
+    os.exit()
+  elseif (xafcoreMath:checkNatural(tonumber(argument), true) == false) then
+    print("    >> Invalid release list index, must be natural number")
+    print("    >> Try running 'xaf release' again with correct index")
+    os.exit()
+  end
+
+  if (inetConnection:connect() == true) then
+    local jsonData = ''
+    local jsonObject = nil
+    local jsonTable = {}
+    local jsonLength = 0
+
+    for dataChunk in inetConnection:getData() do
+      jsonData = jsonData .. dataChunk
+    end
+
+    inetConnection:disconnect()
+    jsonObject = jsonparser:new()
+    jsonTable = jsonObject:parse(jsonData)
+    jsonLength = #jsonTable
+
+    for i = 1, jsonLength do
+      print("      >> Release: " .. jsonTable[i]["tag_name"] .. " - " .. jsonTable[i]["name"] .. " (" .. jsonTable[i]["assets"][1]["download_count"] .. ')')
+
+      if (i == jsonLength and jsonTable[i]["tag_name"] ~= "1.0.0") then
+        print()
+        print("        >> Use 'xaf release [-l | --list] " .. tonumber(argument) + 1 .. "' for older releases")
+      end
+    end
+  else
+    print("    >> Cannot connect to project repository")
+    print("    >> Try running 'xaf release' again")
+  end
 end

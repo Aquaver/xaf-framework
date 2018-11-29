@@ -17,6 +17,7 @@ This class implements very important type of protocol - File Transfer Protocol, 
 * **Accepted requests**
 
   * **Request name -** `FTP_DIRECTORY_CREATE`, **parameters -** `string: directoryPath`, `string: directoryName`
+  * **Request name -** `FTP_DIRECTORY_LIST`, **parameters -** `string: directoryPath`
   * **Request name -** `FTP_FILE_DOWNLOAD_CONTINUE`, **parameters -** `string: targetPath`
   * **Request name -** `FTP_FILE_DOWNLOAD_START`, **parameters -** `string: targetPath`
   * **Request name -** `FTP_FILE_MOVE`, **parameters -** `string: moveFile`, `string: movePath`
@@ -40,7 +41,7 @@ This class implements very important type of protocol - File Transfer Protocol, 
   * `Invalid File Name` - message got on attempt to upload a file with invalid name given (the same as in case of directories).
   * `Invalid File New Name` - message sent as response on try to rename a file to new name which contains invalid characters.
   * `New Name Already Occupied` - received when trying to rename a file with name, that was being used by another file (or directory).
-  * `Path Is Not A Directory` - sent by server on attempt to move (or upload) a file to target path, that is not a directory - sending file 'to file'.
+  * `Path Is Not A Directory` - sent by server on attempt to move, view list (or upload) a file to target path, that is not a directory - sending file 'to file'.
   * `Path Not Exists` - another generic message received when trying to create directory into on path, which does not exist.
   * `OK` - message received on proper request.
   * `OK (Next)` - special case message received when 'continue downloading' but there is more data assigned to this file in server's buffer. That means you should do downloading request again to get entire file.
@@ -57,6 +58,10 @@ This class implements very important type of protocol - File Transfer Protocol, 
 ### Private in-class method documentation
 
 * **Function:** `doDirectoryCreate(event)` - Creates new directory in FTP workspace tree.
+
+  * **Parameter:** `event` - Event table with received request object.
+
+* **Function:** `doDirectoryList(event)` - Retrieves list of files and directories in given path.
 
   * **Parameter:** `event` - Event table with received request object.
 

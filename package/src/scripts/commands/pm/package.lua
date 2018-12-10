@@ -294,13 +294,8 @@ if (options.a == true or options.add == true or options.i == true or options.inf
                         repositoryInfoData = repositoryInfoData .. dataChunk
                       end
 
-                      local repositoryInfoPath = "/aquaver.github.io/xaf-framework/repository.info"
-                      local repositoryInfoFile = filesystem.open(repositoryInfoPath, 'w')
-
-                      repositoryInfoFile:write(repositoryInfoData)
-                      repositoryInfoFile:close()
-                      repositoryInfoTable = xafcoreTable:loadFromFile(repositoryInfoPath)
-                      filesystem.remove(repositoryInfoPath)
+                      repositoryInfoTable = xafcoreTable:loadFromString(repositoryInfoData)
+                      repositoryInfoData = ''
 
                       if (configVersion > repositoryInfoTable["repository-xaf"]) then
                         local dataAddress = "https://raw.githubusercontent.com/"

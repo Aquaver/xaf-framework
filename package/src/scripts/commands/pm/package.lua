@@ -530,13 +530,8 @@ if (options.a == true or options.add == true or options.i == true or options.inf
                     infoData = infoData .. dataChunk
                   end
 
-                  local infoPath = "/aquaver.github.io/xaf-framework/package.info"
-                  local infoFile = filesystem.open(infoPath, 'w')
-
-                  infoFile:write(infoData)
-                  infoFile:close()
-                  infoTable = xafcoreTable:loadFromFile(infoPath)
-                  filesystem.remove(infoPath)
+                  infoTable = xafcoreTable:loadFromString(infoData)
+                  infoData = ''
 
                   if (infoTable["package-description"] and infoTable["package-identifier"] and infoTable["package-index"] and
                       infoTable["package-owner"] and infoTable["package-title"] and infoTable["package-version"] and infoTable["package-xaf"]) then

@@ -268,6 +268,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
     if (inetConnection:connect() == true) then
       local infoData = ''
+      local infoTable = {}
 
       for dataChunk in inetConnection:getData() do
         infoData = infoData .. dataChunk
@@ -284,14 +285,8 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
         os.exit()
       else
-        local infoPath = "/aquaver.github.io/xaf-framework/repository.info"
-        local infoFile = filesystem.open(infoPath, 'w')
-        local infoTable = nil
-
-        infoFile:write(infoData)
-        infoFile:close()
-        infoTable = xafcoreTable:loadFromFile(infoPath)
-        filesystem.remove(infoPath)
+        infoTable = xafcoreTable:loadFromString(infoData)
+        infoData = ''
 
         if (infoTable["repository-description"] and infoTable["repository-owner"] and infoTable["repository-title"] and infoTable["repository-xaf"]) then
           local pathRoot = "aquaver.github.io"

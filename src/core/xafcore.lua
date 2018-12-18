@@ -5,7 +5,7 @@
 -- [>] Executor: used to exit program safely or executing external scripts in protected mode.
 -- [>] Security: provides data security functionality like UUID checking or random hex-string generating.
 -- [>] String: used to searching strings for special or control characters.
--- [>] Table: tables manipulation, quick sorting, searching and saving/reading to/from external files.
+-- [>] Table: tables manipulation, quick sorting, searching and saving/reading to/from external files and sources.
 -- [>] Text: provides text manipulation functionality: padding to right/center/left, splitting or wrapping into table.
 
 local computer = require("computer")
@@ -344,61 +344,72 @@ function XafCore:getTableInstance()
 
       tableData = ''
       tableFile:close()
-
-      for line in string.gmatch(tableContent, "[^" .. lineDelimiter .. "]+") do
-        local delimiter = string.find(line, " = ")
-        local key = nil
-        local value = nil
-
-        if (string.sub(line, 1, 3) ~= "[#]") then -- If line starts with [#] then it will be recognized as comment and ignored.
-          if (delimiter) then
-            local keyMarker = string.sub(line, 1, 3)
-            local keyRaw = string.sub(line, 5, delimiter - 1)
-            local valueMarker = string.sub(line, delimiter + 3, delimiter + 5)
-            local valueRaw = string.sub(line, delimiter + 7)
-
-            if (keyMarker == "[S]") then
-              key = tostring(keyRaw)
-            elseif (keyMarker == "[N]") then
-              key = tonumber(keyRaw)
-            elseif (keyMarker == "[B]") then
-              if (keyRaw == "true") then
-                key = true
-              elseif (keyRaw == "false") then
-                key = false
-              end
-            elseif (keyMarker == "[?]") then
-              -- Key type is unknown - line is ignored.
-            else
-              error("[XAF Error] Invalid table line syntax - invalid key marker")
-            end
-
-            if (valueMarker == "[S]") then
-              value = tostring(valueRaw)
-            elseif (valueMarker == "[N]") then
-              value = tonumber(valueRaw)
-            elseif (valueMarker == "[B]") then
-              if (valueRaw == "true") then
-                value = true
-              elseif (valueRaw == "false") then
-                value = false
-              end
-            elseif (valueMarker == "[?]") then
-              value = nil
-            else
-              error("[XAF Error] Invalid table line syntax - invalid value marker")
-            end
-
-            if (key) then
-              loadTable[key] = value
-            end
-          else
-            error("[XAF Error] Invalid table data syntax - delimiter not found")
-          end
-        end
-      end
+      loadTable = public:loadFromString(tableContent)
     else
       error("[XAF Error] File '" .. loadPath .. "' does not exist")
+    end
+
+    return loadTable
+  end
+
+  public.loadFromString = function(self, sourceString)                                  -- [!] Function: loadFromString(sourceString) - Returns a table from string in XAF Table Format (useful in reading data directly from remote source, for example from internet).
+    assert(type(sourceString) == "string", "[XAF Core] Expected STRING as argument #1") -- [!] Parameter: sourceString - Source string in valid XAF Table Format.
+                                                                                        -- [!] Return: loadTable - Successfully read and loaded table.
+    local lineDelimiter = string.char(13, 10)
+    local loadString = sourceString
+    local loadTable = {}
+
+    for line in string.gmatch(loadString, "[^" .. lineDelimiter .. "]+") do
+      local delimiter = string.find(line, " = ")
+      local key = nil
+      local value = nil
+
+      if (string.sub(line, 1, 3) ~= "[#]") then -- If line starts with [#] then it will be recognized as comment and ignored.
+        if (delimiter) then
+          local keyMarker = string.sub(line, 1, 3)
+          local keyRaw = string.sub(line, 5, delimiter - 1)
+          local valueMarker = string.sub(line, delimiter + 3, delimiter + 5)
+          local valueRaw = string.sub(line, delimiter + 7)
+
+          if (keyMarker == "[S]") then
+            key = tostring(keyRaw)
+          elseif (keyMarker == "[N]") then
+            key = tonumber(keyRaw)
+          elseif (keyMarker == "[B]") then
+            if (keyRaw == "true") then
+              key = true
+            elseif (keyRaw == "false") then
+              key = false
+            end
+          elseif (keyMarker == "[?]") then
+            -- Key type is unknown - line is ignored.
+          else
+            error("[XAF Error] Invalid table line syntax - invalid key marker")
+          end
+
+          if (valueMarker == "[S]") then
+            value = tostring(valueRaw)
+          elseif (valueMarker == "[N]") then
+            value = tonumber(valueRaw)
+          elseif (valueMarker == "[B]") then
+            if (valueRaw == "true") then
+              value = true
+            elseif (valueRaw == "false") then
+              value = false
+            end
+          elseif (valueMarker == "[?]") then
+            value = nil
+          else
+            error("[XAF Error] Invalid table line syntax - invalid value marker")
+          end
+
+          if (key) then
+            loadTable[key] = value
+          end
+        else
+          error("[XAF Error] Invalid table data syntax - delimiter not found")
+        end
+      end
     end
 
     return loadTable

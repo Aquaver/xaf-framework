@@ -130,6 +130,11 @@ XAFCore is framework core library as its name says. This class provides five sub
   * **Parameter:** `filePath` - Absolute path of file where table was saved.
   * **Return:** `loadTable` - Successfully loaded table.
 
+* **Function:** `loadFromString(sourceString)` - Returns a table from string in XAF Table Format (useful in reading data directly from remote source, for example from internet).
+
+  * **Parameter:** `sourceString` - Source string in valid XAF Table Format.
+  * **Return:** `loadTable` - Successfully read and loaded table.
+
 * **Function:** `saveToFile(array, filePath, append)` - Saves table in a file with specified path.
 
   * **Parameter:** `array` - Table which will be saved in file.

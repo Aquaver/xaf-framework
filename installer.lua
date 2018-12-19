@@ -121,7 +121,7 @@ end
 
 if (filesystem.exists(filesystem.concat(pathRoot, pathPackages)) == false) then
   print("    >> XAF PM application package directory does not exist, creating new one...")
-  filesystem.makeDirectory(filesystem.concat(pathRoot, pathProject, pathClasses))
+  filesystem.makeDirectory(filesystem.concat(pathRoot, pathPackages))
 end
 
 if (filesystem.exists(filesystem.concat(pathRoot, pathProject, pathClasses)) == false) then

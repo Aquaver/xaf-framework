@@ -28,6 +28,41 @@ function RepServer:initialize()
   private.serverPaths = {}
   private.serverPaths["rep_root"] = '/'
   private.serverPaths["rep_scripts"] = "REP_SCRIPTS"
+  
+  private.doExecute = function(self, event)                                                    -- [!] Function: doExecute(event) - Tries to execute script with given parameter as path.
+    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")              -- [!] Parameter: event - Event table with received request object.
+
+    local modem = private.componentModem
+    local port = private.port
+    local responseAddress = event[3]
+    local scriptPath = filesystem.canonical(event[7])
+    local scriptFullPath = filesystem.concat(private.serverPaths["rep_scripts"], scriptPath)
+    local scriptParameters = nil
+    local returnParameters = nil
+    local executionFlag = nil
+
+    if (filesystem.exists(scriptFullPath) == false) then
+      modem.send(responseAddress, port, false, "Script Not Exists")
+    elseif (filesystem.isDirectory(scriptFullPath) == true) then
+      modem.send(responseAddress, port, false, "Invalid File")
+    else
+      scriptParameters = {}
+      returnParameters = {}
+
+      for i = 8, #event do
+        table.insert(scriptParameters, event[i])
+      end
+
+      returnParameters = {xafcoreExecutor:runExternal(scriptFullPath, table.unpack(scriptParameters))}
+      executionFlag = table.remove(returnParameters, 1)
+
+      if (executionFlag == true) then
+        modem.send(responseAddress, port, true, "OK", table.unpack(returnParameters))
+      else
+        modem.send(responseAddress, port, false, "Script Execution Error")
+      end
+    end
+  end
 
   return {
     private = private,

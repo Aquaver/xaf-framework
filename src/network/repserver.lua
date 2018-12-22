@@ -63,6 +63,40 @@ function RepServer:initialize()
       end
     end
   end
+  
+  private.doExecuteAbsolute = function(self, event)                                                -- [!] Function: doExecuteAbsolute(event) - Tries to execute program with given parameter as absolute path in server file tree.
+    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")                  -- [!] Parameter: event - Event table with received request object.
+
+    local modem = private.componentModem
+    local port = private.port
+    local responseAddress = event[3]
+    local scriptPath = filesystem.canonical(event[7])
+    local scriptParameters = nil
+    local returnParameters = nil
+    local executionFlag = nil
+
+    if (filesystem.exists(scriptPath) == false) then
+      modem.send(responseAddress, port, false, "Script Not Exists")
+    elseif (filesystem.isDirectory(scriptPath) == true) then
+      modem.send(responseAddress, port, false, "Invalid File")
+    else
+      scriptParameters = {}
+      returnParameters = {}
+
+      for i = 8, #event do
+        table.insert(scriptParameters, event[i])
+      end
+
+      returnParameters = {xafcoreExecutor:runExternal(scriptPath, table.unpack(scriptParameters))}
+      executionFlag = table.remove(returnParameters, 1)
+
+      if (executionFlag == true) then
+        modem.send(responseAddress, port, true, "OK", table.unpack(returnParameters))
+      else
+        modem.send(responseAddress, port, false, "Script Execution Error")
+      end
+    end
+  end
 
   return {
     private = private,

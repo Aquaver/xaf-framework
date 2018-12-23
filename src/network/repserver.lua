@@ -97,6 +97,31 @@ function RepServer:initialize()
       end
     end
   end
+  
+  private.doExecuteCommand = function(self, event)                                -- [!] Function: doExecuteCommand(event) - Tries to execute given program as shell command from root binaries directory.
+    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1") -- [!] Parameter: event - Event table with received request object.
+
+    local modem = private.componentModem
+    local port = private.port
+    local responseAddress = event[3]
+    local scriptCommand = event[7]
+    local scriptParameters = nil
+    local scriptLine = scriptCommand
+    local scriptFullPath = filesystem.concat("bin", scriptCommand .. ".lua")
+
+    if (filesystem.exists(scriptFullPath) == false) then
+      modem.send(responseAddress, port, false, "Script Not Exists")
+    elseif (filesystem.isDirectory(scriptFullPath) == true) then
+      modem.send(responseAddress, port, false, "Invalid File")
+    else
+      for i = 8, #event do
+        scriptLine = scriptLine .. ' ' .. tostring(event[i])
+      end
+
+      shell.execute(scriptLine)
+      modem.send(responseAddress, port, true, "OK")
+    end
+  end
 
   return {
     private = private,

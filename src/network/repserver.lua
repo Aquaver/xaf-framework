@@ -122,6 +122,47 @@ function RepServer:initialize()
       modem.send(responseAddress, port, true, "OK")
     end
   end
+  
+  private.doExecuteNoProtect = function(self, event)                                         -- [!] Function: doExecuteNoReturn(event) - Tries to run program (without default protection) with given parameter as its path - to use with custom execution error handler.
+    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")            -- [!] Parameter: event - Event table with received request object.
+
+    local modem = private.componentModem
+    local port = private.port
+    local responseAddress = event[3]
+    local scriptPath = filesystem.canonical(event[7])
+    local scriptFullPath = filesystem.concat(private.serverPaths["rep_scripts"], scriptPath)
+    local scriptParameters = nil
+    local returnParameters = nil
+
+    if (filesystem.exists(scriptFullPath) == false) then
+      modem.send(responseAddress, port, false, "Script Not Exists")
+    elseif (filesystem.isDirectory(scriptFullPath) == true) then
+      modem.send(responseAddress, port, false, "Invalid File")
+    else
+      local scriptFile = filesystem.open(scriptFullPath, 'r')
+      local scriptCode = ''
+      local scriptData = scriptFile:read(math.huge)
+      local scriptFunction = nil
+
+      scriptParameters = {}
+      returnParameters = {}
+
+      while (scriptData) do
+        scriptCode = scriptCode .. scriptData
+        scriptData = scriptFile:read(math.huge)
+      end
+
+      for i = 8, #event do
+        table.insert(scriptParameters, event[i])
+      end
+
+      scriptFile:close()
+      scriptFunction = load(scriptCode)
+
+      returnParameters = {scriptFunction(table.unpack(scriptParameters))}
+      modem.send(responseAddress, port, true, "OK", table.unpack(returnParameters))
+    end
+  end
 
   return {
     private = private,

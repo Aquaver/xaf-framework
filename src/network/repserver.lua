@@ -163,6 +163,41 @@ function RepServer:initialize()
       modem.send(responseAddress, port, true, "OK", table.unpack(returnParameters))
     end
   end
+  
+  private.doExecuteNoReturn = function(self, event)                                                    -- [!] Function: doExecuteNoReturn(event) - Tries to execute script with passed path - it does not return result parameters.
+    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")                      -- [!] Parameter: event - Event table with received request object.
+
+    local modem = private.componentModem
+    local port = private.port
+    local responseAddress = event[3]
+    local scriptPath = filesystem.canonical(event[7])
+    local scriptFullPath = filesystem.concat(private.serverPaths["rep_scripts"], scriptPath)
+    local scriptParameters = nil
+    local returnParameters = nil
+    local executionFlag = nil
+
+    if (filesystem.exists(scriptFullPath) == false) then
+      modem.send(responseAddress, port, false, "Script Not Exists")
+    elseif (filesystem.isDirectory(scriptFullPath) == true) then
+      modem.send(responseAddress, port, false, "Invalid File")
+    else
+      scriptParameters = {}
+      returnParameters = {}
+
+      for i = 8, #event do
+        table.insert(scriptParameters, event[i])
+      end
+
+      returnParameters = {xafcoreExecutor:runExternal(scriptFullPath, table.unpack(scriptParameters))}
+      executionFlag = table.remove(returnParameters, 1)
+
+      if (executionFlag == true) then
+        modem.send(responseAddress, port, true, "OK") -- This request does not return any result parameters.
+      else
+        modem.send(responseAddress, port, false, "Script Executor Error")
+      end
+    end
+  end
 
   return {
     private = private,

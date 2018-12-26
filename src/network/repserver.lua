@@ -198,6 +198,41 @@ function RepServer:initialize()
       end
     end
   end
+  
+  private.doScriptList = function(self, event)                                           -- [!] Function: doScriptList(event) - Retrieves full script list stored on REP server.
+    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")        -- [!] Parameter: event - Event table with received request object.
+
+    local modem = private.componentModem
+    local port = private.port
+    local responseAddress = event[3]
+    local scriptPath = private.serverPaths["rep_scripts"]
+    local scriptList = string.char(0) -- Next correct script paths are delimited by '//' characters.
+    local scriptData = ''
+
+    function getList(subPath, subLevel)
+      for item in filesystem.list(subPath) do
+        local pathString = filesystem.concat(subPath, item)
+        local pathSegments = {}
+
+        if (filesystem.isDirectory(pathString) == true) then
+          getList(pathString, subLevel + 1)
+        else
+          pathSegments = filesystem.segments(pathString)
+          scriptData = ''
+
+          for i = 1, subLevel do
+            scriptData = scriptData .. pathSegments[#pathSegments - subLevel + i] .. '/'
+          end
+
+          scriptData = string.sub(scriptData, 1, unicode.wlen(scriptData) - 1)
+          scriptList = scriptList .. scriptData .. string.char(0)
+        end
+      end
+    end
+
+    getList(scriptPath, 1)
+    modem.send(responseAddress, port, true, "OK", scriptList)
+  end
 
   return {
     private = private,

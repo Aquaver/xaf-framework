@@ -123,7 +123,7 @@ function RepServer:initialize()
     end
   end
   
-  private.doExecuteNoProtect = function(self, event)                                         -- [!] Function: doExecuteNoReturn(event) - Tries to run program (without default protection) with given parameter as its path - to use with custom execution error handler.
+  private.doExecuteNoProtect = function(self, event)                                         -- [!] Function: doExecuteNoProtect(event) - Tries to run program (without default protection) with given parameter as its path - to use with custom execution error handler.
     assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")            -- [!] Parameter: event - Event table with received request object.
 
     local modem = private.componentModem
@@ -232,6 +232,23 @@ function RepServer:initialize()
 
     getList(scriptPath, 1)
     modem.send(responseAddress, port, true, "OK", scriptList)
+  end
+  
+  private.prepareWorkspace = function(self, rootPath)                                                                           -- [!] Function: prepareWorkspace(rootPath) - Initializes the workspace for REP server.
+    assert(type(rootPath) == "string", "[XAF Network] Expected STRING as argument #1")                                          -- [!] Parameter: rootPath - REP server workspace tree root path string.
+                                                                                                                                -- [!] Return: 'true' - If all required directories have been prepared correctly.
+    private.serverPaths["rep_root"] = rootPath
+    private.serverPaths["rep_scripts"] = filesystem.concat(private.serverPaths["rep_root"], private.serverPaths["rep_scripts"])
+
+    if (filesystem.exists(private.serverPaths["rep_root"]) == false) then
+      filesystem.makeDirectory(private.serverPaths["rep_root"])
+    end
+
+    if (filesystem.exists(private.serverPaths["rep_scripts"]) == false) then
+      filesystem.makeDirectory(private.serverPaths["rep_scripts"])
+    end
+
+    return true
   end
 
   return {

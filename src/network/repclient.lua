@@ -21,6 +21,15 @@ function RepClient:initialize()
   local parent = client:extend()
   local private = (parent) and parent.private or {}
   local public = (parent) and parent.public or {}
+  
+  public.execute = function(self, scriptPath, ...)                                                   -- [!] Function: execute(scriptPath, ...) - Sends 'REP_EXECUTE' request type to the REP server.
+    assert(type(scriptPath) == "string", "[XAF Network] Expected STRING as argument #1")             -- [!] Parameter: scriptPath - Relative path of script to be parformed.
+                                                                                                     -- [!] Parameter: ... - Optional arguments passed to the target program.
+    local scriptRelativePath = scriptPath                                                            -- [!] Return: ... - Boolean flag of request status and optional returned arguments from executed script.
+    local scriptParameters = {...}
+
+    return private:sendRawRequest("REP_EXECUTE", scriptRelativePath, table.unpack(scriptParameters))
+  end
 
   return {
     private = private,

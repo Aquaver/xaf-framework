@@ -30,6 +30,15 @@ function RepClient:initialize()
 
     return private:sendRawRequest("REP_EXECUTE", scriptRelativePath, table.unpack(scriptParameters))
   end
+  
+  public.executeAbsolute = function(self, scriptPath, ...)                                                    -- [!] Function: executeAbsolute(scriptPath, ...) - Sends 'REP_EXECUTE_ABSOLUTE' request type to the REP server.
+    assert(type(scriptPath) == "string", "[XAF Network] Expected STRING as argument #1")                      -- [!] Parameter: scriptPath - Absolute path of the script to be execute, in entire server file tree.
+                                                                                                              -- [!] Parameter: ... - Optional arguments passed to the targed script.
+    local scriptAbsolutePath = scriptPath                                                                     -- [!] Return: ... - Boolean flag of request procession and optional returned values from performed program.
+    local scriptParameters = {...}
+
+    return private:sendRawRequest("REP_EXECUTE_ABSOLUTE", scriptAbsolutePath, table.unpack(scriptParameters))
+  end
 
   return {
     private = private,

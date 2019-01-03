@@ -39,6 +39,15 @@ function RepClient:initialize()
 
     return private:sendRawRequest("REP_EXECUTE_ABSOLUTE", scriptAbsolutePath, table.unpack(scriptParameters))
   end
+  
+  public.executeCommand = function(self, scriptCommand, ...)                                                -- [!] Function: executeCommand(scriptCommand, ...) - Sends 'REP_EXECUTE_COMMAND' request type to REP server.
+    assert(type(scriptCommand) == "string", "[XAF Network] Expected STRING as argument #1")                 -- [!] Parameter: scriptCommand - Name of given command to execute on the server.
+                                                                                                            -- [!] Parameter: ... - Optional arguments passed to the command.
+    local scriptCommandName = scriptCommand                                                                 -- [!] Return: ... - Response status and its message - this function does not return any values from execution.
+    local scriptParameters = {...}
+
+    return private:sendRawRequest("REP_EXECUTE_COMMAND", scriptCommandName, table.unpack(scriptParameters))
+  end
 
   return {
     private = private,

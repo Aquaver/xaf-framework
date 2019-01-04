@@ -48,6 +48,15 @@ function RepClient:initialize()
 
     return private:sendRawRequest("REP_EXECUTE_COMMAND", scriptCommandName, table.unpack(scriptParameters))
   end
+  
+  public.executeNoProtect = function(self, scriptPath, ...)                                                     -- [!] Function: executeNoProtect(scriptPath, ...) - Sends 'REP_EXECUTE_NO_PROTECT' request to the target REP server.
+    assert(type(scriptPath) == "string", "[XAF Network] Expected STRING as argument #1")                        -- [!] Parameter: scriptPath - Relative path of target script to be executed.
+                                                                                                                -- [!] Parameter: ... - Optional argument list passed to the script.
+    local scriptRelativePath = scriptPath                                                                       -- [!] Return: ... - Boolean flag of exeution status and optional returned argument list.
+    local scriptParameters = {...}
+
+    return private:sendRawRequest("REP_EXECUTE_NO_PROTECT", scriptRelativePath, table.unpack(scriptParameters))
+  end
 
   return {
     private = private,

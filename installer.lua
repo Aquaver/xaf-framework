@@ -32,7 +32,7 @@ sourceData = {"pm-source"}
 sourceModules["api"] = {"pm"}
 sourceModules["core"] = {"xafcore"}
 sourceModules["graphic"] = {"button", "checkbox", "component", "list", "passwordfield", "progressbar", "slider", "spinner", "switch", "textfield"}
-sourceModules["network"] = {"client", "dnsclient", "dnsserver", "dtpclient", "dtpserver", "ftpclient", "ftpserver", "server"}
+sourceModules["network"] = {"client", "dnsclient", "dnsserver", "dtpclient", "dtpserver", "ftpclient", "ftpserver", "repclient", "repserver", "server"}
 sourceModules["utility"] = {"bignumber", "httpstream", "jsonparser", "redstream"}
 
 -- Target installation directories in absolute paths.
@@ -121,7 +121,7 @@ end
 
 if (filesystem.exists(filesystem.concat(pathRoot, pathPackages)) == false) then
   print("    >> XAF PM application package directory does not exist, creating new one...")
-  filesystem.makeDirectory(filesystem.concat(pathRoot, pathProject, pathClasses))
+  filesystem.makeDirectory(filesystem.concat(pathRoot, pathPackages))
 end
 
 if (filesystem.exists(filesystem.concat(pathRoot, pathProject, pathClasses)) == false) then

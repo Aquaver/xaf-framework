@@ -50,6 +50,11 @@ Another component and integral part of XAF framework GUI library - the Spinner c
   * **Parameter:** `...` - Event task function arguments.
   * **Return:** `'true'` - If new event function has been changed properly.
 
+* **Function:** `setValue(newValue)` - Forces to change current spinner value (not index) independently on its type (counter or iterator).
+
+  * **Parameter:** `newValue` - New value to set - must belong to current set of spinner values.
+  * **Return:** `'true' or 'false'` - If the new value has been set correctly - 'false' on bad new value, which does not belong to current set.
+
 * **Function:** `view()` - Renders spinner on the screen.
 
   * **Return:** `'true'` - If the spinner has been rendered without errors.

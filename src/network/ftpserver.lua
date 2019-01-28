@@ -41,8 +41,8 @@ function FtpServer:initialize()
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local directoryPath = filesystem.canonical(event[7])
-    local directoryName = event[8]
+    local directoryPath = filesystem.canonical(event[8])
+    local directoryName = event[9]
     local fullDirectoryPath = filesystem.concat(private.serverPaths["ftp_storage"], private.mountPrefix, directoryPath)
     local fullNewDirectoryPath = filesystem.concat(fullDirectoryPath, directoryName)
     local controlMount_fullDirectoryPath = string.format(fullDirectoryPath, 1)
@@ -72,7 +72,7 @@ function FtpServer:initialize()
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local directoryPath = filesystem.canonical(event[7])
+    local directoryPath = filesystem.canonical(event[8])
     local fullDirectoryPath = filesystem.concat(private.serverPaths["ftp_storage"], private.mountPrefix, directoryPath)
     local controlMount_fullDirectoryPath = string.format(fullDirectoryPath, 1)
 
@@ -112,7 +112,7 @@ function FtpServer:initialize()
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local targetPath = filesystem.canonical(event[7])
+    local targetPath = filesystem.canonical(event[8])
     local fullTargetPath = filesystem.concat(private.serverPaths["ftp_storage"], private.mountPrefix, targetPath)
 
     if (private.fileBuffer[responseAddress]) then
@@ -141,7 +141,7 @@ function FtpServer:initialize()
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local targetPath = filesystem.canonical(event[7])
+    local targetPath = filesystem.canonical(event[8])
     local fullTargetPath = filesystem.concat(private.serverPaths["ftp_storage"], private.mountPrefix, targetPath)
     local controlMount_fullTargetPath = string.format(fullTargetPath, 1)
 
@@ -191,8 +191,8 @@ function FtpServer:initialize()
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local moveFile = filesystem.canonical(event[7])
-    local movePath = filesystem.canonical(event[8])
+    local moveFile = filesystem.canonical(event[8])
+    local movePath = filesystem.canonical(event[9])
     local fullMoveFile = filesystem.concat(private.serverPaths["ftp_storage"], private.mountPrefix, moveFile)
     local fullMovePath = filesystem.concat(private.serverPaths["ftp_storage"], private.mountPrefix, movePath)
     local controlMount_fullMoveFile = string.format(fullMoveFile, 1)
@@ -226,7 +226,7 @@ function FtpServer:initialize()
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local filePath = filesystem.canonical(event[7])
+    local filePath = filesystem.canonical(event[8])
     local fullFilePath = filesystem.concat(private.serverPaths["ftp_storage"], private.mountPrefix, filePath)
     local controlMount_fullFilePath = string.format(fullFilePath, 1)
 
@@ -249,8 +249,8 @@ function FtpServer:initialize()
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local filePath = filesystem.canonical(event[7])
-    local newName = event[8]
+    local filePath = filesystem.canonical(event[8])
+    local newName = event[9]
     local fullFilePath = filesystem.concat(private.serverPaths["ftp_storage"], private.mountPrefix, filePath)
     local controlMount_fullFilePath = string.format(fullFilePath, 1)
 
@@ -293,9 +293,9 @@ function FtpServer:initialize()
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local directoryPath = filesystem.canonical(event[7])
-    local fileName = event[8]
-    local fileDataChunk = event[9]
+    local directoryPath = filesystem.canonical(event[8])
+    local fileName = event[9]
+    local fileDataChunk = event[10]
     local fullDirectoryPath = filesystem.concat(private.serverPaths["ftp_storage"], private.mountPrefix, directoryPath)
     local fullFilePath = filesystem.concat(fullDirectoryPath, fileName)
 
@@ -318,8 +318,8 @@ function FtpServer:initialize()
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local directoryPath = filesystem.canonical(event[7])
-    local fileName = event[8]
+    local directoryPath = filesystem.canonical(event[8])
+    local fileName = event[9]
     local fullDirectoryPath = filesystem.concat(private.serverPaths["ftp_storage"], private.mountPrefix, directoryPath)
     local fullFilePath = filesystem.concat(fullDirectoryPath, fileName)
     local controlMount_fullDirectoryPath = string.format(fullDirectoryPath, 1)
@@ -351,8 +351,8 @@ function FtpServer:initialize()
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local directoryPath = filesystem.canonical(event[7])
-    local fileName = event[8]
+    local directoryPath = filesystem.canonical(event[8])
+    local fileName = event[9]
     local fullDirectoryPath = filesystem.concat(private.serverPaths["ftp_storage"], private.mountPrefix, directoryPath)
     local fullFilePath = filesystem.concat(fullDirectoryPath, fileName)
 
@@ -465,28 +465,36 @@ function FtpServer:initialize()
       if (modem) then
         if (event[1] == "modem_message") then
           if (event[2] == address and event[4] == port) then
-            local requestName = event[6]
+            local clientVersion = event[6]
+            local serverVersion = _G._XAF._VERSION
+            local responseAddress = event[3]
+            local responsePort = event[4]
+            local requestName = event[7]
 
-            if (requestName == "FTP_DIRECTORY_CREATE") then
-              return true, private:doDirectoryCreate(event)
-            elseif (requestName == "FTP_DIRECTORY_LIST") then
-              return true, private:doDirectoryList(event)
-            elseif (requestName == "FTP_FILE_DOWNLOAD_CONTINUE") then
-              return true, private:doFileDownloadContinue(event)
-            elseif (requestName == "FTP_FILE_DOWNLOAD_START") then
-              return true, private:doFileDownloadStart(event)
-            elseif (requestName == "FTP_FILE_MOVE") then
-              return true, private:doFileMove(event)
-            elseif (requestName == "FTP_FILE_REMOVE") then
-              return true, private:doFileRemove(event)
-            elseif (requestName == "FTP_FILE_RENAME") then
-              return true, private:doFileRename(event)
-            elseif (requestName == "FTP_FILE_UPLOAD_CONTINUE") then
-              return true, private:doFileUploadContinue(event)
-            elseif (requestName == "FTP_FILE_UPLOAD_START") then
-              return true, private:doFileUploadStart(event)
-            elseif (requestName == "FTP_FILE_UPLOAD_STOP") then
-              return true, private:doFileUploadStop(event)
+            if (clientVersion == serverVersion) then
+              if (requestName == "FTP_DIRECTORY_CREATE") then
+                return true, private:doDirectoryCreate(event)
+              elseif (requestName == "FTP_DIRECTORY_LIST") then
+                return true, private:doDirectoryList(event)
+              elseif (requestName == "FTP_FILE_DOWNLOAD_CONTINUE") then
+                return true, private:doFileDownloadContinue(event)
+              elseif (requestName == "FTP_FILE_DOWNLOAD_START") then
+                return true, private:doFileDownloadStart(event)
+              elseif (requestName == "FTP_FILE_MOVE") then
+                return true, private:doFileMove(event)
+              elseif (requestName == "FTP_FILE_REMOVE") then
+                return true, private:doFileRemove(event)
+              elseif (requestName == "FTP_FILE_RENAME") then
+                return true, private:doFileRename(event)
+              elseif (requestName == "FTP_FILE_UPLOAD_CONTINUE") then
+                return true, private:doFileUploadContinue(event)
+              elseif (requestName == "FTP_FILE_UPLOAD_START") then
+                return true, private:doFileUploadStart(event)
+              elseif (requestName == "FTP_FILE_UPLOAD_STOP") then
+                return true, private:doFileUploadStop(event)
+              end
+            else
+              modem.send(responseAddress, responsePort, false, "XAF Version Mismatch")
             end
 
             return false

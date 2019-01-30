@@ -43,6 +43,7 @@ This class implements very important type of protocol - File Transfer Protocol, 
   * `New Name Already Occupied` - received when trying to rename a file with name, that was being used by another file (or directory).
   * `Path Is Not A Directory` - sent by server on attempt to move, view list (or upload) a file to target path, that is not a directory - sending file 'to file'.
   * `Path Not Exists` - another generic message received when trying to create directory into on path, which does not exist.
+  * `XAF Version Mismatch` - sent on XAF versions incompatibility on server and client machines.
   * `OK` - message received on proper request.
   * `OK (Next)` - special case message received when 'continue downloading' but there is more data assigned to this file in server's buffer. That means you should do downloading request again to get entire file.
   * `OK (Stop)` - special case message received on 'continue downloading' while there is **no** more data in its buffer - file has been completely transferred.

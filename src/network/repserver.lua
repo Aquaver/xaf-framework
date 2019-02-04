@@ -28,14 +28,14 @@ function RepServer:initialize()
   private.serverPaths = {}
   private.serverPaths["rep_root"] = '/'
   private.serverPaths["rep_scripts"] = "REP_SCRIPTS"
-  
+
   private.doExecute = function(self, event)                                                    -- [!] Function: doExecute(event) - Tries to execute script with given parameter as path.
     assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")              -- [!] Parameter: event - Event table with received request object.
 
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local scriptPath = filesystem.canonical(event[7])
+    local scriptPath = filesystem.canonical(event[8])
     local scriptFullPath = filesystem.concat(private.serverPaths["rep_scripts"], scriptPath)
     local scriptParameters = nil
     local returnParameters = nil
@@ -49,7 +49,7 @@ function RepServer:initialize()
       scriptParameters = {}
       returnParameters = {}
 
-      for i = 8, #event do
+      for i = 9, #event do
         table.insert(scriptParameters, event[i])
       end
 
@@ -63,14 +63,14 @@ function RepServer:initialize()
       end
     end
   end
-  
+
   private.doExecuteAbsolute = function(self, event)                                                -- [!] Function: doExecuteAbsolute(event) - Tries to execute program with given parameter as absolute path in server file tree.
     assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")                  -- [!] Parameter: event - Event table with received request object.
 
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local scriptPath = filesystem.canonical(event[7])
+    local scriptPath = filesystem.canonical(event[8])
     local scriptParameters = nil
     local returnParameters = nil
     local executionFlag = nil
@@ -83,7 +83,7 @@ function RepServer:initialize()
       scriptParameters = {}
       returnParameters = {}
 
-      for i = 8, #event do
+      for i = 9, #event do
         table.insert(scriptParameters, event[i])
       end
 
@@ -97,14 +97,14 @@ function RepServer:initialize()
       end
     end
   end
-  
+
   private.doExecuteCommand = function(self, event)                                -- [!] Function: doExecuteCommand(event) - Tries to execute given program as shell command from root binaries directory.
     assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1") -- [!] Parameter: event - Event table with received request object.
 
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local scriptCommand = event[7]
+    local scriptCommand = event[8]
     local scriptParameters = nil
     local scriptLine = scriptCommand
     local scriptFullPath = filesystem.concat("bin", scriptCommand .. ".lua")
@@ -114,7 +114,7 @@ function RepServer:initialize()
     elseif (filesystem.isDirectory(scriptFullPath) == true) then
       modem.send(responseAddress, port, false, "Invalid File")
     else
-      for i = 8, #event do
+      for i = 9, #event do
         scriptLine = scriptLine .. ' ' .. tostring(event[i])
       end
 
@@ -122,14 +122,14 @@ function RepServer:initialize()
       modem.send(responseAddress, port, true, "OK")
     end
   end
-  
+
   private.doExecuteNoProtect = function(self, event)                                         -- [!] Function: doExecuteNoProtect(event) - Tries to run program (without default protection) with given parameter as its path - to use with custom execution error handler.
     assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")            -- [!] Parameter: event - Event table with received request object.
 
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local scriptPath = filesystem.canonical(event[7])
+    local scriptPath = filesystem.canonical(event[8])
     local scriptFullPath = filesystem.concat(private.serverPaths["rep_scripts"], scriptPath)
     local scriptParameters = nil
     local returnParameters = nil
@@ -152,7 +152,7 @@ function RepServer:initialize()
         scriptData = scriptFile:read(math.huge)
       end
 
-      for i = 8, #event do
+      for i = 9, #event do
         table.insert(scriptParameters, event[i])
       end
 
@@ -163,14 +163,14 @@ function RepServer:initialize()
       modem.send(responseAddress, port, true, "OK", table.unpack(returnParameters))
     end
   end
-  
+
   private.doExecuteNoReturn = function(self, event)                                                    -- [!] Function: doExecuteNoReturn(event) - Tries to execute script with passed path - it does not return result parameters.
     assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")                      -- [!] Parameter: event - Event table with received request object.
 
     local modem = private.componentModem
     local port = private.port
     local responseAddress = event[3]
-    local scriptPath = filesystem.canonical(event[7])
+    local scriptPath = filesystem.canonical(event[8])
     local scriptFullPath = filesystem.concat(private.serverPaths["rep_scripts"], scriptPath)
     local scriptParameters = nil
     local returnParameters = nil
@@ -184,7 +184,7 @@ function RepServer:initialize()
       scriptParameters = {}
       returnParameters = {}
 
-      for i = 8, #event do
+      for i = 9, #event do
         table.insert(scriptParameters, event[i])
       end
 
@@ -198,7 +198,7 @@ function RepServer:initialize()
       end
     end
   end
-  
+
   private.doScriptList = function(self, event)                                           -- [!] Function: doScriptList(event) - Retrieves full script list stored on REP server.
     assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")        -- [!] Parameter: event - Event table with received request object.
 
@@ -233,7 +233,7 @@ function RepServer:initialize()
     getList(scriptPath, 1)
     modem.send(responseAddress, port, true, "OK", scriptList)
   end
-  
+
   private.prepareWorkspace = function(self, rootPath)                                                                           -- [!] Function: prepareWorkspace(rootPath) - Initializes the workspace for REP server.
     assert(type(rootPath) == "string", "[XAF Network] Expected STRING as argument #1")                                          -- [!] Parameter: rootPath - REP server workspace tree root path string.
                                                                                                                                 -- [!] Return: 'true' - If all required directories have been prepared correctly.
@@ -250,7 +250,7 @@ function RepServer:initialize()
 
     return true
   end
-  
+
   public.process = function(self, event)                                             -- [!] Function: process(event) - Captures request and passes its object to proper handling function.
     assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")    -- [!] Parameter: event - Event table from OC Event API 'event.pull()' function which holds request object.
                                                                                      -- [!] Return: status, ... - Processing status as boolean flag and additional request values (unless NO_RETURN choosen).
@@ -262,20 +262,28 @@ function RepServer:initialize()
       if (modem) then
         if (event[1] == "modem_message") then
           if (event[2] == address and event[4] == port) then
-            local requestName = event[6]
+            local clientVersion = event[6]
+            local serverVersion = _G._XAF._VERSION
+            local responseAddress = event[3]
+            local responsePort = event[4]
+            local requestName = event[7]
 
-            if (requestName == "REP_EXECUTE") then
-              return true, private:doExecute(event)
-            elseif (requestName == "REP_EXECUTE_ABSOLUTE") then
-              return true, private:doExecuteAbsolute(event)
-            elseif (requestName == "REP_EXECUTE_COMMAND") then
-              return true, private:doExecuteCommand(event)
-            elseif (requestName == "REP_EXECUTE_NO_PROTECT") then
-              return true, private:doExecuteNoProtect(event)
-            elseif (requestName == "REP_EXECUTE_NO_RETURN") then
-              return true, private:doExecuteNoReturn(event)
-            elseif (requestName == "REP_SCRIPT_LIST") then
-              return true, private:doScriptList(event)
+            if (clientVersion == serverVersion) then
+              if (requestName == "REP_EXECUTE") then
+                return true, private:doExecute(event)
+              elseif (requestName == "REP_EXECUTE_ABSOLUTE") then
+                return true, private:doExecuteAbsolute(event)
+              elseif (requestName == "REP_EXECUTE_COMMAND") then
+                return true, private:doExecuteCommand(event)
+              elseif (requestName == "REP_EXECUTE_NO_PROTECT") then
+                return true, private:doExecuteNoProtect(event)
+              elseif (requestName == "REP_EXECUTE_NO_RETURN") then
+                return true, private:doExecuteNoReturn(event)
+              elseif (requestName == "REP_SCRIPT_LIST") then
+                return true, private:doScriptList(event)
+              end
+            else
+              modem.send(responseAddress, responsePort, false, "XAF Version Mismatch")
             end
 
             return false

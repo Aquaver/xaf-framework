@@ -15,6 +15,21 @@ local configTable = _G._XAF
 local configVersion = (configTable) and configTable._VERSION or ''
 
 if (options.h == true or options.help == true) then
+  print("----------------------------------")
+  print("-- XAF Package Manager - Manual --")
+  print("----------------------------------")
+  print("  >> NAME")
+  print("    >> xaf-pm check - Package update checking program")
+  print()
+  print("  >> SYNOPSIS")
+  print("    >> xaf-pm check")
+  print("    >> xaf-pm check [-h | --help]")
+  print("    >> xaf-pm check [-p | --package] <identifier>")
+  print()
+  print("  >> DESCRIPTION")
+  print("    >> This programs is used for checking remote version of installed package and returning information about update possibility.")
+
+  os.exit()
 end
 
 if (options.p == true or options.package == true) then

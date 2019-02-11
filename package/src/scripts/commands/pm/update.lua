@@ -16,6 +16,19 @@ local configTable = _G._XAF
 local configVersion = (configTable) and configTable._VERSION or ''
 
 if (options.h == true or options.help == true) then
+  print("----------------------------------")
+  print("-- XAF Package Manager - Manual --")
+  print("----------------------------------")
+  print("  >> NAME")
+  print("    >> xaf-pm update - Package updating program")
+  print()
+  print("  >> SYNOPSIS")
+  print("    >> xaf-pm update")
+  print("    >> xaf-pm update [-h | --help]")
+  print("    >> xaf-pm update [-p | --package] <identifier>")
+  print()
+  print("  >> DESCRIPTION")
+  print("    >> This script is designed to perform automatic download an update from original package source repository and installing it.")
 end
 
 if (options.p == true or options.package == true) then

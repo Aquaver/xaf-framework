@@ -355,6 +355,7 @@ if (options.p == true or options.package == true) then
             print("        >> Updating procedure has been interrupted")
 
             os.exit()
+          end
         end
       end
 

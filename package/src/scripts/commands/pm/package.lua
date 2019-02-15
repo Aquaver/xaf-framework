@@ -15,8 +15,6 @@ local xafcoreTable = xafcore:getTableInstance()
 
 local configTable = _G._XAF
 local configVersion = (configTable) and configTable._VERSION or ''
-local gpu = component.getPrimary("gpu")
-local gpuWidth, gpuHeight = gpu.getResolution()
 
 if (options.h == true or options.help == true) then
   print("----------------------------------")
@@ -203,9 +201,14 @@ if (options.a == true or options.add == true or options.i == true or options.inf
   end
 
   if (options.a == true or options.add == true) then
+    local infoName = "pm-update.info"
+    local infoPath = filesystem.concat(pathRoot, pathProject, pathData, infoName)
+    local infoDataTable = nil
     local packageIdentifier = arguments[1]
     local packageNameIndex = string.find(tostring(packageIdentifier), '/')
+    local packageCategory = (packageNameIndex) and string.sub(tostring(packageIdentifier), 1, packageNameIndex - 1)
     local packageName = (packageNameIndex) and string.sub(tostring(packageIdentifier), packageNameIndex + 1, -1) or ''
+    local selectedRepository = nil
 
     if (packageIdentifier == nil or packageNameIndex == nil) then
       print("    >> Invalid package identifier, must not be empty")
@@ -220,6 +223,19 @@ if (options.a == true or options.add == true or options.i == true or options.inf
       print("    >> Package with name '" .. packageName .. "' is already installed")
       print("    >> Remove it first with 'xaf-pm remove' before installing this one")
       print("    >> Installation procedure has been interrupted")
+
+      os.exit()
+    end
+
+    if (filesystem.exists(infoPath) == true) then
+      infoDataTable = xafcoreTable:loadFromFile(infoPath)
+    else
+      print("--------------------------------------")
+      print("-- XAF Package Manager - Controller --")
+      print("--------------------------------------")
+      print("  >> Cannot find the package source list file")
+      print("  >> Reinstall XAF package or download this file manually")
+      print("  >> Missing file name: " .. infoName)
 
       os.exit()
     end
@@ -263,6 +279,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
               if (option[3] == 89) then
                 print("        >> Installation confirmed, continuing...")
 
+                selectedRepository = repositoryIdentifier
                 sourceAddress = jsonTable["tree"][i]["url"]
                 inetAddress = jsonTable["tree"][i]["url"]
                 inetConnection = httpstream:new(inetComponent, inetAddress)
@@ -372,6 +389,18 @@ if (options.a == true or options.add == true or options.i == true or options.inf
                                           end
                                         end
                                       end
+
+                                      local infoFile = filesystem.open(infoPath, 'w')
+                                      local infoKey = packageName
+                                      local infoValue = selectedRepository .. ':' .. packageCategory
+
+                                      infoFile:write("[#] Extensible Application Framework Package Manager application source." .. '\n')
+                                      infoFile:write("[#] This file stores specific packages source identifiers which are used in updating." .. '\n')
+                                      infoFile:write("[#] Data represented in XAF Table Format." .. '\n' .. '\n')
+                                      infoFile:close()
+
+                                      infoDataTable[infoKey] = infoValue
+                                      xafcoreTable:saveToFile(infoDataTable, infoPath, true)
 
                                       print("              >> Successfully downloaded package '" .. packageIdentifier .. "' from repository: " .. repositoryIdentifier)
                                       print("              >> Downloaded package total size: " .. string.format("%.2f", sourceTotalSize / 1024) .. " kB")

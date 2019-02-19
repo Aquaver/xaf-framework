@@ -169,10 +169,10 @@ function Checkbox:initialize()
         renderer.fill(posX, posY, 1, height - 1, '│')
         renderer.fill(posX + width - 1, posY, 1, height - 1, '│')
         
-        renderer.set(posX, posY, '╭')
-        renderer.set(posX + width - 1, posY, '╮')
-        renderer.set(posX, posY + height - 1, '╰')
-        renderer.set(posX + width - 1, posY + height - 1, '╯')
+        renderer.set(posX, posY, '┌')
+        renderer.set(posX + width - 1, posY, '┐')
+        renderer.set(posX, posY + height - 1, '└')
+        renderer.set(posX + width - 1, posY + height - 1, '┘')
         
         if (private.showLabel == true) then
           renderer.set(posX + 4, posY, '┬')

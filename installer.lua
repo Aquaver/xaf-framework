@@ -46,7 +46,7 @@ local pathData = "data"
 -- XAF scripts directories (for initializing, controlling, et cetera).
 sourceScripts["bin"] = {"xaf", "xaf-pm"}
 sourceScripts["commands"] = {"check", "init", "list", "remove", "update"}
-sourceScripts["commands/pm"] = {"category", "list", "package", "repository", "run"}
+sourceScripts["commands/pm"] = {"category", "check", "list", "package", "repository", "run", "update"}
 
 -- Starting installation procedure.
 print("-----------------------------------------------------")

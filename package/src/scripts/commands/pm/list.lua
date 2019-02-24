@@ -46,10 +46,12 @@ print("  >> Use command with '-h' or '--help' option for its manual")
 
 listTable[1] = {
   "    >> xaf-pm category - Source repository category viewer.",
+  "    >> xaf-pm check - Automated package checking for update script.",
   "    >> xaf-pm list - Prints this command list.",
   "    >> xaf-pm package - Repository add-on packages manager.",
   "    >> xaf-pm repository - PM source repository managing program.",
-  "    >> xaf-pm run - Package executing (starting) script."
+  "    >> xaf-pm run - Package executing (starting) script.",
+  "    >> xaf-pm update - Package updating program."
 }
 
 for key, value in ipairs(listTable[listPage]) do

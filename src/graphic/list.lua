@@ -3,7 +3,7 @@
 -------------------------------
 -- [>] That class represents a list - component which allows showing multiple text lines in smaller place.
 -- [>] It also has a scrollbar which indicates current relative position in the list container.
--- [>] Furthermore that component allows selecting and deselecting specific text lines (single or multiple at once).
+-- [>] Furthermore that component allows selecting and deselecting specific text lines (single, multiple at once or even nothing for viewing only).
 -- [!] Accepted events: 'click', 'scroll'
 
 local component = require("xaf/graphic/component")
@@ -19,7 +19,8 @@ local List = {
   static = {
     SELECT_DEFAULT = 0, -- Constants used for choosing selection mode. They allow single or multiple selecting.
     SELECT_SINGLE = 1,
-    SELECT_MULTIPLE = 2
+    SELECT_MULTIPLE = 2,
+    SELECT_NOTHING = 3
   }
 }
 
@@ -39,6 +40,7 @@ function List:initialize()
   private.columns = 0
   private.rows = 0
   private.scrollbarPosition = 0
+  private.selectedItems = 0
   private.selectedKeys = {}
   private.selectedValues = {}
   private.selectionMode = 0
@@ -97,30 +99,40 @@ function List:initialize()
             local eventClick = private.eventClick
             local arguments = private.eventClickArguments
 
-            if (private.selectionMode == 0 or private.selectionMode == 1) then
+            if (private.selectionMode == 0 or private.selectionMode == 1) then -- Single (default) selection mode.
               local key = private.contentTableKeys[relativeClickLine]
               local value = private.contentTable[key]
 
               if (private.selectedKeys[relativeClickLine]) then
-                private.selectedKeys[relativeClickLine] = nil
-                private.selectedValues[relativeClickLine] = nil
+                private.selectedItems = 0 -- Reset entire content table - it is important when changing list selection mode.
+                private.selectedKeys = {}
+                private.selectedValues = {}
               else
                 private.selectedKeys = {}
                 private.selectedValues = {}
 
+                private.selectedItems = 1
                 private.selectedKeys[relativeClickLine] = key
                 private.selectedValues[relativeClickLine] = value
               end
-            elseif (private.selectionMode == 2) then
+            elseif (private.selectionMode == 2) then -- Multiple selection mode.
               local key = private.contentTableKeys[relativeClickLine]
               local value = private.contentTable[key]
 
               if (private.selectedKeys[relativeClickLine]) then
+                private.selectedItems = private.selectedItems - 1
                 private.selectedKeys[relativeClickLine] = nil
                 private.selectedValues[relativeClickLine] = nil
               else
+                private.selectedItems = private.selectedItems + 1
                 private.selectedKeys[relativeClickLine] = key
                 private.selectedValues[relativeClickLine] = value
+              end
+            elseif (private.selectionMode == 3) then -- Viewing (nothing) selection mode.
+              if (private.selectedItems > 0) then -- Reset all selections when the list has already selected items.
+                private.selectedItems = 0
+                private.selectedKeys = {}
+                private.selectedValues = {}
               end
             else
               error("[XAF Error] Invalid list selection mode")
@@ -203,6 +215,7 @@ function List:initialize()
     private.contentTable = {}
     private.contentTableKeys = {}
     private.scrollbarPosition = 0
+    private.selectedItems = 0
     private.selectedKeys = {}
     private.selectedValues = {}
 
@@ -247,7 +260,7 @@ function List:initialize()
     assert(type(mode) == "number", "[XAF Graphic] Expected NUMBER as argument #1")  -- [!] Parameter: mode - New selection mode (0 - default, 1 - single, 2 - multiple).
     assert(type(color) == "number", "[XAF Graphic] Expected NUMBER as argument #2") -- [!] Parameter: color - New selected line highlight color.
                                                                                     -- [!] Return: 'true' - If the new selection model has been set properly.
-    if (mode >= 0 and mode <= 2) then
+    if (mode >= 0 and mode <= 3) then
       private.selectionMode = mode
     else
       error("[XAF Error] Invalid list selection mode number")

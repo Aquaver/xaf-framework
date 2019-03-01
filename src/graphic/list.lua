@@ -164,17 +164,17 @@ function List:initialize()
             startPositionX = private.positionX
             startPositionY = private.positionY
             endPositionX = private.positionX + private.totalWidth - 1
-            endPositionY = private.positionX + private.totalHeight - 1
+            endPositionY = private.positionY + private.totalHeight - 1
           elseif (render <= 2) then
             startPositionX = private.positionX + 1
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 2
-            endPositionY = private.positionX + private.totalHeight - 2
+            endPositionY = private.positionY + private.totalHeight - 2
           elseif (render <= 3) then
             startPositionX = private.positionX + 2
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 3
-            endPositionY = private.positionX + private.totalHeight - 2
+            endPositionY = private.positionY + private.totalHeight - 2
           end
 
           if ((scrollX >= startPositionX and scrollX <= endPositionX)

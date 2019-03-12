@@ -20,7 +20,7 @@ if (options.h == true or options.help == true) then
   print()
   print("  >> DESCRIPTION")
   print("    >> This command is mainly used for getting more information about commands and keywords which allows controlling and managing the XAF package.")
-  
+
   os.exit()
 end
 
@@ -46,6 +46,7 @@ listTable[1] = {
   "    >> xaf check - Tries to check for potential updates.",
   "    >> xaf init - Initializes XAF package API. Always use before other commands.",
   "    >> xaf list - Prints this command list.",
+  "    >> xaf release - Retrieves XAF release data and prints it.",
   "    >> xaf remove - Uninstalls the XAF package with its API and configuration.",
   "    >> xaf update - Downloads XAF package in specified version and automatically installs it."
 }

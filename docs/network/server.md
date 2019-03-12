@@ -1,6 +1,6 @@
 # XAF Module - Network:Server
 
-Server module is the top-level class for all servers - passive network components (computers) which response on clients requests. It describes the default behavior for all servers - setting working network modem, port number and starting or stopping. Furthermore, on these two least actions, the server may perform task function (its called initialization or finalization respectively) that allow preparing server to work or for example closes all file handles before stopping and shutting the machine down.
+Server module is the top-level class for all servers - passive network components (computers) which response on clients requests. It describes the default behavior for all servers - setting working network modem, port number and starting or stopping. Furthermore, on these two least actions, the server may perform task function (its called initialization or finalization respectively) that allow preparing server to work or for example closes all file handles before stopping and shutting the machine down. **Important!** Each server should handle case of client version incompatibility - it means that the XAF version on server machine is not equal to the XAF version on client machine. It strongly recommended sending `false` response flag with `XAF Version Mismatch` fixed message to the client.
 
 ## Class documentation
 

@@ -39,6 +39,7 @@ Another XAF built-in useful network protocol called Data Transfer Protocol. In c
   * `Path Not Exists` - generic message received on trying to work with path does not exist.
   * `Table Already Exists` - feedback got when creating new table with name that was currently used by another table in directory.
   * `Table Not Exists` - message got on using table mechanisms (data get/set) on table that does not exist.
+  * `XAF Version Mismatch` - sent on XAF versions incompatibility on server and client machines.
   * `OK` - received as response on proper request.
 
 ## Method documentation

@@ -1,6 +1,6 @@
 # XAF Module - Network:FTPClient
 
-Client side version of XAF implemented File Transfer Protocol service. This class comes with all needed functions that are able to perform primary request types for remote file management like moving, removing, renaming, two-way file transferring (uploading and downloading) and obviously directory creating. Setting up and configuring the FTP client is much more simply than it could be imagined. You only need to get your computer's modem component and set the target server address and the client will do the rest. With implemented functions working with remote files is very easy. Moreover, the FTP server is fantastic solution to extend your computer's capacity and keep the files safe in the 'cloud'.
+Client side version of XAF implemented File Transfer Protocol service. This class comes with all needed functions that are able to perform primary request types for remote file management like moving, removing, renaming, directory tree listing, two-way file transferring (uploading and downloading) and obviously directory creating. Setting up and configuring the FTP client is much more simply than it could be imagined. You only need to get your computer's modem component and set the target server address and the client will do the rest. With implemented functions working with remote files is very easy. Moreover, the FTP server is fantastic solution to extend your computer's capacity and keep the files safe in the 'cloud'.
 
 ## Class documentation
 
@@ -20,6 +20,11 @@ Client side version of XAF implemented File Transfer Protocol service. This clas
   * **Parameter:** `path` - Path to parent directory, in which the new directory will be created.
   * **Parameter:** `name` - Name of new directory.
   * **Return:** `...` - Status and message of performed request.
+
+* **Function:** `directoryList(path)` - Sends 'FTP_DIRECTORY_LIST' request to the FTP server.
+
+  * **Parameter:** `path` - Path of parent target directory, of whose file list will be retrieved.
+  * **Return:** `...` - Status of request, its message and returned list data (on proper request).
 
 * **Function:** `fileDownload(remotePath, localDirectory, localName)` - Tries to download file from remote FTP server using two types of 'FTP_FILE_DOWNLOAD' request.
 

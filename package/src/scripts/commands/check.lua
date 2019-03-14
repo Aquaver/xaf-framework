@@ -4,7 +4,6 @@
 
 local arguments, options = ...
 local component = require("component")
-local filesystem = require("filesystem")
 local httpstream = require("xaf/utility/httpstream")
 local xafcore = require("xaf/core/xafcore")
 local xafcoreTable = xafcore:getTableInstance()
@@ -22,7 +21,7 @@ if (options.h == true or options.help == true) then
   print()
   print("  >> DESCRIPTION")
   print("    >> This program let the user check for package updates and notifies if it is available.")
-  
+
   os.exit()
 end
 
@@ -32,7 +31,7 @@ if (component.isAvailable("internet") == false) then
   print("---------------------------------------------------")
   print("  >> Internet card component is not available")
   print("  >> Checking for update procedure cannot be continued")
-  
+
   os.exit()
 else
   print("---------------------------------------------------")
@@ -45,28 +44,25 @@ end
 local sourceAddress = "https://raw.githubusercontent.com/Aquaver/xaf-framework/"
 local sourceReleaseBranch = "master"
 local sourcePackageInfo = "/package/package.info"
-local sourceTarget = "/aquaver.github.io/xaf-framework/package.info"
+local sourceData = ''
 
 local inetAddress = sourceAddress .. sourceReleaseBranch .. sourcePackageInfo
 local inetComponent = component.getPrimary("internet")
 local inetConnection = httpstream:new(inetComponent, inetAddress)
 
 if (inetConnection.connect() == true) then
-  local infoFile = filesystem.open(sourceTarget, 'w')
-  
   for dataChunk in inetConnection:getData() do
-    infoFile:write(dataChunk)
+    sourceData = sourceData .. dataChunk
   end
-  
+
   inetConnection.disconnect()
-  infoFile:close()
 else
   print("    >> Cannot connect to project repository")
   print("    >> Try running 'xaf check' again")
   os.exit()
 end
 
-local infoTable = xafcoreTable:loadFromFile(sourceTarget)
+local infoTable = xafcoreTable:loadFromString(sourceData)
 local infoName = infoTable.package_name
 local infoStable = infoTable.package_stable
 local infoVersion = infoTable.package_version
@@ -75,10 +71,11 @@ local localVersion = _G._XAF._VERSION
 if (infoVersion == localVersion) then
   print("    >> Installed package version is equal to latest version (" .. localVersion .. ')')
   print("    >> Thank you for keeping XAF up to date")
+  print("    >> Update checking procedure has been finished")
 else
   print("    >> New version detected (local: " .. localVersion .. ", remote: " .. infoVersion .. ')')
   print("    >> Use 'xaf update " .. infoVersion .. "' to download and install this version")
-  
+
   if (infoStable == "true") then
     print("      >> This version is marked as 'stable'")
     print("      >> All changes are fully backward compatible")
@@ -90,14 +87,6 @@ else
     print("      >> Please notify the author about that")
     print("      >> Thank you for your feedback")
   end
-end
 
-if (filesystem.exists(sourceTarget) == true) then
-  filesystem.remove(sourceTarget)
-  
-  print("    >> Package metadata file has been removed")
-  print("    >> Update checking procedure has been finished")
-else
-  print("    >> Package metadata file does not exist")
   print("    >> Update checking procedure has been finished")
 end

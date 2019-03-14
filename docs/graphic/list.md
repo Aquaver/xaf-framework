@@ -10,6 +10,7 @@ The list is first graphic component in XAF framework which has slightly more com
   * `SELECT_DEFAULT` - Constant used in `setSelectionModel(mode, color)` as `mode` parameter. It works the same as `SELECT_SINGLE` option.
   * `SELECT_SINGLE` - Constant used in `setSelectionModel(mode, color)` as `mode` parameter. When used, the list will accept only one selection at once, and automatically deselect the others.
   * `SELECT_MULTIPLE` - Constant used in `setSelectionModel(mode, color)` as `mode` parameter. With that option list will accept multiple selections simultaneously.
+  * `SELECT_NOTHING` - Constant used in `setSelectionModel(mode, color)` as `mode` parameter. It disables selecting completely and makes the list for viewing only. Although the `color` parameter is useless with this mode, it must be entered (zero `0` value is recommended).
 
 * **Constructor -** `List:new(positionX, positionY, columns, rows, showScroll)`
 * **Dependencies -** `Core:XAFCore`, `Graphic:Component`

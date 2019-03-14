@@ -18,26 +18,35 @@ local systemVersion = string.sub(systemIdentifier, systemDelimiter)
 
 -- General XAF package installation properties.
 local sourceProject = "https://raw.githubusercontent.com/Aquaver/xaf-framework/"
-local sourceVersion = "1.0.2"
+local sourceVersion = "1.1.0"
 local sourcePackage = "/package"
+local sourcePackageData = "/data"
+local sourceData = {}
 local sourceModules = {}
 local sourceScripts = {}
 
+-- Project required data (tables, constants, et cetera).
+sourceData = {"pm-source"}
+
 -- Project module table tree with file names.
+sourceModules["api"] = {"pm"}
 sourceModules["core"] = {"xafcore"}
 sourceModules["graphic"] = {"button", "checkbox", "component", "list", "passwordfield", "progressbar", "slider", "spinner", "switch", "textfield"}
-sourceModules["network"] = {"client", "dnsclient", "dnsserver", "dtpclient", "dtpserver", "ftpclient", "ftpserver", "server"}
-sourceModules["utility"] = {"httpstream", "jsonparser", "redstream"}
+sourceModules["network"] = {"client", "dnsclient", "dnsserver", "dtpclient", "dtpserver", "ftpclient", "ftpserver", "repclient", "repserver", "server"}
+sourceModules["utility"] = {"bignumber", "httpstream", "jsonparser", "redstream"}
 
 -- Target installation directories in absolute paths.
 local pathRoot = "aquaver.github.io"
 local pathProject = "xaf-framework"
+local pathPackages = "xaf-packages"
 local pathClasses = "xaf"
 local pathScripts = "scripts"
+local pathData = "data"
 
 -- XAF scripts directories (for initializing, controlling, et cetera).
-sourceScripts["bin"] = {"xaf"}
+sourceScripts["bin"] = {"xaf", "xaf-pm"}
 sourceScripts["commands"] = {"check", "init", "list", "remove", "update"}
+sourceScripts["commands/pm"] = {"category", "check", "list", "package", "repository", "run", "update"}
 
 -- Starting installation procedure.
 print("-----------------------------------------------------")
@@ -72,7 +81,7 @@ end
 -- Checking internet card availability.
 if (component.isAvailable("internet") == true) then
   internet = component.getPrimary("internet")
-  
+
   print("    >> Internet card component found")
 else
   print("    >> Internet card component is not available")
@@ -93,14 +102,14 @@ else
   print("    >> Project directory already exists, replace it?")
   print("      >> Hit 'Y' to accept or 'N' to interrupt the installation")
   print("      >> Warning! It will delete current XAF package if it is already installed")
-  
+
   while (true) do
     local option = {event.pull("key_down")}
-    
+
     if (option[3] == 89) then
       filesystem.remove(filesystem.concat(pathRoot, pathProject))
       filesystem.makeDirectory(filesystem.concat(pathRoot, pathProject))
-      
+
       print("      >> Project directory replaced, continuing...")
       break
     elseif (option[3] == 78) then
@@ -110,9 +119,19 @@ else
   end
 end
 
+if (filesystem.exists(filesystem.concat(pathRoot, pathPackages)) == false) then
+  print("    >> XAF PM application package directory does not exist, creating new one...")
+  filesystem.makeDirectory(filesystem.concat(pathRoot, pathPackages))
+end
+
 if (filesystem.exists(filesystem.concat(pathRoot, pathProject, pathClasses)) == false) then
   print("    >> XAF package API directory does not exist, creating new one...")
   filesystem.makeDirectory(filesystem.concat(pathRoot, pathProject, pathClasses))
+end
+
+if (filesystem.exists(filesystem.concat(pathRoot, pathProject, pathData)) == false) then
+  print("    >> XAF package data directory does not exist, creating new one...")
+  filesystem.makeDirectory(filesystem.concat(pathRoot, pathProject, pathData))
 end
 
 if (filesystem.exists(filesystem.concat(pathRoot, pathProject, pathScripts)) == false) then
@@ -128,7 +147,7 @@ print("    >> q - Interrupt and exit the installation...")
 
 while (true) do
   local option = {event.pull("key_down")}
-  
+
   if (option[3] == 49) then
     print("      >> You chose the following package type: Minified source")
     packageType = "/min/"
@@ -144,6 +163,9 @@ while (true) do
 end
 
 -- Starting downloading and installation procedure.
+local dataAddress = sourceProject .. sourceVersion .. sourcePackage .. sourcePackageData
+local dataTarget = filesystem.concat(pathRoot, pathProject, pathData)
+local dataTotalSize = 0
 local scriptsAddress = sourceProject .. sourceVersion .. sourcePackage
 local scriptsTarget = filesystem.concat(pathRoot, pathProject, pathScripts)
 local scriptsTotalSize = 0
@@ -154,46 +176,81 @@ local sourceTotalSize = 0
 print("  >> Preparing to installation...")
 print("  >> Connecting to project repository...")
 
+for dataIdentifier, dataName in pairs(sourceData) do
+  local remotePath = dataAddress .. '/' .. dataName .. ".info"
+  local localPath = filesystem.concat(dataTarget, dataName .. ".info")
+  local connection = internet.request(remotePath)
+
+  print("    >> Downloading required data: " .. dataName)
+  os.sleep(1)
+
+  for i = 1, 3 do
+    if (connection.response()) then
+      local dataFile = filesystem.open(localPath, 'w')
+      local dataCode = connection.read(math.huge)
+      local dataSize = 0
+
+      while (dataCode) do
+        dataSize = dataSize + unicode.wlen(dataCode)
+        dataFile:write(dataCode)
+        dataCode = connection.read(math.huge)
+      end
+
+      dataTotalSize = dataTotalSize + dataSize
+      connection.close()
+      dataFile:close()
+
+      print("    >> Downloading data '" .. dataName .. "' finished (" .. string.format("%.2f", dataSize / 1024) .. " kB)")
+      break
+    else
+      print("      >> Cannot download, trying again...")
+      os.sleep(1)
+    end
+  end
+end
+
 for scriptType, scriptTable in pairs(sourceScripts) do
   local remotePath = scriptsAddress .. packageType .. pathScripts .. '/' .. scriptType
   local localPath = '/'
-  
+
   if (scriptType == "bin") then
     localPath = filesystem.concat(localPath, scriptType)
   elseif (scriptType == "commands") then
     localPath = filesystem.concat(localPath, scriptsTarget)
+  elseif (scriptType == "commands/pm") then
+    localPath = filesystem.concat(localPath, scriptsTarget, "pm")
   end
-  
+
   print("    >> Downloading script type: " .. scriptType)
-  
+
   if (filesystem.exists(localPath) == false) then
     filesystem.makeDirectory(localPath)
   end
-  
+
   for scriptIdentifier, scriptName in ipairs(scriptTable) do
     local internalRemote = remotePath .. '/' .. scriptName .. ".lua"
     local internalLocal = localPath .. '/' .. scriptName .. ".lua"
     local connection = internet.request(internalRemote)
-    
+
     print("      >> Downloading script: " .. scriptType .. '/' .. scriptName)
     os.sleep(1)
-    
+
     for i = 1, 3 do
       if (connection.response()) then
         local scriptFile = filesystem.open(internalLocal, 'w')
         local scriptCode = connection.read(math.huge)
         local scriptSize = 0
-        
+
         while (scriptCode) do
           scriptSize = scriptSize + unicode.wlen(scriptCode)
           scriptFile:write(scriptCode)
           scriptCode = connection.read(math.huge)
         end
-        
+
         scriptsTotalSize = scriptsTotalSize + scriptSize
         connection.close()
         scriptFile:close()
-        
+
         print("      >> Downloading script '" .. scriptType .. '/' .. scriptName .. "' finished (" .. string.format("%.2f", scriptSize / 1024) .. " kB)")
         break
       else
@@ -202,41 +259,41 @@ for scriptType, scriptTable in pairs(sourceScripts) do
       end
     end
   end
-  
+
   print("    >> Downloading script type '" .. scriptType .. "' finished")
 end
 
 for moduleName, moduleTable in pairs(sourceModules) do
   print("    >> Downloading module: " .. moduleName)
-  
+
   if (filesystem.exists(filesystem.concat(pathRoot, pathProject, pathClasses, moduleName)) == false) then
     filesystem.makeDirectory(filesystem.concat(pathRoot, pathProject, pathClasses, moduleName))
   end
-  
+
   for classIdentifier, className in ipairs(moduleTable) do
     local remotePath = sourceAddress .. moduleName .. '/' .. className .. ".lua"
     local localPath = sourceTarget .. '/' .. moduleName .. '/' .. className .. ".lua"
     local connection = internet.request(remotePath)
-    
+
     print("      >> Downloading class: " .. moduleName .. '/' .. className)
     os.sleep(1)
-    
+
     for i = 1, 3 do
       if (connection.response()) then
         local classFile = filesystem.open(localPath, 'w')
         local classCode = connection.read(math.huge)
         local classSize = 0
-        
+
         while (classCode) do
           classSize = classSize + unicode.wlen(classCode)
           classFile:write(classCode)
           classCode = connection.read(math.huge)
         end
-        
+
         sourceTotalSize = sourceTotalSize + classSize
         connection.close()
         classFile:close()
-        
+
         print("      >> Downloading class '" .. moduleName .. '/' .. className .. "' finished (" .. string.format("%.2f", classSize / 1024) .. " kB)")
         break
       else
@@ -245,17 +302,17 @@ for moduleName, moduleTable in pairs(sourceModules) do
       end
     end
   end
-  
+
   print("    >> Downloading module '" .. moduleName .. "' finished")
 end
 
 if (_G._XAF) then
   _G._XAF = nil
-  
+
   print("    >> XAF configuration table already exists")
   print("    >> Existing configuration table has been cleared")
 end
 
 print("  >> Installation completed")
-print("  >> Total downloaded data size: " .. string.format("%.2f", (sourceTotalSize + scriptsTotalSize) / 1024) .. " kB")
+print("  >> Total downloaded data size: " .. string.format("%.2f", (dataTotalSize + sourceTotalSize + scriptsTotalSize) / 1024) .. " kB")
 print("  >> Please initialize XAF before using it with 'xaf init' command")

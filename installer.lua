@@ -26,7 +26,7 @@ local sourceModules = {}
 local sourceScripts = {}
 
 -- Project required data (tables, constants, et cetera).
-sourceData = {"pm-source"}
+sourceData = {"pm-source", "pm-update"}
 
 -- Project module table tree with file names.
 sourceModules["api"] = {"pm"}

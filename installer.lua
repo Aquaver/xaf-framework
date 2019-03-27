@@ -18,7 +18,7 @@ local systemVersion = string.sub(systemIdentifier, systemDelimiter)
 
 -- General XAF package installation properties.
 local sourceProject = "https://raw.githubusercontent.com/Aquaver/xaf-framework/"
-local sourceVersion = "1.1.0"
+local sourceVersion = "1.1.1"
 local sourcePackage = "/package"
 local sourcePackageData = "/data"
 local sourceData = {}
@@ -26,7 +26,7 @@ local sourceModules = {}
 local sourceScripts = {}
 
 -- Project required data (tables, constants, et cetera).
-sourceData = {"pm-source"}
+sourceData = {"pm-source", "pm-update"}
 
 -- Project module table tree with file names.
 sourceModules["api"] = {"pm"}
@@ -45,7 +45,7 @@ local pathData = "data"
 
 -- XAF scripts directories (for initializing, controlling, et cetera).
 sourceScripts["bin"] = {"xaf", "xaf-pm"}
-sourceScripts["commands"] = {"check", "init", "list", "remove", "update"}
+sourceScripts["commands"] = {"check", "init", "list", "release", "remove", "update"}
 sourceScripts["commands/pm"] = {"category", "check", "list", "package", "repository", "run", "update"}
 
 -- Starting installation procedure.

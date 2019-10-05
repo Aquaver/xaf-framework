@@ -22,7 +22,7 @@ function PackageManager:initialize()
   local private = (parent) and parent.private or {}
   local public = (parent) and parent.public or {}
 
-  private.pathRoot = "aquaver.github.io"
+  private.pathRoot = "io.github.aquaver"
   private.pathPackage = ''
   private.pathPackages = "xaf-packages"
   private.pathPackageBinary = "_bin"

@@ -11,7 +11,7 @@ local configTable = _G._XAF
 local configVersion = (configTable) and configTable._VERSION or ''
 
 if (command) then
-  local pathRoot = "aquaver.github.io"
+  local pathRoot = "io.github.aquaver"
   local pathProject = "xaf-framework"
   local pathScripts = "scripts"
   

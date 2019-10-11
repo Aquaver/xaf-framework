@@ -6,7 +6,7 @@ local arguments, options = ...
 local filesystem = require("filesystem")
 
 local configTable = _G._XAF
-local pathRoot = "aquaver.github.io"
+local pathRoot = "io.github.aquaver"
 local pathProject = "xaf-framework"
 
 if (options.h == true or options.help == true) then

@@ -33,7 +33,7 @@ if (options.h == true or options.help == true) then
 end
 
 if (options.p == true or options.package == true) then
-  local pathRoot = "aquaver.github.io"
+  local pathRoot = "io.github.aquaver"
   local pathProject = "xaf-framework"
   local pathPackages = "xaf-packages"
   local pathData = "data"

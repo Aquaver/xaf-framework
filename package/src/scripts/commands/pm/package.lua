@@ -38,7 +38,7 @@ if (options.h == true or options.help == true) then
 end
 
 if (options.l == true or options.list == true or options.r == true or options.remove == true) then
-  local pathRoot = "aquaver.github.io"
+  local pathRoot = "io.github.aquaver"
   local pathPackages = "xaf-packages"
 
   if (options.l == true or options.list == true) then
@@ -160,7 +160,7 @@ if (options.l == true or options.list == true or options.r == true or options.re
 end
 
 if (options.a == true or options.add == true or options.i == true or options.info == true) then
-  local pathRoot = "aquaver.github.io"
+  local pathRoot = "io.github.aquaver"
   local pathProject = "xaf-framework"
   local pathPackages = "xaf-packages"
   local pathData = "data"
@@ -358,7 +358,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
                                       for j = 1, #jsonTable["tree"] do
                                         local objectPath = jsonTable["tree"][j]["path"]
                                         local objectType = jsonTable["tree"][j]["type"]
-                                        local pathRoot = "aquaver.github.io"
+                                        local pathRoot = "io.github.aquaver"
                                         local pathProject = "xaf-packages"
 
                                         if (objectType == "tree") then

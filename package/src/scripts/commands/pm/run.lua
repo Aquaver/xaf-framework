@@ -27,7 +27,7 @@ if (options.h == true or options.help == true) then
   os.exit()
 end
 
-local pathRoot = "aquaver.github.io"
+local pathRoot = "io.github.aquaver"
 local pathPackages = "xaf-packages"
 local pathPackageBin = "_bin"
 local pathPackageConfig = "_config"

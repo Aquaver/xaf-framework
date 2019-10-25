@@ -32,7 +32,7 @@ if (options.h == true or options.help == true) then
 end
 
 if (options.p == true or options.package == true) then
-  local pathRoot = "aquaver.github.io"
+  local pathRoot = "io.github.aquaver"
   local pathProject = "xaf-framework"
   local pathPackages = "xaf-packages"
   local pathData = "data"
@@ -226,7 +226,7 @@ if (options.p == true or options.package == true) then
                                 for j = 1, #jsonTable["tree"] do
                                   local objectPath = jsonTable["tree"][j]["path"]
                                   local objectType = jsonTable["tree"][j]["type"]
-                                  local pathRoot = "aquaver.github.io"
+                                  local pathRoot = "io.github.aquaver"
                                   local pathProject = "xaf-packages"
 
                                   if (objectType == "tree") then

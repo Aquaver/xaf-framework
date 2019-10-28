@@ -36,7 +36,7 @@ sourceModules["network"] = {"client", "dnsclient", "dnsserver", "dtpclient", "dt
 sourceModules["utility"] = {"bignumber", "httpstream", "jsonparser", "redstream"}
 
 -- Target installation directories in absolute paths.
-local pathRoot = "aquaver.github.io"
+local pathRoot = "io.github.aquaver"
 local pathProject = "xaf-framework"
 local pathPackages = "xaf-packages"
 local pathClasses = "xaf"

@@ -43,7 +43,7 @@ while (true) do
   end
 end
 
-local pathRoot = "aquaver.github.io"
+local pathRoot = "io.github.aquaver"
 local pathProject = "xaf-framework"
 local pathPackages = "xaf-packages"
 local pathBinaries = "bin"

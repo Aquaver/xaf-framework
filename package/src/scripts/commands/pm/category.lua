@@ -30,7 +30,7 @@ if (options.h == true or options.help == true) then
 end
 
 if (options.c == true or options.content == true or options.l == true or options.list == true) then
-  local pathRoot = "aquaver.github.io"
+  local pathRoot = "io.github.aquaver"
   local pathProject = "xaf-framework"
   local pathData = "data"
   local pathName = "pm-source.info"

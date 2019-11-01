@@ -64,15 +64,27 @@ function Spinner:initialize()
               event = private.eventClick
               arguments = private.eventClickArguments
 
-              if (private.contentIndex > 1) then
-                private.contentIndex = private.contentIndex - 1
+              if (private.spinnerMode == 2) then -- Reversed scrolling (click up) direction in 'MODE_ITERATOR' spinner mode.
+                if (private.contentIndex < private.contentLength) then
+                  private.contentIndex = private.contentIndex + 1
+                end
+              else
+                if (private.contentIndex > 1) then
+                  private.contentIndex = private.contentIndex - 1
+                end
               end
             elseif (clickX == private.positionX + private.columns + 6) then
               event = private.eventClick
               arguments = private.eventClickArguments
 
-              if (private.contentIndex < private.contentLength) then
-                private.contentIndex = private.contentIndex + 1
+              if (private.spinnerMode == 2) then -- Reversed scrolling (click down).
+                if (private.contentIndex > 1) then
+                  private.contentIndex = private.contentIndex - 1
+                end
+              else
+                if (private.contentIndex < private.contentLength) then
+                  private.contentIndex = private.contentIndex + 1
+                end
               end
             end
 
@@ -120,10 +132,18 @@ function Spinner:initialize()
             local event = private.eventScroll
             local arguments = private.eventScrollArguments
 
-            if (private.contentIndex > 1 and scrollDirection < 0) then
-              private.contentIndex = private.contentIndex - 1
-            elseif (private.contentIndex < private.contentLength and scrollDirection > 0) then
-              private.contentIndex = private.contentIndex + 1
+            if (private.spinnerMode == 2) then
+              if (private.contentIndex > 1 and scrollDirection > 0) then -- Reversed scrolling (scroll up).
+                private.contentIndex = private.contentIndex - 1
+              elseif (private.contentIndex < private.contentLength and scrollDirection < 0) then -- Reversed scrolling (scroll down).
+                private.contentIndex = private.contentIndex + 1
+              end
+            else
+              if (private.contentIndex > 1 and scrollDirection < 0) then
+                private.contentIndex = private.contentIndex - 1
+              elseif (private.contentIndex < private.contentLength and scrollDirection > 0) then
+                private.contentIndex = private.contentIndex + 1
+              end
             end
 
             public:setRenderMode(3)

@@ -593,7 +593,7 @@ function XafCore:getTextInstance()
         concatenatedString = concatenatedString .. tostring(value) .. concatenationLink
       end
 
-      concatenatedString = string.sub(concatenatedString, 1, unicode.wlen(concatenatedString) - 1)
+      concatenatedString = string.sub(concatenatedString, 1, unicode.wlen(concatenatedString) - unicode.wlen(concatenationLink))
       return concatenatedString
     else
       error("[XAF Error] Invalid concatenation mode")

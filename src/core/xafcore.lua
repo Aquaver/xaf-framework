@@ -656,19 +656,44 @@ function XafCore:getTextInstance()
     return paddedText
   end
 
-  public.split = function(self, text, delimiter)                                     -- [!] Function: split(text, delimiter) - Splits given string to tokens by given delimiters.
-    assert(type(text) == "string", "[XAF Core] Expected STRING as argument #1")      -- [!] Parameter: text - String data text to be split.
-    assert(type(delimiter) == "string", "[XAF Core] Expected STRING as argument #2") -- [!] Parameter: delimiter - String which contains set of delimiters to splitting (for space use - ' ').
-                                                                                     -- [!] Return: tokensTable - Table with split string as tokens.
-    local textString = text
-    local delimiterChars = (delimiter == '') and ' ' or delimiter
-    local tokensTable = {}
+  public.split = function(self, text, delimiter, ignoreEmpty)                            -- [!] Function: split(text, delimiter, ignoreEmpty) - Splits given string to tokens by given delimiter.
+    assert(type(text) == "string", "[XAF Core] Expected STRING as argument #1")          -- [!] Parameter: text - String data text to be split.
+    assert(type(delimiter) == "string", "[XAF Core] Expected STRING as argument #2")     -- [!] Parameter: delimiter - Delimiter string used for splitting, may be multicharacter.
+    assert(type(ignoreEmpty) == "boolean", "[XAF Core] Expected BOOLEAN as argument #3") -- [!] Parameter: ignoreEmpty - When 'true' value, ignores and discards found empty characters ('') between delimiters.
+                                                                                         -- [!] Return: tokenTable - Table with split string as tokens.
+    local inputLength = #text
+    local tokenIndex = 0
+    local tokenTable = {}
 
-    for token in string.gmatch(textString, "[^" .. delimiterChars .. "]+") do
-      table.insert(tokensTable, token)
+    while (true) do
+      local delimiterFirst, delimiterLast = string.find(text, delimiter, tokenIndex)
+
+      if (delimiterFirst and delimiterLast) then
+        local tokenString = string.sub(text, tokenIndex, delimiterFirst - 1)
+
+        if (tokenString == '') then
+          if (ignoreEmpty == false) then
+            table.insert(tokenTable, tokenString)
+          end
+        else
+          table.insert(tokenTable, tokenString)
+        end
+
+        tokenIndex = delimiterLast + 1
+      else
+        if (tokenIndex - 1 < inputLength) then
+          table.insert(tokenTable, string.sub(text, tokenIndex))
+        else
+          if (ignoreEmpty == false) then
+            table.insert(tokenTable, '')
+          end
+        end
+
+        break
+      end
     end
 
-    return tokensTable
+    return tokenTable
   end
 
   return public

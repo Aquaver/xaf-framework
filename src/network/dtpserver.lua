@@ -128,7 +128,7 @@ function DtpServer:initialize()
     elseif (moveObject == '' or moveObject == '/') then
       modem.send(responseAddress, port, false, "Access Denied")
     else
-      local pathSegments = xafcoreText:split(fullMoveObject, '/')
+      local pathSegments = xafcoreText:split(fullMoveObject, '/', true)
       local segmentsCount = #pathSegments
       local objectName = pathSegments[segmentsCount]
       local newObjectPath = filesystem.concat(fullMovePath, objectName)
@@ -177,7 +177,7 @@ function DtpServer:initialize()
     or xafcoreString:checkSpecialCharacter(newName) == true or xafcoreString:checkWhitespace(newName) == true) then
       modem.send(responseAddress, port, false, "Invalid Object New Name")
     else
-      local pathSegments = xafcoreText:split(fullObjectPath, '/')
+      local pathSegments = xafcoreText:split(fullObjectPath, '/', true)
       local segmentsCount = #pathSegments
       local newObjectPath = ''
 

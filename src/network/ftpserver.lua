@@ -207,7 +207,7 @@ function FtpServer:initialize()
     elseif (moveFile == '' or moveFile == '/') then
       modem.send(responseAddress, port, false, "Access Denied")
     else
-      local pathSegments = xafcoreText:split(fullMoveFile, '/')
+      local pathSegments = xafcoreText:split(fullMoveFile, '/', true)
       local segmentsCount = #pathSegments
       local fileName = pathSegments[segmentsCount]
       local newFilePath = filesystem.concat(fullMovePath, fileName)
@@ -262,7 +262,7 @@ function FtpServer:initialize()
     or xafcoreString:checkSpecialCharacter(newName) == true or xafcoreString:checkWhitespace(newName) == true) then
       modem.send(responseAddress, port, false, "Invalid File New Name")
     else
-      local pathSegments = xafcoreText:split(fullFilePath, '/')
+      local pathSegments = xafcoreText:split(fullFilePath, '/', true)
       local segmentsCount = #pathSegments
       local newFilePath = ''
       local controlMount_newFilePath = ''

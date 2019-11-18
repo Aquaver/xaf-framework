@@ -44,20 +44,33 @@ function TextField:initialize()
     local maxLine = private.rows
     local textLine = line
     local textTable = private.textTable
-    
+    local totalLength = private.columns + private.lineExtension
+    local lineLength = unicode.wlen(textTable[textLine])
+
     if (textLine <= maxLine) then
       local renderer = private.renderer
-      
+
       if (renderer) then
         local previousBackground = renderer.getBackground()
         local previousForeground = renderer.getForeground()
-        
+
         renderer.setBackground(private.colorBackground)
         renderer.setForeground(private.colorSelected)
-        
+
         renderer.set(posX + 2, posY + textLine, string.rep(' ', maxWidth))
-        renderer.set(posX + 2, posY + textLine, unicode.sub(textTable[textLine] .. '|', 1, maxWidth))
-        
+
+        if (lineLength < maxWidth) then
+          renderer.set(posX + 2, posY + textLine, unicode.sub(textTable[textLine] .. '|', 1, maxWidth))
+        else
+          local newText = textTable[textLine]
+
+          if (lineLength < totalLength) then
+            newText = newText .. '|'
+          end
+
+          renderer.set(posX + 2, posY + textLine, unicode.sub(newText, -maxWidth, -1))
+        end
+
         renderer.setBackground(previousBackground)
         renderer.setForeground(previousForeground)
       else
@@ -66,7 +79,7 @@ function TextField:initialize()
     else
       error("[XAF Error] Invalid text line number")
     end
-    
+
     return true
   end
   

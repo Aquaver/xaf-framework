@@ -32,6 +32,7 @@ function TextField:initialize()
   private.eventPaste = nil
   private.eventPasteArguments = {}
   private.fieldFocus = false
+  private.lineExtension = 0
   private.selectedLine = 0
   private.textTable = {}
   
@@ -93,7 +94,11 @@ function TextField:initialize()
   end
   
   public.getColorSelected = function(self) -- [!] Function: getColorSelected() - Returns text field selection (highlight) color.
-    return private.colorSelected           -- [!] Return: 'colorSelected' - Current text field highlight color as number.
+    return private.colorSelected           -- [!] Return: colorSelected - Current text field highlight color as number.
+  end
+  
+  public.getLineExtension = function(self) -- [!] Function: getLineExtension() - Returns current set line extension capacity value.
+    return private.lineExtension           -- [!] Return: lineExtension - Value of text line extended capacity (in characters).
   end
   
   public.getText = function(self) -- [!] Function: getText() - Returns text field content table.

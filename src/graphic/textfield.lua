@@ -105,6 +105,25 @@ function TextField:initialize()
     return private.textTable      -- [!] Return: textTable - Table with text content lines.
   end
   
+  public.getTrimmedText = function(self)                      -- [!] Function: getTrimmedText() - Returns text table trimmed trailing empty lines (nil or empty characters).
+    local textTable = private.textTable                       -- [!] Return: trimmedText - Value of text table without last empty lines.
+    local trimmedText = {}
+
+    for i = 1, #textTable do
+      table.insert(trimmedText, textTable[i])
+    end
+
+    for i = #textTable, 1, -1 do
+      if (trimmedText[i] == '' or trimmedText[i] == nil) then
+        trimmedText[i] = nil
+      else
+        break
+      end
+    end
+
+    return trimmedText
+  end
+  
   public.register = function(self, event)                                         -- [!] Function: register(event) - Registers the text field component in main event loop.
     assert(type(event) == "table", "[XAF Graphic] Expected TABLE as argument #1") -- [!] Parameter: event - Event object table from 'event.pull()' function in OC Event API.
                                                                                   -- [!] Return: ... - Results from event task functions if they have been registered.

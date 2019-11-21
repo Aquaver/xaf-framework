@@ -131,19 +131,19 @@ function TextField:initialize()
       if (event[1] == "clipboard") then
         local eventPaste = private.eventPaste
         local argumentsPaste = private.eventPasteArguments
-        
+
         if (private.fieldFocus == true) then
-          local lineLength = private.columns
+          local lineLength = private.columns + private.lineExtension
           local lineNumber = private.selectedLine
           local valueRaw = event[3]
           local value = string.gsub(valueRaw, "[\n]+", ' ')
           local rawLine = private.textTable[lineNumber]
           local oldLine = (rawLine == nil) and '' or tostring(rawLine)
           local newLine = oldLine .. value
-          
+
           private.textTable[lineNumber] = unicode.sub(newLine, 1, lineLength)
           private:refreshLine(lineNumber)
-          
+
           if (eventPaste) then
             return eventPaste(table.unpack(argumentsPaste))
           end
@@ -151,16 +151,16 @@ function TextField:initialize()
       elseif (event[1] == "key_down") then
         local eventKey = private.eventKey
         local argumentsKey = private.eventKeyArguments
-        
+
         if (private.fieldFocus == true) then
           local keyChar = event[3]
           local keyCode = event[4]
           local render = private.renderMode
-          
+
           if (keyCode == 28 or keyCode == 208) then -- Key code 28 (enter) or 208 (downwards arrow) will switch to line below.
             if (private.selectedLine < private.rows) then
               private.selectedLine = private.selectedLine + 1
-              
+
               public:setRenderMode(3)
               public:view()
               public:setRenderMode(render)
@@ -168,7 +168,7 @@ function TextField:initialize()
           elseif (keyCode == 200) then -- Key code 200 (upwards arrow) will switch to line above.
             if (private.selectedLine > 1) then
               private.selectedLine = private.selectedLine - 1
-              
+
               public:setRenderMode(3)
               public:view()
               public:setRenderMode(render)
@@ -179,21 +179,26 @@ function TextField:initialize()
               local rawLine = private.textTable[lineNumber]
               local oldLine = (rawLine == nil) and '' or tostring(rawLine)
               local newLine = unicode.sub(oldLine, 1, unicode.wlen(oldLine) - 1)
-              
-              private.textTable[lineNumber] = newLine
-              private:refreshLine(lineNumber)
+
+              if (oldLine == '' and lineNumber > 1) then
+                private.selectedLine = lineNumber - 1 -- Moves one line up when trying 'backspace' on empty line.
+                public:view()
+              else
+                private.textTable[lineNumber] = newLine
+                private:refreshLine(lineNumber)
+              end
             elseif (keyChar >= 32 and keyChar <= 126) then
-              local lineLength = private.columns
+              local lineLength = private.columns + private.lineExtension
               local lineNumber = private.selectedLine
               local rawLine = private.textTable[lineNumber]
               local oldLine = (rawLine == nil) and '' or tostring(rawLine)
               local newLine = oldLine .. string.char(keyChar)
-              
+
               private.textTable[lineNumber] = unicode.sub(newLine, 1, lineLength)
               private:refreshLine(lineNumber)
             end
           end
-          
+
           if (eventKey) then
             return eventKey(table.unpack(argumentsKey))
           end
@@ -202,7 +207,7 @@ function TextField:initialize()
         local eventClick = private.eventClick
         local argumentsClick = private.eventClickArguments
         local screenAddress = event[2]
-        
+
         if (screenAddress == private.renderer.getScreen()) then
           local clickX = event[3]
           local clickY = event[4]
@@ -211,26 +216,26 @@ function TextField:initialize()
           local startPositionY = 0
           local endPositionX = 0
           local endPositionY = 0
-          
+
           if (render <= 3) then
             startPositionX = private.positionX + 2
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 3
             endPositionY = private.positionY + private.totalHeight - 2
           end
-          
+
           if ((clickX >= startPositionX and clickX <= endPositionX)
           and (clickY >= startPositionY and clickY <= endPositionY)) then
             local absoluteLine = clickY
             local relativeLine = absoluteLine - private.positionY
-            
+
             private.fieldFocus = true
             private.selectedLine = relativeLine
-            
+
             public:setRenderMode(3)
             public:view()
             public:setRenderMode(render)
-            
+
             if (eventClick) then
               return eventClick(table.unpack(argumentsClick))
             end
@@ -238,7 +243,7 @@ function TextField:initialize()
             if (private.fieldFocus == true) then
               private.fieldFocus = false
               private.selectedLine = 0
-              
+
               public:setRenderMode(3)
               public:view()
               public:setRenderMode(render)

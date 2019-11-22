@@ -266,6 +266,19 @@ function TextField:initialize()
     return true
   end
   
+  public.setLineExtension = function(self, newValue)                                                  -- [!] Function: setLineExtension(newValue) - Extends total capacity of text line (in characters).
+    assert(type(newValue) == "number", "[XAF Graphic] Expected NUMBER as argument #1")                -- [!] Parameter: newValue - Value of line extension (0 to disable, math.huge for no limit).
+                                                                                                      -- [!] Return: 'true' - If new line extension value has been set.
+    if (xafcoreMath:checkNatural(newValue, false) == true) then
+      private.lineExtension = newValue
+      public:clear()
+    else
+      error("[XAF Error] Invalid new line extension value - must be natural number (including zero)")
+    end
+
+    return true
+  end
+  
   public.setOnClick = function(self, task, ...)                                        -- [!] Function: setOnClick(task, ...) - Changes response action on 'click' event.
     assert(type(task) == "function", "[XAF Graphic] Expected FUNCTION as argument #1") -- [!] Parameter: task - New task function.
                                                                                        -- [!] Parameter: ... - New task parameters.

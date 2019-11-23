@@ -318,21 +318,21 @@ function TextField:initialize()
   public.setText = function(self, text)                                          -- [!] Function: setText(text) - Sets new text field content table.
     assert(type(text) == "table", "[XAF Graphic] Expected TABLE as argument #1") -- [!] Parameter: text - Table with new text content table.
                                                                                  -- [!] Return: 'true' - If new text has been set correctly.
-    local textWidth = private.columns
+    local textWidth = private.columns + private.lineExtension
     local textLength = private.rows
     local textTable = {}
-    
+
     private.selectedLine = 0
     private.textTable = {}
-    
+
     for i = 1, textLength do
       local lineRaw = text[i]
       local line = (lineRaw == nil) and '' or unicode.sub(tostring(lineRaw), 1, textWidth)
-      
+
       table.insert(textTable, line)
       textLength = textLength + 1
     end
-    
+
     private.textTable = textTable
     return true
   end

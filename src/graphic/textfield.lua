@@ -339,7 +339,7 @@ function TextField:initialize()
   
   public.view = function(self)                                                                            -- [!] Function: view() - Renders text field on the screen.
     local renderer = private.renderer                                                                     -- [!] Return: 'true' - If the component has been rendered successfully.
-    
+
     if (renderer) then
       local columns = private.columns
       local rows = private.rows
@@ -350,53 +350,53 @@ function TextField:initialize()
       local previousBackground = renderer.getBackground()
       local previousForeground = renderer.getForeground()
       local render = private.renderMode
-      
+
       if (render <= 1) then
         renderer.setBackground(private.colorBackground)
         renderer.setForeground(private.colorBorder)
-        
+
         renderer.fill(posX, posY, width - 1, 1, '─')
         renderer.fill(posX, posY + height - 1, width - 1, 1, '─')
         renderer.fill(posX, posY, 1, height - 1, '│')
         renderer.fill(posX + width - 1, posY, 1, height - 1, '│')
-        
+
         renderer.set(posX, posY, '┌')
         renderer.set(posX + width - 1, posY, '┐')
         renderer.set(posX, posY + height - 1, '└')
         renderer.set(posX + width - 1, posY + height - 1, '┘')
       end
-      
+
       if (render <= 2) then
         renderer.setBackground(private.colorBackground)
-        
+
         renderer.fill(posX + 1, posY + 1, 1, rows, ' ')
         renderer.fill(posX + columns + 2, posY + 1, 1, rows, ' ')
       end
-      
+
       if (render <= 3) then
         local textLength = private.columns
         local textTable = private.textTable
-        
+
         renderer.setBackground(private.colorBackground)
         renderer.fill(posX + 2, posY + 1, columns, rows, ' ')
-        
-        for i = 1, textLength do
+
+        for i = 1, #textTable do
           local lineColor = (private.selectedLine == i) and private.colorSelected or private.colorContent
           local lineRaw = textTable[i]
           local line = (lineRaw == nil) and '' or tostring(lineRaw)
-          
-          if (unicode.wlen(line) < columns and private.selectedLine == i) then
-            line = line .. '|'
+
+          if (private.selectedLine == i) then
+            private:refreshLine(i)
+          else
+            renderer.setForeground(lineColor)
+            renderer.set(posX + 2, posY + i, unicode.sub(line, 1, textLength))
           end
-          
-          renderer.setForeground(lineColor)
-          renderer.set(posX + 2, posY + i, line)
         end
       end
-      
+
       renderer.setBackground(previousBackground)
       renderer.setForeground(previousForeground)
-      
+
       return true
     else
       error("[XAF Error] Component GPU renderer has not been initialized")

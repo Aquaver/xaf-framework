@@ -32,6 +32,7 @@ function TextField:initialize()
   private.eventPaste = nil
   private.eventPasteArguments = {}
   private.fieldFocus = false
+  private.lineExtension = 0
   private.selectedLine = 0
   private.textTable = {}
   
@@ -44,20 +45,33 @@ function TextField:initialize()
     local maxLine = private.rows
     local textLine = line
     local textTable = private.textTable
-    
+    local totalLength = private.columns + private.lineExtension
+    local lineLength = unicode.wlen(textTable[textLine])
+
     if (textLine <= maxLine) then
       local renderer = private.renderer
-      
+
       if (renderer) then
         local previousBackground = renderer.getBackground()
         local previousForeground = renderer.getForeground()
-        
+
         renderer.setBackground(private.colorBackground)
         renderer.setForeground(private.colorSelected)
-        
+
         renderer.set(posX + 2, posY + textLine, string.rep(' ', maxWidth))
-        renderer.set(posX + 2, posY + textLine, unicode.sub(textTable[textLine] .. '|', 1, maxWidth))
-        
+
+        if (lineLength < maxWidth) then
+          renderer.set(posX + 2, posY + textLine, unicode.sub(textTable[textLine] .. '|', 1, maxWidth))
+        else
+          local newText = textTable[textLine]
+
+          if (lineLength < totalLength) then
+            newText = newText .. '|'
+          end
+
+          renderer.set(posX + 2, posY + textLine, unicode.sub(newText, -maxWidth, -1))
+        end
+
         renderer.setBackground(previousBackground)
         renderer.setForeground(previousForeground)
       else
@@ -66,7 +80,7 @@ function TextField:initialize()
     else
       error("[XAF Error] Invalid text line number")
     end
-    
+
     return true
   end
   
@@ -80,11 +94,34 @@ function TextField:initialize()
   end
   
   public.getColorSelected = function(self) -- [!] Function: getColorSelected() - Returns text field selection (highlight) color.
-    return private.colorSelected           -- [!] Return: 'colorSelected' - Current text field highlight color as number.
+    return private.colorSelected           -- [!] Return: colorSelected - Current text field highlight color as number.
+  end
+  
+  public.getLineExtension = function(self) -- [!] Function: getLineExtension() - Returns current set line extension capacity value.
+    return private.lineExtension           -- [!] Return: lineExtension - Value of text line extended capacity (in characters).
   end
   
   public.getText = function(self) -- [!] Function: getText() - Returns text field content table.
     return private.textTable      -- [!] Return: textTable - Table with text content lines.
+  end
+  
+  public.getTrimmedText = function(self)                      -- [!] Function: getTrimmedText() - Returns text table trimmed trailing empty lines (nil or empty characters).
+    local textTable = private.textTable                       -- [!] Return: trimmedText - Value of text table without last empty lines.
+    local trimmedText = {}
+
+    for i = 1, #textTable do
+      table.insert(trimmedText, textTable[i])
+    end
+
+    for i = #textTable, 1, -1 do
+      if (trimmedText[i] == '' or trimmedText[i] == nil) then
+        trimmedText[i] = nil
+      else
+        break
+      end
+    end
+
+    return trimmedText
   end
   
   public.register = function(self, event)                                         -- [!] Function: register(event) - Registers the text field component in main event loop.
@@ -94,19 +131,19 @@ function TextField:initialize()
       if (event[1] == "clipboard") then
         local eventPaste = private.eventPaste
         local argumentsPaste = private.eventPasteArguments
-        
+
         if (private.fieldFocus == true) then
-          local lineLength = private.columns
+          local lineLength = private.columns + private.lineExtension
           local lineNumber = private.selectedLine
           local valueRaw = event[3]
           local value = string.gsub(valueRaw, "[\n]+", ' ')
           local rawLine = private.textTable[lineNumber]
           local oldLine = (rawLine == nil) and '' or tostring(rawLine)
           local newLine = oldLine .. value
-          
+
           private.textTable[lineNumber] = unicode.sub(newLine, 1, lineLength)
           private:refreshLine(lineNumber)
-          
+
           if (eventPaste) then
             return eventPaste(table.unpack(argumentsPaste))
           end
@@ -114,16 +151,16 @@ function TextField:initialize()
       elseif (event[1] == "key_down") then
         local eventKey = private.eventKey
         local argumentsKey = private.eventKeyArguments
-        
+
         if (private.fieldFocus == true) then
           local keyChar = event[3]
           local keyCode = event[4]
           local render = private.renderMode
-          
+
           if (keyCode == 28 or keyCode == 208) then -- Key code 28 (enter) or 208 (downwards arrow) will switch to line below.
             if (private.selectedLine < private.rows) then
               private.selectedLine = private.selectedLine + 1
-              
+
               public:setRenderMode(3)
               public:view()
               public:setRenderMode(render)
@@ -131,7 +168,7 @@ function TextField:initialize()
           elseif (keyCode == 200) then -- Key code 200 (upwards arrow) will switch to line above.
             if (private.selectedLine > 1) then
               private.selectedLine = private.selectedLine - 1
-              
+
               public:setRenderMode(3)
               public:view()
               public:setRenderMode(render)
@@ -142,21 +179,26 @@ function TextField:initialize()
               local rawLine = private.textTable[lineNumber]
               local oldLine = (rawLine == nil) and '' or tostring(rawLine)
               local newLine = unicode.sub(oldLine, 1, unicode.wlen(oldLine) - 1)
-              
-              private.textTable[lineNumber] = newLine
-              private:refreshLine(lineNumber)
+
+              if (oldLine == '' and lineNumber > 1) then
+                private.selectedLine = lineNumber - 1 -- Moves one line up when trying 'backspace' on empty line.
+                public:view()
+              else
+                private.textTable[lineNumber] = newLine
+                private:refreshLine(lineNumber)
+              end
             elseif (keyChar >= 32 and keyChar <= 126) then
-              local lineLength = private.columns
+              local lineLength = private.columns + private.lineExtension
               local lineNumber = private.selectedLine
               local rawLine = private.textTable[lineNumber]
               local oldLine = (rawLine == nil) and '' or tostring(rawLine)
               local newLine = oldLine .. string.char(keyChar)
-              
+
               private.textTable[lineNumber] = unicode.sub(newLine, 1, lineLength)
               private:refreshLine(lineNumber)
             end
           end
-          
+
           if (eventKey) then
             return eventKey(table.unpack(argumentsKey))
           end
@@ -165,7 +207,7 @@ function TextField:initialize()
         local eventClick = private.eventClick
         local argumentsClick = private.eventClickArguments
         local screenAddress = event[2]
-        
+
         if (screenAddress == private.renderer.getScreen()) then
           local clickX = event[3]
           local clickY = event[4]
@@ -174,26 +216,26 @@ function TextField:initialize()
           local startPositionY = 0
           local endPositionX = 0
           local endPositionY = 0
-          
+
           if (render <= 3) then
             startPositionX = private.positionX + 2
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 3
             endPositionY = private.positionY + private.totalHeight - 2
           end
-          
+
           if ((clickX >= startPositionX and clickX <= endPositionX)
           and (clickY >= startPositionY and clickY <= endPositionY)) then
             local absoluteLine = clickY
             local relativeLine = absoluteLine - private.positionY
-            
+
             private.fieldFocus = true
             private.selectedLine = relativeLine
-            
+
             public:setRenderMode(3)
             public:view()
             public:setRenderMode(render)
-            
+
             if (eventClick) then
               return eventClick(table.unpack(argumentsClick))
             end
@@ -201,7 +243,7 @@ function TextField:initialize()
             if (private.fieldFocus == true) then
               private.fieldFocus = false
               private.selectedLine = 0
-              
+
               public:setRenderMode(3)
               public:view()
               public:setRenderMode(render)
@@ -221,6 +263,19 @@ function TextField:initialize()
       error("[XAF Error] Invalid text field selection color number")
     end
     
+    return true
+  end
+  
+  public.setLineExtension = function(self, newValue)                                                  -- [!] Function: setLineExtension(newValue) - Extends total capacity of text line (in characters).
+    assert(type(newValue) == "number", "[XAF Graphic] Expected NUMBER as argument #1")                -- [!] Parameter: newValue - Value of line extension (0 to disable, math.huge for no limit).
+                                                                                                      -- [!] Return: 'true' - If new line extension value has been set.
+    if (xafcoreMath:checkNatural(newValue, false) == true) then
+      private.lineExtension = newValue
+      public:clear()
+    else
+      error("[XAF Error] Invalid new line extension value - must be natural number (including zero)")
+    end
+
     return true
   end
   
@@ -263,28 +318,28 @@ function TextField:initialize()
   public.setText = function(self, text)                                          -- [!] Function: setText(text) - Sets new text field content table.
     assert(type(text) == "table", "[XAF Graphic] Expected TABLE as argument #1") -- [!] Parameter: text - Table with new text content table.
                                                                                  -- [!] Return: 'true' - If new text has been set correctly.
-    local textWidth = private.columns
+    local textWidth = private.columns + private.lineExtension
     local textLength = private.rows
     local textTable = {}
-    
+
     private.selectedLine = 0
     private.textTable = {}
-    
+
     for i = 1, textLength do
       local lineRaw = text[i]
       local line = (lineRaw == nil) and '' or unicode.sub(tostring(lineRaw), 1, textWidth)
-      
+
       table.insert(textTable, line)
       textLength = textLength + 1
     end
-    
+
     private.textTable = textTable
     return true
   end
   
   public.view = function(self)                                                                            -- [!] Function: view() - Renders text field on the screen.
     local renderer = private.renderer                                                                     -- [!] Return: 'true' - If the component has been rendered successfully.
-    
+
     if (renderer) then
       local columns = private.columns
       local rows = private.rows
@@ -295,53 +350,53 @@ function TextField:initialize()
       local previousBackground = renderer.getBackground()
       local previousForeground = renderer.getForeground()
       local render = private.renderMode
-      
+
       if (render <= 1) then
         renderer.setBackground(private.colorBackground)
         renderer.setForeground(private.colorBorder)
-        
+
         renderer.fill(posX, posY, width - 1, 1, '─')
         renderer.fill(posX, posY + height - 1, width - 1, 1, '─')
         renderer.fill(posX, posY, 1, height - 1, '│')
         renderer.fill(posX + width - 1, posY, 1, height - 1, '│')
-        
+
         renderer.set(posX, posY, '┌')
         renderer.set(posX + width - 1, posY, '┐')
         renderer.set(posX, posY + height - 1, '└')
         renderer.set(posX + width - 1, posY + height - 1, '┘')
       end
-      
+
       if (render <= 2) then
         renderer.setBackground(private.colorBackground)
-        
+
         renderer.fill(posX + 1, posY + 1, 1, rows, ' ')
         renderer.fill(posX + columns + 2, posY + 1, 1, rows, ' ')
       end
-      
+
       if (render <= 3) then
         local textLength = private.columns
         local textTable = private.textTable
-        
+
         renderer.setBackground(private.colorBackground)
         renderer.fill(posX + 2, posY + 1, columns, rows, ' ')
-        
-        for i = 1, textLength do
+
+        for i = 1, #textTable do
           local lineColor = (private.selectedLine == i) and private.colorSelected or private.colorContent
           local lineRaw = textTable[i]
           local line = (lineRaw == nil) and '' or tostring(lineRaw)
-          
-          if (unicode.wlen(line) < columns and private.selectedLine == i) then
-            line = line .. '|'
+
+          if (private.selectedLine == i) then
+            private:refreshLine(i)
+          else
+            renderer.setForeground(lineColor)
+            renderer.set(posX + 2, posY + i, unicode.sub(line, 1, textLength))
           end
-          
-          renderer.setForeground(lineColor)
-          renderer.set(posX + 2, posY + i, line)
         end
       end
-      
+
       renderer.setBackground(previousBackground)
       renderer.setForeground(previousForeground)
-      
+
       return true
     else
       error("[XAF Error] Component GPU renderer has not been initialized")

@@ -182,7 +182,7 @@ for dataIdentifier, dataName in pairs(sourceData) do
   local connection = internet.request(remotePath)
 
   print("    >> Downloading required data: " .. dataName)
-  os.sleep(1)
+  os.sleep(0.5)
 
   for i = 1, 3 do
     if (connection.response()) then
@@ -204,7 +204,7 @@ for dataIdentifier, dataName in pairs(sourceData) do
       break
     else
       print("      >> Cannot download, trying again...")
-      os.sleep(1)
+      os.sleep(0.5)
     end
   end
 end
@@ -233,7 +233,7 @@ for scriptType, scriptTable in pairs(sourceScripts) do
     local connection = internet.request(internalRemote)
 
     print("      >> Downloading script: " .. scriptType .. '/' .. scriptName)
-    os.sleep(1)
+    os.sleep(0.5)
 
     for i = 1, 3 do
       if (connection.response()) then
@@ -255,7 +255,7 @@ for scriptType, scriptTable in pairs(sourceScripts) do
         break
       else
         print("        >> Cannot download, trying again...")
-        os.sleep(1)
+        os.sleep(0.5)
       end
     end
   end
@@ -276,7 +276,7 @@ for moduleName, moduleTable in pairs(sourceModules) do
     local connection = internet.request(remotePath)
 
     print("      >> Downloading class: " .. moduleName .. '/' .. className)
-    os.sleep(1)
+    os.sleep(0.5)
 
     for i = 1, 3 do
       if (connection.response()) then
@@ -298,7 +298,7 @@ for moduleName, moduleTable in pairs(sourceModules) do
         break
       else
         print("        >> Cannot download, trying again...")
-        os.sleep(1)
+        os.sleep(0.5)
       end
     end
   end

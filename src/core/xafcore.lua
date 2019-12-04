@@ -666,7 +666,7 @@ function XafCore:getTextInstance()
     local tokenTable = {}
 
     while (true) do
-      local delimiterFirst, delimiterLast = string.find(text, delimiter, tokenIndex)
+      local delimiterFirst, delimiterLast = string.find(text, delimiter, tokenIndex, true)
 
       if (delimiterFirst and delimiterLast) then
         local tokenString = string.sub(text, tokenIndex, delimiterFirst - 1)

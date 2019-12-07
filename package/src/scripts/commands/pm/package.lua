@@ -250,7 +250,9 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
       local inetAddress = targetAddress .. repositoryIdentifier .. targetSuffix .. targetFlag
       local inetComponent = component.getPrimary("internet")
+
       local inetConnection = httpstream:new(inetComponent, inetAddress)
+      inetConnection:setMaxTimeout(0.5)
 
       if (inetConnection:connect() == true) then
         local jsonData = ''
@@ -282,7 +284,9 @@ if (options.a == true or options.add == true or options.i == true or options.inf
                 selectedRepository = repositoryIdentifier
                 sourceAddress = jsonTable["tree"][i]["url"]
                 inetAddress = jsonTable["tree"][i]["url"]
+
                 inetConnection = httpstream:new(inetComponent, inetAddress)
+                inetConnection:setMaxTimeout(0.5)
 
                 if (inetConnection:connect() == true) then
                   jsonData = ''
@@ -302,6 +306,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
                     inetAddress = repositoryAddress .. repositoryIdentifier .. repositoryBranch .. repositoryPath
                     inetConnection = httpstream:new(inetComponent, inetAddress)
+                    inetConnection:setMaxTimeout(0.5)
 
                     if (inetConnection:connect() == true) then
                       local repositoryInfoData = ''
@@ -321,6 +326,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
                         inetAddress = dataAddress .. repositoryIdentifier .. dataBranch .. packageIdentifier .. dataPath
                         inetConnection = httpstream:new(inetComponent, inetAddress)
+                        inetConnection:setMaxTimeout(0.5)
 
                         if (inetConnection:connect() == true) then
                           local infoData = ''
@@ -343,6 +349,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
                                     inetAddress = sourceAddress .. targetFlag
                                     inetConnection = httpstream:new(inetComponent, inetAddress)
+                                    inetConnection:setMaxTimeout(0.5)
 
                                     if (inetConnection:connect() == true) then
                                       jsonData = ''
@@ -370,6 +377,8 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
                                           inetAddress = dataAddress .. repositoryIdentifier .. dataBranch .. packageIdentifier .. '/' .. objectPath
                                           inetConnection = httpstream:new(inetComponent, inetAddress)
+
+                                          inetConnection:setMaxTimeout(0.5)
                                           print("          >> Trying to download: " .. packageName .. '/' .. objectPath)
 
                                           if (inetConnection:connect() == true) then
@@ -512,7 +521,9 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
       local inetAddress = targetAddress .. repositoryIdentifier .. targetSuffix .. targetFlag
       local inetComponent = component.getPrimary("internet")
+
       local inetConnection = httpstream:new(inetComponent, inetAddress)
+      inetConnection:setMaxTimeout(0.5)
 
       if (inetConnection:connect() == true) then
         local jsonData = ''
@@ -531,6 +542,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
           if (jsonTable["tree"][i]["path"] == packageIdentifier) then
             inetAddress = jsonTable["tree"][i]["url"]
             inetConnection = httpstream:new(inetComponent, inetAddress)
+            inetConnection:setMaxTimeout(0.5)
 
             if (inetConnection:connect() == true) then
               jsonData = ''
@@ -550,6 +562,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
                 inetAddress = dataAddress .. repositoryIdentifier .. dataBranch .. packageIdentifier .. dataPath
                 inetConnection = httpstream:new(inetComponent, inetAddress)
+                inetConnection:setMaxTimeout(0.5)
 
                 if (inetConnection:connect() == true) then
                   local infoData = ''

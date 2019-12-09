@@ -15,6 +15,8 @@ local xafcoreTable = xafcore:getTableInstance()
 
 local configTable = _G._XAF
 local configVersion = (configTable) and configTable._VERSION or ''
+local gpu = component.getPrimary("gpu")
+local gpuWidth, gpuHeight = gpu.getResolution()
 
 if (options.h == true or options.help == true) then
   print("----------------------------------")

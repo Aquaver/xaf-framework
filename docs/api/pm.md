@@ -31,6 +31,10 @@ This class is the first in new `API` module group which contains classes that he
   * **Parameter:** `relativePath` - Relative path of given target file.
   * **Return:** `pathBinary` - Created absolute path of given target object file.
 
+* **Function:** `getPackageVersion()` - Returns detected package version.
+
+  * **Return:** `packageVersion` - Retrieved package version from its configuration file.
+
 * **Function:** `getTableValue(tableKey)` - Returns specified data value from XAF application data table of this package.
 
   * **Parameter:** `tableKey` - Table index (key) of data value you would like to get from.

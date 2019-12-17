@@ -127,7 +127,9 @@ if (options.p == true or options.package == true) then
 
     local inetAddress = targetAddress .. sourceRepository .. targetSuffix .. targetFlag
     local inetComponent = component.getPrimary("internet")
+
     local inetConnection = httpstream:new(inetComponent, inetAddress)
+    inetConnection:setMaxTimeout(0.5)
 
     if (inetConnection:connect() == true) then
       local jsonData = ''
@@ -150,7 +152,9 @@ if (options.p == true or options.package == true) then
           targetFound = true
           sourceAddress = jsonTable["tree"][i]["url"]
           inetAddress = jsonTable["tree"][i]["url"]
+
           inetConnection = httpstream:new(inetComponent, inetAddress)
+          inetConnection:setMaxTimeout(0.5)
 
           if (inetConnection:connect() == true) then
             jsonData = ''
@@ -170,6 +174,7 @@ if (options.p == true or options.package == true) then
 
               inetAddress = repositoryAddress .. sourceRepository .. repositoryBranch .. repositoryPath
               inetConnection = httpstream:new(inetComponent, inetAddress)
+              inetConnection:setMaxTimeout(0.5)
 
               if (inetConnection:connect() == true) then
                 local repositoryInfoData = ''
@@ -189,6 +194,7 @@ if (options.p == true or options.package == true) then
 
                   inetAddress = dataAddress .. sourceRepository .. dataBranch .. sourceCategory .. '/' .. packageString .. dataPath
                   inetConnection = httpstream:new(inetComponent, inetAddress)
+                  inetConnection:setMaxTimeout(0.5)
 
                   if (inetConnection:connect() == true) then
                     local infoData = ''
@@ -211,6 +217,7 @@ if (options.p == true or options.package == true) then
 
                               inetAddress = sourceAddress .. targetFlag
                               inetConnection = httpstream:new(inetComponent, inetAddress)
+                              inetConnection:setMaxTimeout(0.5)
 
                               if (inetConnection:connect() == true) then
                                 jsonData = ''
@@ -238,6 +245,8 @@ if (options.p == true or options.package == true) then
 
                                     inetAddress = dataAddress .. sourceRepository .. dataBranch .. sourceCategory .. '/' .. packageString .. '/' .. objectPath
                                     inetConnection = httpstream:new(inetComponent, inetAddress)
+
+                                    inetConnection:setMaxTimeout(0.5)
                                     print("          >> Trying to download: " .. packageString .. '/' .. objectPath)
 
                                     if (inetConnection:connect() == true) then
@@ -259,7 +268,7 @@ if (options.p == true or options.package == true) then
                                 end
 
                                 print("              >> Successfully downloaded updated version of package '" .. packageString .. "' from repository: " .. sourceRepository)
-                                print("              >> Downloaded package total size: " .. string.format("%.2f", sourceTotalSize / 1024) .. "kB")
+                                print("              >> Downloaded package total size: " .. string.format("%.2f", sourceTotalSize / 1024) .. " kB")
                                 print("              >> Are you sure to install this update?")
                                 print("              >> Hit 'Y' to confirm, or 'N' to abort and remove it")
                                 print("              >> Warning! It will delete entire current version of package with all its data")

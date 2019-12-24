@@ -23,7 +23,7 @@ if (options.h == true or options.help == true) then
   print()
   print("  >> DESCRIPTION")
   print("    >> This script is used in downloading and installing available package updates. It downloads installer program from specified version release and automatically executes it. The user is able to abort the process during installation.")
-  
+
   os.exit()
 end
 
@@ -34,7 +34,7 @@ if (version == nil) then
   print("  >> Invalid version identifier")
   print("  >> Use correct 'xaf update <version>' command syntax")
   print("  >> Use '-h' or '--help' option for command help")
-  
+
   os.exit()
 end
 
@@ -44,7 +44,7 @@ if (component.isAvailable("internet") == false) then
   print("---------------------------------------------------")
   print("  >> Internet card component not found")
   print("  >> Update process has been interrupted")
-  
+
   os.exit()
 else
   print("---------------------------------------------------")
@@ -59,19 +59,21 @@ local releaseAddress = "https://raw.githubusercontent.com/Aquaver/xaf-framework/
 local releaseInstaller = "/installer.lua"
 local internetAddress = releaseAddress .. version .. releaseInstaller
 local internetComponent = component.getPrimary("internet")
+
 local internetConnection = httpstream:new(internetComponent, internetAddress)
+internetConnection:setMaxTimeout(0.5)
 
 if (internetConnection:connect() == true) then
   local installerCode = ''
   local installerFunction = nil
-  
+
   for dataChunk in internetConnection:getData() do
     installerCode = installerCode .. dataChunk
   end
-  
+
   internetConnection:disconnect()
   installerFunction = load(installerCode)
-  
+
   print("    >> Loading installer...")
   xafcoreExecutor:run(installerFunction)
 else

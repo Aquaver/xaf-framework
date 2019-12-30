@@ -263,8 +263,10 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
     local inetAddress = targetAddress .. targetRepository .. targetPath
     local inetComponent = component.getPrimary("internet")
+
     local inetConnection = httpstream:new(inetComponent, inetAddress)
     local inetResponse = 0
+    inetConnection:setMaxTimeout(0.5)
 
     if (inetConnection:connect() == true) then
       local infoData = ''
@@ -366,8 +368,10 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
     local inetAddress = targetAddress .. targetRepository .. targetPath
     local inetComponent = component.getPrimary("internet")
+
     local inetConnection = httpstream:new(inetComponent, inetAddress)
     local inetResponse = 0
+    inetConnection:setMaxTimeout(0.5)
 
     if (inetConnection:connect() == true) then
       local infoData = ''

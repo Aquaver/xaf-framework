@@ -28,6 +28,20 @@ function JsonWriter:initialize()
   private.inputData = nil
   private.stringEscapes = {['\b'] = "\\b", ['\n'] = "\\n", ['\t'] = "\\t", ['\r'] = "\\r", ['\f'] = "\\f", ['\"'] = '\\"', ["\\"] = "\\\\"}
 
+  private.checkDataType = function(self, data)                                                                   -- [!] Function: checkDataType(data) - Checks input data type according to JSON.
+    if (type(data) == "boolean" or type(data) == "nil" or type(data) == "number" or type(data) == "string") then -- [!] Parameter: data - Input data with any type (may be nil).
+      return type(data)                                                                                          -- [!] Return: dataType - String name of checked data type (or nil on invalid data, for instance: Lua functions).
+    elseif (type(data) == "table") then
+      if (#data >= xafcoreTable:getLength(data)) then
+        return "array" -- Table has number indices only (JSON array).
+      else
+        return "object" -- Table has string type keys (JSON object).
+      end
+    else
+      return nil
+    end
+  end
+
   return {
     private = private,
     public = public

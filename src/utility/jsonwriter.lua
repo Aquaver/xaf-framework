@@ -42,6 +42,32 @@ function JsonWriter:initialize()
     end
   end
 
+  private.getValue = function(self, dataString, dataValue, messageErrorType)                           -- [!] Function: getValue(dataString, dataValue, messageErrorType) - Determines passed data type and tries to convert it to JSON string.
+    assert(type(dataString) == "string", "[XAF Core] Expected STRING as argument #1")                  -- [!] Parameter: dataString - Raw JSON string partially converted.
+    assert(type(messageErrorType) == "string", "[XAF Core] Expected STRING as argument #3")            -- [!] Parameter: dataValue - Next data value to convert.
+                                                                                                       -- [!] Parameter: messageErrorType - Internal value to determine where the error occured.
+    local valueRaw = dataValue                                                                         -- [!] Return: dataString - Partially converted JSON data string.
+    local valueType = private:checkDataType(valueRaw)
+
+    if (valueType == "array") then
+      dataString = dataString .. private:writeArray(valueRaw)
+    elseif (valueType == "boolean") then
+      dataString = dataString .. private:writeBoolean(valueRaw)
+    elseif (valueType == "nil") then
+      dataString = dataString .. private:writeNull(valueRaw)
+    elseif (valueType == "number") then
+      dataString = dataString .. private:writeNumber(valueRaw)
+    elseif (valueType == "object") then
+      dataString = dataString .. private:writeObject(valueRaw)
+    elseif (valueType == "string") then
+      dataString = dataString .. private:writeString(valueRaw)
+    else
+      error("[XAF Error] Invalid data type occured while writing JSON - parsing " .. messageErrorType)
+    end
+
+    return dataString
+  end
+
   return {
     private = private,
     public = public

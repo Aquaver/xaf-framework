@@ -67,6 +67,37 @@ function JsonWriter:initialize()
 
     return dataString
   end
+  
+  private.removeWhitespaces = function(self, jsonString)                                 -- [!] Function: removeWhitespaces(jsonString) - Minifies the JSON string on input by removing all whitespaces (except in string literals).
+    local currentCharacter = ''                                                          -- [!] Parameter: jsonString - Input JSON string to minify.
+    local previousCharacter = ''                                                         -- [!] Return: transformedString - Minified JSON string, ready to output.
+    local stringLiteral = false
+    local totalLength = unicode.wlen(jsonString)
+    local transformedString = ''
+
+    for i = 1, totalLength do
+      currentCharacter = string.sub(jsonString, i, i)
+
+      if (currentCharacter == '\"') then
+        if (previousCharacter == "\\") then
+          transformedString = transformedString .. previousCharacter .. currentCharacter
+        else
+          stringLiteral = (not stringLiteral)
+          transformedString = transformedString .. currentCharacter
+        end
+      elseif (string.find(currentCharacter, "%s")) then
+        if (stringLiteral == true) then
+          transformedString = transformedString .. currentCharacter
+        end
+      else
+        transformedString = transformedString .. currentCharacter
+      end
+
+      previousCharacter = currentCharacter
+    end
+
+    return transformedString
+  end
 
   return {
     private = private,

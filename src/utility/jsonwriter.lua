@@ -98,6 +98,29 @@ function JsonWriter:initialize()
 
     return transformedString
   end
+  
+  private.writeArray = function(self, inputArray)                                         -- [!] Function: writeArray(inputArray) - Converts array raw data to proper JSON string.
+    assert(type(inputArray) == "table", "[XAF Core] Expected TABLE as argument #1")       -- [!] Parameter: inputArray - Input data to convert.
+                                                                                          -- [!] Return: stringArray - Converted string from input array data.
+    local stringArray = ''
+    stringArray = stringArray .. '[' .. '\n'
+    private.currentIndent = private.currentIndent + private.indentSize -- Shift one level more (up) nested indentation.
+
+    for i = 1, #inputArray do
+      stringArray = stringArray .. string.rep(' ', private.currentIndent)
+      stringArray = private:getValue(stringArray, inputArray[i], "array", true)
+      stringArray = stringArray .. ',' .. '\n'
+    end
+
+    if (#inputArray > 0) then
+      stringArray = string.sub(stringArray, 1, -3)
+    end
+
+    private.currentIndent = private.currentIndent - private.indentSize -- Shift one level less (down) nested indentation.
+    stringArray = stringArray .. '\n' .. string.rep(' ', private.currentIndent) .. ']'
+
+    return stringArray
+  end
 
   return {
     private = private,

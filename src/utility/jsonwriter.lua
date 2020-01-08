@@ -121,6 +121,12 @@ function JsonWriter:initialize()
 
     return stringArray
   end
+  
+  private.writeBoolean = function(self, inputBoolean)                                     -- [!] Function: writeBoolean(inputBoolean) - Converts boolean raw data to proper JSON string.
+    assert(type(inputBoolean) == "boolean", "[XAF Core] Expected BOOLEAN as argument #1") -- [!] Parameter: inputBoolean - Input data to convert.
+                                                                                          -- [!] Return: stringBoolean - Converted string from input boolean data.
+    return tostring(inputBoolean)
+  end
 
   return {
     private = private,

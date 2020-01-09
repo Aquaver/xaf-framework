@@ -127,6 +127,12 @@ function JsonWriter:initialize()
                                                                                           -- [!] Return: stringBoolean - Converted string from input boolean data.
     return tostring(inputBoolean)
   end
+  
+  private.writeNull = function(self, inputNull)                                -- [!] Function: writeNull(inputNull) - Converts null raw data to proper JSON string.
+    assert(type(inputNull) == "nil", "[XAF Core] Expected NIL as argument #1") -- [!] Parameter: inputNull - Input data to convert.
+                                                                               -- [!] Return: stringNull - Converted string from input nil (null) data.
+    return "null"
+  end
 
   return {
     private = private,

@@ -133,6 +133,18 @@ function JsonWriter:initialize()
                                                                                -- [!] Return: stringNull - Converted string from input nil (null) data.
     return "null"
   end
+  
+  private.writeNumber = function(self, inputNumber)                                    -- [!] Function: writeNumber(inputNumber) - Converts number raw data to proper JSON string.
+    assert(type(inputNumber) == "number", "[XAF Core] Expected NUMBER as argument #1") -- [!] Parameter: inputNumber - Input data to convert.
+                                                                                       -- [!] Return: stringNumber - Converted string from input number data (or null on infinite or NaN).
+    if (inputNumber == math.huge or
+        inputNumber == -math.huge or
+        inputNumber ~= inputNumber) then -- NaN (not a number) detected.
+          return "null" -- JSON treats infinites and NaNs as null.
+    end
+
+    return tostring(inputNumber)
+  end
 
   return {
     private = private,

@@ -145,6 +145,33 @@ function JsonWriter:initialize()
 
     return tostring(inputNumber)
   end
+  
+  private.writeObject = function(self, inputObject)                                                                        -- [!] Function: writeObject(inputObject) - Converts object raw data to proper JSON string.
+    assert(type(inputObject) == "table", "[XAF Core] Expected TABLE as argument #1")                                       -- [!] Parameter: inputObject - Input data to convert.
+                                                                                                                           -- [!] Return: stringObject - Converted string from input object data.
+    local stringObject = ''
+    stringObject = stringObject .. '{' .. '\n'
+    private.currentIndent = private.currentIndent + private.indentSize
+
+    for key, value in xafcoreTable:sortByKey(inputObject, false) do
+      if (type(key) == "string") then
+        stringObject = stringObject .. string.rep(' ', private.currentIndent)
+        stringObject = stringObject .. private:writeString(key)
+        stringObject = stringObject .. ": "
+
+        stringObject = private:getValue(stringObject, value, "object")
+        stringObject = stringObject .. ',' .. '\n'
+      else
+        error("[XAF Error] Object key type must be string - detected type: " .. type(key))
+      end
+    end
+
+    private.currentIndent = private.currentIndent - private.indentSize
+    stringObject = string.sub(stringObject, 1, -3)
+    stringObject = stringObject .. '\n' .. string.rep(' ', private.currentIndent) .. '}'
+
+    return stringObject
+  end
 
   return {
     private = private,

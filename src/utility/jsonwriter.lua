@@ -172,6 +172,16 @@ function JsonWriter:initialize()
 
     return stringObject
   end
+  
+  private.writeString = function(self, inputString)                                    -- [!] Function: writeString(inputString) - Converts string raw data to proper JSON string.
+    assert(type(inputString) == "string", "[XAF Core] Expected STRING as argument #1") -- [!] Parameter: inputString - Input data to convert.
+                                                                                       -- [!] Return: stringString - Converted string from input string data.
+    for escapeKey, escapeValue in pairs(private.stringEscapes) do
+      inputString = inputString:gsub(escapeKey, escapeValue)
+    end
+
+    return '\"' .. tostring(inputString) .. '\"'
+  end
 
   return {
     private = private,

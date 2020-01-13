@@ -146,9 +146,9 @@ function JsonWriter:initialize()
     return tostring(inputNumber)
   end
   
-  private.writeObject = function(self, inputObject)                                                                        -- [!] Function: writeObject(inputObject) - Converts object raw data to proper JSON string.
-    assert(type(inputObject) == "table", "[XAF Core] Expected TABLE as argument #1")                                       -- [!] Parameter: inputObject - Input data to convert.
-                                                                                                                           -- [!] Return: stringObject - Converted string from input object data.
+  private.writeObject = function(self, inputObject)                                        -- [!] Function: writeObject(inputObject) - Converts object raw data to proper JSON string.
+    assert(type(inputObject) == "table", "[XAF Core] Expected TABLE as argument #1")       -- [!] Parameter: inputObject - Input data to convert.
+                                                                                           -- [!] Return: stringObject - Converted string from input object data.
     local stringObject = ''
     stringObject = stringObject .. '{' .. '\n'
     private.currentIndent = private.currentIndent + private.indentSize
@@ -181,6 +181,16 @@ function JsonWriter:initialize()
     end
 
     return '\"' .. tostring(inputString) .. '\"'
+  end
+  
+  public.write = function(self, inputData, minifyData)                                        -- [!] Function: write(inputData, minifyData) - Tries to convert given Lua object to JSON string.
+    assert(type(minifyData) == "boolean", "[XAF Core] Expected BOOLEAN as argument #2")       -- [!] Parameter: inputData - Lua input data to convert to JSON, may be anything JSON valid value, including nil (null).
+                                                                                              -- [!] Parameter: minifyData - Boolean flag to specify the result string should be minified.
+    local jsonString = ''                                                                     -- [!] Return: jsonValue - Converted JSON string.
+    jsonString = private:getValue(jsonString, inputData, "entire JSON", false)
+    jsonString = (minifyData == true) and private:removeWhitespaces(jsonString) or jsonString
+
+    return jsonString
   end
 
   return {

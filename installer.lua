@@ -37,7 +37,7 @@ sourceModules["api"] = {"pm"}
 sourceModules["core"] = {"xafcore"}
 sourceModules["graphic"] = {"button", "checkbox", "component", "list", "passwordfield", "progressbar", "slider", "spinner", "switch", "textfield"}
 sourceModules["network"] = {"client", "dnsclient", "dnsserver", "dtpclient", "dtpserver", "ftpclient", "ftpserver", "repclient", "repserver", "server"}
-sourceModules["utility"] = {"bignumber", "httpstream", "jsonparser", "redstream"}
+sourceModules["utility"] = {"bignumber", "httpstream", "jsonparser", "jsonwriter", "redstream"}
 
 -- Target installation directories in absolute paths.
 local pathRoot = "io.github.aquaver"

@@ -167,103 +167,104 @@ if (options.p == true or options.package == true) then
           inetConnection:disconnect()
           jsonTable = jsonObject:parse(jsonData)
 
-          if (#jsonTable["tree"] == 2 and jsonTable["tree"][1]["path"] == "_bin" and jsonTable["tree"][2]["path"] == "_config") then
-            local repositoryAddress = "https://raw.githubusercontent.com/"
-            local repositoryPath = "_config/repository.info"
-            local repositoryBranch = "/master/"
+          if (#jsonTable["tree"] == 2 and jsonTable["tree"][1]["path"] == "_bin" and jsonTable["tree"][2]["path"] == "_config") or
+             (#jsonTable["tree"] == 3 and jsonTable["tree"][1]["path"] == "README.md" and jsonTable["tree"][2]["path"] == "_bin" and jsonTable["tree"][3]["path"] == "_config") then
+                local repositoryAddress = "https://raw.githubusercontent.com/"
+                local repositoryPath = "_config/repository.info"
+                local repositoryBranch = "/master/"
 
-            inetAddress = repositoryAddress .. sourceRepository .. repositoryBranch .. repositoryPath
-            inetConnection = httpstream:new(inetComponent,inetAddress)
-            inetConnection:setMaxTimeout(0.5)
-
-            if (inetConnection:connect() == true) then
-              local repositoryInfoData = ''
-              local repositoryInfoTable = {}
-
-              for dataChunk in inetConnection:getData() do
-                repositoryInfoData = repositoryInfoData .. dataChunk
-              end
-
-              repositoryInfoTable = xafcoreTable:loadFromString(repositoryInfoData)
-              repositoryInfoData = ''
-
-              if (configVersion > repositoryInfoTable["repository-xaf"]) then
-                local dataAddress = "https://raw.githubusercontent.com/"
-                local dataPath = "/_config/package.info"
-                local dataBranch = "/master/"
-
-                inetAddress = dataAddress .. sourceRepository .. dataBranch .. sourceCategory .. '/' .. packageString .. dataPath
-                inetConnection = httpstream:new(inetComponent, inetAddress)
+                inetAddress = repositoryAddress .. sourceRepository .. repositoryBranch .. repositoryPath
+                inetConnection = httpstream:new(inetComponent,inetAddress)
                 inetConnection:setMaxTimeout(0.5)
 
                 if (inetConnection:connect() == true) then
-                  local infoData = ''
-                  local infoTable = {}
+                  local repositoryInfoData = ''
+                  local repositoryInfoTable = {}
 
                   for dataChunk in inetConnection:getData() do
-                    infoData = infoData .. dataChunk
+                    repositoryInfoData = repositoryInfoData .. dataChunk
                   end
 
-                  infoTable = xafcoreTable:loadFromString(infoData)
-                  infoData = ''
+                  repositoryInfoTable = xafcoreTable:loadFromString(repositoryInfoData)
+                  repositoryInfoData = ''
 
-                  if (infoTable["package-description"] and infoTable["package-identifier"] and infoTable["package-index"] and
-                      infoTable["package-owner"] and infoTable["package-title"] and infoTable["package-version"] and infoTable["package-xaf"]) then
-                        if (packageString == infoTable["package-identifier"]) then
-                          local localConfigPath = filesystem.concat(packagePath, "_config", "package.info")
-                          local localConfigData = xafcoreTable:loadFromFile(localConfigPath)
-                          local versionLocal = localConfigData["package-version"]
-                          local versionRemote = infoTable["package-version"]
+                  if (configVersion > repositoryInfoTable["repository-xaf"]) then
+                    local dataAddress = "https://raw.githubusercontent.com/"
+                    local dataPath = "/_config/package.info"
+                    local dataBranch = "/master/"
 
-                          if (versionRemote > versionLocal) then
-                            print("        >> Successfully retrieved information about '" .. packageString)
-                            print("        >> An update is available for this package")
-                            print("        >> Remote version: " .. versionRemote .. " (local version: " .. versionLocal .. ')')
-                            print("        >> You can now use 'xaf-pm update " .. packageString .. "' to update this package")
-                            print("        >> Update checking procedure has been finished")
-                          else
-                            print("        >> Successfully retrieved information about: " .. packageString)
-                            print("        >> No update is available, you have the latest version of this package (" .. versionLocal .. ')')
-                            print("        >> Updated checking procedure has been finished")
-                          end
+                    inetAddress = dataAddress .. sourceRepository .. dataBranch .. sourceCategory .. '/' .. packageString .. dataPath
+                    inetConnection = httpstream:new(inetComponent, inetAddress)
+                    inetConnection:setMaxTimeout(0.5)
 
-                          os.exit()
-                        else
-                          print("        >> Package identifier mismatch detected")
-                          print("        >> Identifier from configuration file and package directory (entered name) must be equal")
-                          print("        >> This package cannot be updated")
+                    if (inetConnection:connect() == true) then
+                      local infoData = ''
+                      local infoTable = {}
 
-                          os.exit()
-                        end
+                      for dataChunk in inetConnection:getData() do
+                        infoData = infoData .. dataChunk
+                      end
+
+                      infoTable = xafcoreTable:loadFromString(infoData)
+                      infoData = ''
+
+                      if (infoTable["package-description"] and infoTable["package-identifier"] and infoTable["package-index"] and
+                          infoTable["package-owner"] and infoTable["package-title"] and infoTable["package-version"] and infoTable["package-xaf"]) then
+                            if (packageString == infoTable["package-identifier"]) then
+                              local localConfigPath = filesystem.concat(packagePath, "_config", "package.info")
+                              local localConfigData = xafcoreTable:loadFromFile(localConfigPath)
+                              local versionLocal = localConfigData["package-version"]
+                              local versionRemote = infoTable["package-version"]
+
+                              if (versionRemote > versionLocal) then
+                                print("        >> Successfully retrieved information about '" .. packageString)
+                                print("        >> An update is available for this package")
+                                print("        >> Remote version: " .. versionRemote .. " (local version: " .. versionLocal .. ')')
+                                print("        >> You can now use 'xaf-pm update " .. packageString .. "' to update this package")
+                                print("        >> Update checking procedure has been finished")
+                              else
+                                print("        >> Successfully retrieved information about: " .. packageString)
+                                print("        >> No update is available, you have the latest version of this package (" .. versionLocal .. ')')
+                                print("        >> Updated checking procedure has been finished")
+                              end
+
+                              os.exit()
+                            else
+                              print("        >> Package identifier mismatch detected")
+                              print("        >> Identifier from configuration file and package directory (entered name) must be equal")
+                              print("        >> This package cannot be updated")
+
+                              os.exit()
+                            end
+                      else
+                        print("        >> Invalid package description file detected")
+                        print("        >> If this message appears again, contact the package owner")
+                        print("        >> Update checking procedure has been interrupted")
+
+                        os.exit()
+                      end
+                    else
+                      print("        >> Cannot retrieve package description file")
+                      print("        >> Ensure you have not lost internet access")
+                      print("        >> Update checking procedure has been interrupted")
+
+                      os.exit()
+                    end
                   else
-                    print("        >> Invalid package description file detected")
-                    print("        >> If this message appears again, contact the package owner")
+                    print("        >> Repository '" .. sourceRepository .. "' forces requirement to have newer XAF version")
+                    print("        >> Detected local API version: " .. configVersion .. " (required by this repository is: " .. repositoryInfoTable["repository-xaf"] .. ')')
+                    print("        >> Please update XAF via 'xaf update' before updating this package")
                     print("        >> Update checking procedure has been interrupted")
 
                     os.exit()
                   end
                 else
-                  print("        >> Cannot retrieve package description file")
+                  print("        >> Cannot retrieve repository description file")
                   print("        >> Ensure you have not lost internet access")
                   print("        >> Update checking procedure has been interrupted")
 
                   os.exit()
                 end
-              else
-                print("        >> Repository '" .. sourceRepository .. "' forces requirement to have newer XAF version")
-                print("        >> Detected local API version: " .. configVersion .. " (required by this repository is: " .. repositoryInfoTable["repository-xaf"] .. ')')
-                print("        >> Please update XAF via 'xaf update' before updating this package")
-                print("        >> Update checking procedure has been interrupted")
-
-                os.exit()
-              end
-            else
-              print("        >> Cannot retrieve repository description file")
-              print("        >> Ensure you have not lost internet access")
-              print("        >> Update checking procedure has been interrupted")
-
-              os.exit()
-            end
           else
             print("        >> Invalid XAF PM package structure")
             print("        >> Encountered unexpected files in package master directory")

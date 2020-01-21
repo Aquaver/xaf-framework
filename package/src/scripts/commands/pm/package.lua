@@ -302,7 +302,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
                   jsonTable = jsonObject:parse(jsonData)
 
                   if (#jsonTable["tree"] == 2 and jsonTable["tree"][1]["path"] == "_bin" and jsonTable["tree"][2]["path"] == "_config") or
-                     (#jsonTable["tree"] == 3 and jsonTable["tree"][1]["path"] == "_bin" and jsonTable["tree"][3]["path"] == "_config" and jsonTable["tree"][4]["path"] == "README.md") then
+                     (#jsonTable["tree"] == 3 and jsonTable["tree"][1]["path"] == "README.md" and jsonTable["tree"][2]["path"] == "_bin" and jsonTable["tree"][3]["path"] == "_config") then
                         local repositoryAddress = "https://raw.githubusercontent.com/"
                         local repositoryPath = "_config/repository.info"
                         local repositoryBranch = "/master/"
@@ -561,7 +561,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
               jsonTable = jsonObject:parse(jsonData)
 
               if (#jsonTable["tree"] == 2 and jsonTable["tree"][1]["path"] == "_bin" and jsonTable["tree"][2]["path"] == "_config") or
-                 (#jsonTable["tree"] == 3 and jsonTable["tree"][1]["path"] == "_bin" and jsonTable["tree"][3]["path"] == "_config" and string.lower(jsonTable["tree"][4]["path"]) == "README.md") then
+                 (#jsonTable["tree"] == 3 and jsonTable["tree"][1]["path"] == "README.md" and jsonTable["tree"][2]["path"] == "_bin" and jsonTable["tree"][3]["path"] == "_config") then
                     local dataAddress = "https://raw.githubusercontent.com/"
                     local dataPath = "/_config/package.info"
                     local dataBranch = "/master/"

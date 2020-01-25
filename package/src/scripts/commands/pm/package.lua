@@ -497,6 +497,8 @@ if (options.a == true or options.add == true or options.i == true or options.inf
       else
         print("      >> Cannot connect to '" .. repositoryIdentifier .. "' repository")
         print("      >> Ensure you have not lost internet access")
+
+        os.exit()
       end
 
       if (targetFound == false) then
@@ -599,29 +601,41 @@ if (options.a == true or options.add == true or options.i == true or options.inf
                               print("      >> Package identifier mismatch detected")
                               print("      >> Identifier from configuration file and package directory name must be equal")
                               print("      >> This package cannot be installed")
+
+                              os.exit()
                             end
                       else
                         print("      >> Invalid package description file detected")
                         print("      >> If this message appears again, contact the package owner")
+
+                        os.exit()
                       end
                     else
                       print("      >> Cannot retrieve package description file")
                       print("      >> Ensure you have not lost internet access")
+
+                      os.exit()
                     end
               else
                 print("      >> Invalid XAF PM package structure")
                 print("      >> Encountered unexpected files in package master directory")
                 print("      >> This package cannot be installed")
+
+                os.exit()
               end
             else
               print("      >> Cannot connect to package content tree...")
               print("      >> Ensure you have not lost internet access")
+
+              os.exit()
             end
           end
         end
       else
         print("      >> Cannot connect to '" .. repositoryIdentifier .. "' repository")
         print("      >> Ensure you have not lost internet access")
+
+        os.exit()
       end
 
       print("      >> Cannot find package '" .. packageIdentifier .. "' on repository: " .. repositoryIdentifier)

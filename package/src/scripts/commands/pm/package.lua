@@ -364,6 +364,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
                                           inetConnection:disconnect()
                                           jsonTable = jsonObject:parse(jsonData)
+                                          filesystem.makeDirectory(filesystem.concat(pathRoot, pathPackages, packageName)) -- Create package master directory before downloading binaries
 
                                           for j = 1, #jsonTable["tree"] do
                                             local objectPath = jsonTable["tree"][j]["path"]

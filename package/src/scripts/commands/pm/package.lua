@@ -223,7 +223,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
     if (filesystem.exists(filesystem.concat(pathRoot, pathPackages, packageName)) == true) then
       print("    >> Package with name '" .. packageName .. "' is already installed")
-      print("    >> Remove it first with 'xaf-pm remove' before installing this one")
+      print("    >> Remove it first with 'xaf-pm package [-r | --remove] " .. packageName .. "' before installing this one")
       print("    >> Installation procedure has been interrupted")
 
       os.exit()

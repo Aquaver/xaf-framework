@@ -223,7 +223,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
     if (filesystem.exists(filesystem.concat(pathRoot, pathPackages, packageName)) == true) then
       print("    >> Package with name '" .. packageName .. "' is already installed")
-      print("    >> Remove it first with 'xaf-pm remove' before installing this one")
+      print("    >> Remove it first with 'xaf-pm package [-r | --remove] " .. packageName .. "' before installing this one")
       print("    >> Installation procedure has been interrupted")
 
       os.exit()
@@ -302,7 +302,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
                   jsonTable = jsonObject:parse(jsonData)
 
                   if (#jsonTable["tree"] == 2 and jsonTable["tree"][1]["path"] == "_bin" and jsonTable["tree"][2]["path"] == "_config") or
-                     (#jsonTable["tree"] == 3 and jsonTable["tree"][1]["path"] == "_bin" and jsonTable["tree"][3]["path"] == "_config" and jsonTable["tree"][4]["path"] == "README.md") then
+                     (#jsonTable["tree"] == 3 and jsonTable["tree"][1]["path"] == "README.md" and jsonTable["tree"][2]["path"] == "_bin" and jsonTable["tree"][3]["path"] == "_config") then
                         local repositoryAddress = "https://raw.githubusercontent.com/"
                         local repositoryPath = "_config/repository.info"
                         local repositoryBranch = "/master/"
@@ -364,6 +364,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
                                           inetConnection:disconnect()
                                           jsonTable = jsonObject:parse(jsonData)
+                                          filesystem.makeDirectory(filesystem.concat(pathRoot, pathPackages, packageName)) -- Create package master directory before downloading binaries
 
                                           for j = 1, #jsonTable["tree"] do
                                             local objectPath = jsonTable["tree"][j]["path"]
@@ -497,6 +498,8 @@ if (options.a == true or options.add == true or options.i == true or options.inf
       else
         print("      >> Cannot connect to '" .. repositoryIdentifier .. "' repository")
         print("      >> Ensure you have not lost internet access")
+
+        os.exit()
       end
 
       if (targetFound == false) then
@@ -561,7 +564,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
               jsonTable = jsonObject:parse(jsonData)
 
               if (#jsonTable["tree"] == 2 and jsonTable["tree"][1]["path"] == "_bin" and jsonTable["tree"][2]["path"] == "_config") or
-                 (#jsonTable["tree"] == 3 and jsonTable["tree"][1]["path"] == "_bin" and jsonTable["tree"][3]["path"] == "_config" and string.lower(jsonTable["tree"][4]["path"]) == "README.md") then
+                 (#jsonTable["tree"] == 3 and jsonTable["tree"][1]["path"] == "README.md" and jsonTable["tree"][2]["path"] == "_bin" and jsonTable["tree"][3]["path"] == "_config") then
                     local dataAddress = "https://raw.githubusercontent.com/"
                     local dataPath = "/_config/package.info"
                     local dataBranch = "/master/"
@@ -599,29 +602,41 @@ if (options.a == true or options.add == true or options.i == true or options.inf
                               print("      >> Package identifier mismatch detected")
                               print("      >> Identifier from configuration file and package directory name must be equal")
                               print("      >> This package cannot be installed")
+
+                              os.exit()
                             end
                       else
                         print("      >> Invalid package description file detected")
                         print("      >> If this message appears again, contact the package owner")
+
+                        os.exit()
                       end
                     else
                       print("      >> Cannot retrieve package description file")
                       print("      >> Ensure you have not lost internet access")
+
+                      os.exit()
                     end
               else
                 print("      >> Invalid XAF PM package structure")
                 print("      >> Encountered unexpected files in package master directory")
                 print("      >> This package cannot be installed")
+
+                os.exit()
               end
             else
               print("      >> Cannot connect to package content tree...")
               print("      >> Ensure you have not lost internet access")
+
+              os.exit()
             end
           end
         end
       else
         print("      >> Cannot connect to '" .. repositoryIdentifier .. "' repository")
         print("      >> Ensure you have not lost internet access")
+
+        os.exit()
       end
 
       print("      >> Cannot find package '" .. packageIdentifier .. "' on repository: " .. repositoryIdentifier)

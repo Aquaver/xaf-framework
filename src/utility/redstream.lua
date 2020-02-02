@@ -131,7 +131,28 @@ function RedStream:initialize()
   
   public.on = function(self, value)                                     -- [!] Function: on(value) - Switches on redstone output signal and sets it to specified value.
     local componentRedstone = private.componentRedstone                 -- [!] Parameter: value - New redstone power value - if 'nil' then it will be the maximum available ('full on').
-    local powerValue = (type(value) == "number") and value or 255       -- [!] Return: 'true' - If the redstone signal has been changed properly.
+    local rawValue = (type(value) == "number") and value or 0           -- [!] Return: 'true' - If the redstone signal has been changed properly.
+    local powerValue = 0
+
+    if (private.streamMode == 0 or private.streamMode == 1) then
+      if (value == nil) then
+        powerValue = 15
+      elseif (rawValue >= 0 and rawValue <= 15 and xafcoreMath:checkInteger(rawValue) == true) then
+        powerValue = rawValue
+      else
+        error("[XAF Error] Invalid analog power value - must be integer from 0 to 15")
+      end
+    elseif (private.streamMode == 2) then
+      if (value == nil) then
+        powerValue = 255
+      elseif (rawValue >= 0 and rawValue <= 255 and xafcoreMath:checkInteger(rawValue) == true) then
+        powerValue = rawValue
+      else
+        error("[XAF Error] Invalid digital power value - must be integer from 0 to 255")
+      end
+    else
+      error("[XAF Error] Invalid redstone stream mode")
+    end
     
     if (componentRedstone) then
       local color = private.bundleColor

@@ -160,7 +160,7 @@ XAFCore is framework core library as its name says. This class provides five sub
 * **Function:** `convertLinesToString(linesTable, mode)` - Converts table with string lines to one concatenated string.
 
   * **Parameter:** `linesTable` - Table with lines to concatenate.
-  * **Parameter:** `mode` - Concatenation mode (0 - default, 1 - space, 2 - no space, 3 - new line character)
+  * **Parameter:** `mode` - Concatenation mode (all modes are defined as static constants).
   * **Return:** `concatenatedString` - The string after concatenation.
 
 * **Function:** `convertStringToLines(text, width)` - Splits whole string into lines and returns them as table.

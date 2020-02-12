@@ -54,17 +54,17 @@ function Checkbox:initialize()
           local endPositionX = 0
           local endPositionY = 0
           
-          if (render <= 1) then
+          if (render <= component.static.RENDER_ALL) then
             startPositionX = private.positionX
             startPositionY = private.positionY
             endPositionX = private.positionX + private.totalWidth - 1
             endPositionY = private.positionY + private.totalHeight - 1
-          elseif (render <= 2) then
+          elseif (render <= component.static.RENDER_INSETS) then
             startPositionX = private.positionX + 1
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 2
             endPositionY = private.positionY + private.totalHeight - 2
-          elseif (render <= 3) then
+          elseif (render <= component.static.RENDER_CONTENT) then
             startPositionX = private.positionX + 2
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 3
@@ -160,7 +160,7 @@ function Checkbox:initialize()
       local previousForeground = renderer.getForeground()
       local render = private.renderMode
       
-      if (render <= 1) then
+      if (render <= component.static.RENDER_ALL) then
         renderer.setBackground(private.colorBackground)
         renderer.setForeground(private.colorBorder)
         
@@ -181,7 +181,7 @@ function Checkbox:initialize()
         end
       end
       
-      if (render <= 2) then
+      if (render <= component.static.RENDER_INSETS) then
         renderer.setBackground(private.colorBackground)
         
         renderer.set(posX + 1, posY + 1, ' ')
@@ -193,7 +193,7 @@ function Checkbox:initialize()
         end
       end
       
-      if (render <= 3) then
+      if (render <= component.static.RENDER_CONTENT) then
         local checkTick = (private.selected == true) and 'X' or ' '
         local labelLine = private.label
         

@@ -26,16 +26,16 @@ function Component:initialize()
   local private = (parent) and parent.private or {}
   local public = (parent) and parent.public or {}
   
-  private.active = true              -- [!] Default component activity state - if 'false' then component will not response on events.
-  private.colorBackground = 0x000000 -- [!] Default background color - black (RGB: 0, 0, 0)
-  private.colorBorder = 0xFFFFFF     -- [!] Default border color - white (RGB: 255, 255, 255)
-  private.colorContent = 0xFFFFFF    -- [!] Default content (text) color - white (RGB: 255, 255, 255)
-  private.totalWidth = -1            -- [!] Default component width: -1 means that component does not exist (cannot be visible).
-  private.totalHeight = -1           -- [!] Default component height: -1 means that component does not exist (cannot be visible).
-  private.positionX = nil            -- [!] Default horizontal position - 'nil' means that component has not been initialized.
-  private.positionY = nil            -- [!] Default vertical position - 'nil' means that component has not been initialized.
-  private.renderMode = 0             -- [!] Default render mode - RENDER_DEFAULT (value: 0)
-  private.renderer = nil             -- [!] Default component render engine: if 'nil' then component has not associated GPU.
+  private.active = true                                -- [!] Default component activity state - if 'false' then component will not response on events.
+  private.colorBackground = 0x000000                   -- [!] Default background color - black (RGB: 0, 0, 0)
+  private.colorBorder = 0xFFFFFF                       -- [!] Default border color - white (RGB: 255, 255, 255)
+  private.colorContent = 0xFFFFFF                      -- [!] Default content (text) color - white (RGB: 255, 255, 255)
+  private.totalWidth = -1                              -- [!] Default component width: -1 means that component does not exist (cannot be visible).
+  private.totalHeight = -1                             -- [!] Default component height: -1 means that component does not exist (cannot be visible).
+  private.positionX = nil                              -- [!] Default horizontal position - 'nil' means that component has not been initialized.
+  private.positionY = nil                              -- [!] Default vertical position - 'nil' means that component has not been initialized.
+  private.renderMode = Component.static.RENDER_DEFAULT -- [!] Default render mode - RENDER_DEFAULT (value: 0)
+  private.renderer = nil                               -- [!] Default component render engine: if 'nil' then component has not associated GPU.
   
   public.getActive = function(self) -- [!] Function: getActive() - Returns current component activity state.
     return private.active           -- [!] Return: active - Boolean flag whether component is currently active.
@@ -114,10 +114,10 @@ function Component:initialize()
     return true
   end
   
-  public.setRenderMode = function(self, mode)                                      -- [!] Function: setRenderMode(mode) - Switches current component rendering mode.
-    assert(type(mode) == "number", "[XAF Graphic] Expected NUMBER as argument #1") -- [!] Parameter: mode - New rendering mode (0 - default, 1 - all, 2 - insets only, 3 - content only).
-                                                                                   -- [!] Return: 'true' - If new rendering mode was set correctly.
-    if (mode >= 0 and mode <= 3) then
+  public.setRenderMode = function(self, mode)                                                     -- [!] Function: setRenderMode(mode) - Switches current component rendering mode.
+    assert(type(mode) == "number", "[XAF Graphic] Expected NUMBER as argument #1")                -- [!] Parameter: mode - New rendering mode (all modes are defined as static constants).
+                                                                                                  -- [!] Return: 'true' - If new rendering mode was set correctly.
+    if (mode >= Component.static.RENDER_DEFAULT and mode <= Component.static.RENDER_CONTENT) then
       private.renderMode = mode
     else
       error("[XAF Error] Invalid component rendering mode")

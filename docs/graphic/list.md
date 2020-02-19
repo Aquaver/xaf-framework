@@ -64,7 +64,7 @@ The list is first graphic component in XAF framework which has slightly more com
 
 * **Function:** `setSelectionModel(mode, color)` - Sets new list selection model (mode number and color number).
 
-  * **Parameter:** `mode` - New selection mode (0 - default, 1 - single, 2 - multiple).
+  * **Parameter:** `mode` - New selection mode (all modes are defined as static constants).
   * **Parameter:** `color` - New selected line highlight color.
   * **Return:** `'true'` - If the new selection model has been set properly.
 

@@ -161,7 +161,7 @@ function TextField:initialize()
             if (private.selectedLine < private.rows) then
               private.selectedLine = private.selectedLine + 1
 
-              public:setRenderMode(3)
+              public:setRenderMode(component.static.RENDER_CONTENT)
               public:view()
               public:setRenderMode(render)
             end
@@ -169,7 +169,7 @@ function TextField:initialize()
             if (private.selectedLine > 1) then
               private.selectedLine = private.selectedLine - 1
 
-              public:setRenderMode(3)
+              public:setRenderMode(component.static.RENDER_CONTENT)
               public:view()
               public:setRenderMode(render)
             end
@@ -217,7 +217,7 @@ function TextField:initialize()
           local endPositionX = 0
           local endPositionY = 0
 
-          if (render <= 3) then
+          if (render <= component.static.RENDER_CONTENT) then
             startPositionX = private.positionX + 2
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 3
@@ -232,7 +232,7 @@ function TextField:initialize()
             private.fieldFocus = true
             private.selectedLine = relativeLine
 
-            public:setRenderMode(3)
+            public:setRenderMode(component.static.RENDER_CONTENT)
             public:view()
             public:setRenderMode(render)
 
@@ -244,7 +244,7 @@ function TextField:initialize()
               private.fieldFocus = false
               private.selectedLine = 0
 
-              public:setRenderMode(3)
+              public:setRenderMode(component.static.RENDER_CONTENT)
               public:view()
               public:setRenderMode(render)
             end
@@ -351,7 +351,7 @@ function TextField:initialize()
       local previousForeground = renderer.getForeground()
       local render = private.renderMode
 
-      if (render <= 1) then
+      if (render <= component.static.RENDER_ALL) then
         renderer.setBackground(private.colorBackground)
         renderer.setForeground(private.colorBorder)
 
@@ -366,14 +366,14 @@ function TextField:initialize()
         renderer.set(posX + width - 1, posY + height - 1, '┘')
       end
 
-      if (render <= 2) then
+      if (render <= component.static.RENDER_INSETS) then
         renderer.setBackground(private.colorBackground)
 
         renderer.fill(posX + 1, posY + 1, 1, rows, ' ')
         renderer.fill(posX + columns + 2, posY + 1, 1, rows, ' ')
       end
 
-      if (render <= 3) then
+      if (render <= component.static.RENDER_CONTENT) then
         local textLength = private.columns
         local textTable = private.textTable
 

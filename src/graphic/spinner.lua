@@ -297,7 +297,7 @@ function Spinner:initialize()
         renderer.set(posX + columns + 2, posY + 1, ' ')
       end
 
-      if (render <= component.static.RENDER) then
+      if (render <= component.static.RENDER_CONTENT) then
         local valueRaw = private.contentTable[private.contentIndex]
         local valueString = (valueRaw == nil) and '' or tostring(valueRaw)
 

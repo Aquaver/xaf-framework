@@ -58,9 +58,9 @@ function ProgressBar:initialize()
   end
   
   public.setLayoutMode = function(self, mode)                                      -- [!] Function: setLayoutMode(mode) - Changes progress bar component layout mode.
-    assert(type(mode) == "number", "[XAF Graphic] Expected NUMBER as argument #1") -- [!] Parameter: mode - New progress bar layout mode (0 - default, 1 - horizontal, 2 - vertical).
+    assert(type(mode) == "number", "[XAF Graphic] Expected NUMBER as argument #1") -- [!] Parameter: mode - New progress bar layout mode (all modes are defined as static constants).
                                                                                    -- [!] Return: 'true' - If the new progress bar layout mode has been set correctly.
-    if (mode >= 0 and mode <= 2) then
+    if (mode >= LAYOUT_DEFAULT and mode <= LAYOUT_VERTICAL) then
       if (xafcoreMath:checkInteger(mode) == true) then
         private.barLayout = mode
       else
@@ -99,7 +99,7 @@ function ProgressBar:initialize()
   public.refresh = function(self)             -- [!] Function: refresh() - Refreshes the progress bar without rendering entire component (it is slightly faster than 'view()' function).
     local previousRender = private.renderMode -- [!] Return: 'true' - Returned if component has been refreshed properly.
     
-    public:setRenderMode(3)
+    public:setRenderMode(component.static.RENDER_CONTENT)
     public:view()
     public:setRenderMode(previousRender)
     
@@ -120,7 +120,7 @@ function ProgressBar:initialize()
       local previousForeground = renderer.getForeground()
       local render = private.renderMode
       
-      if (render <= 1) then
+      if (render <= component.static.RENDER_ALL) then
         renderer.setBackground(private.colorBackground)
         renderer.setForeground(private.colorBorder)
         
@@ -135,14 +135,14 @@ function ProgressBar:initialize()
         renderer.set(posX + width - 1, posY + height - 1, '┘')
       end
       
-      if (render <= 2) then
+      if (render <= component.static.RENDER_INSETS) then
         renderer.setBackground(private.colorBackground)
         
         renderer.fill(posX + 1, posY + 1, 1, height - 2, ' ')
         renderer.fill(posX + width - 2, posY + 1, 1, height - 2, ' ')
       end
       
-      if (render <= 3) then
+      if (render <= component.static.RENDER_CONTENT) then
         local valueOffset = private.minimumValue
         local valueMinimumOffset = 0
         local valueMaximumOffset = private.maximumValue - valueOffset

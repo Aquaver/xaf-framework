@@ -27,13 +27,13 @@ function RedStream:initialize()
   
   private.componentRedstone = nil
   private.bundleColor = -1
-  private.streamMode = 0
+  private.streamMode = RedStream.static.MODE_DEFAULT
   private.streamSide = -1
   private.tableColors = {["white"] = 0, ["orange"] = 1, ["magenta"] = 2, ["light_blue"] = 3, ["yellow"] = 4, ["lime"] = 5, ["pink"] = 6, ["gray"] = 7, ["light_gray"] = 8, ["cyan"] = 9, ["purple"] = 10, ["blue"] = 11, ["brown"] = 12, ["green"] = 13, ["red"] = 14, ["black"] = 15}
   private.tableSides = {["bottom"] = 0, ["top"] = 1, ["back"] = 2, ["north"] = 2, ["front"] = 3, ["south"] = 3, ["right"] = 4, ["west"] = 4, ["left"] = 5, ["east"] = 5}
   
   public.getBundleColor = function(self)                                -- [!] Function: getBundleColor() - Returns redstone stream bundle color in digital mode.
-    if (private.streamMode == 2) then                                   -- [!] Return: bundleColor - Current stream bundle color name as number.
+    if (private.streamMode == RedStream.static.MODE_DIGITAL) then       -- [!] Return: bundleColor - Current stream bundle color name as number.
       return private.bundleColor
     else
       error("[XAF Error] Bundle colors available in digital mode only")
@@ -50,9 +50,9 @@ function RedStream:initialize()
       local side = private.streamSide
       
       if (side > -1) then
-        if (private.streamMode == 0 or private.streamMode == 1) then
+        if (private.streamMode == RedStream.static.MODE_DEFAULT or private.streamMode == RedStream.static.MODE_ANALOG) then
           return private.componentRedstone.getInput(side)
-        elseif (private.streamMode == 2) then
+        elseif (private.streamMode == RedStream.static.MODE_DIGITAL) then
           if (color > -1) then
             return private.componentRedstone.getBundledInput(side, color)
           else
@@ -75,9 +75,9 @@ function RedStream:initialize()
       local side = private.streamSide
       
       if (side > -1) then
-        if (private.streamMode == 0 or private.streamMode == 1) then
+        if (private.streamMode == RedStream.static.MODE_DEFAULT or private.streamMode == RedStream.static.MODE_ANALOG) then
           return private.componentRedstone.getOutput(side)
-        elseif (private.streamMode == 2) then
+        elseif (private.streamMode == RedStream.static.MODE_DIGITAL) then
           if (color > -1) then
             return private.componentRedstone.getBundledOutput(side, color)
           else
@@ -108,9 +108,9 @@ function RedStream:initialize()
       local side = private.streamSide
       
       if (side > -1) then
-        if (private.streamMode == 0 or private.streamMode == 1) then
+        if (private.streamMode == RedStream.static.MODE_DEFAULT or private.streamMode == RedStream.static.MODE_ANALOG) then
           private.componentRedstone.setOutput(side, 0)
-        elseif (private.streamMode == 2) then
+        elseif (private.streamMode == RedStream.static.MODE_DIGITAL) then
           if (color > -1) then
             private.componentRedstone.setBundledOutput(side, color, 0)
           else
@@ -134,7 +134,7 @@ function RedStream:initialize()
     local rawValue = (type(value) == "number") and value or 0           -- [!] Return: 'true' - If the redstone signal has been changed properly.
     local powerValue = 0
 
-    if (private.streamMode == 0 or private.streamMode == 1) then
+    if (private.streamMode == RedStream.static.MODE_DEFAULT or private.streamMode == RedStream.static.MODE_ANALOG) then
       if (value == nil) then
         powerValue = 15
       elseif (rawValue >= 0 and rawValue <= 15 and xafcoreMath:checkInteger(rawValue) == true) then
@@ -142,7 +142,7 @@ function RedStream:initialize()
       else
         error("[XAF Error] Invalid analog power value - must be integer from 0 to 15")
       end
-    elseif (private.streamMode == 2) then
+    elseif (private.streamMode == RedStream.static.MODE_DIGITAL) then
       if (value == nil) then
         powerValue = 255
       elseif (rawValue >= 0 and rawValue <= 255 and xafcoreMath:checkInteger(rawValue) == true) then
@@ -159,9 +159,9 @@ function RedStream:initialize()
       local side = private.streamSide
       
       if (side > -1) then
-        if (private.streamMode == 0 or private.streamMode == 1) then
+        if (private.streamMode == RedStream.static.MODE_DEFAULT or private.streamMode == RedStream.static.MODE_ANALOG) then
           componentRedstone.setOutput(side, powerValue)
-        elseif (private.streamMode == 2) then
+        elseif (private.streamMode == RedStream.static.MODE_DIGITAL) then
           if (color > -1) then
             componentRedstone.setBundledOutput(side, color, powerValue)
           else
@@ -183,7 +183,7 @@ function RedStream:initialize()
   public.setBundleColor = function(self, color)                                     -- [!] Function: setBundleColor(color) - Changes redstone bundle color for digital mode.
     assert(type(color) == "string", "[XAF Utility] Expected STRING as argument #1") -- [!] Parameter: color - Plain color name as string (white, orange, light_blue, etc).
                                                                                     -- [!] Return: 'true' - If the color value has been set correctly.
-    if (private.streamMode == 2) then
+    if (private.streamMode == RedStream.static.MODE_DIGITAL) then
       if (private.tableColors[color]) then
         private.bundleColor = private.tableColors[color]
       else
@@ -249,7 +249,7 @@ function RedStream:new(component, mode)
   public:setComponent(component)
   assert(type(mode) == "number", "[XAF Utility] Expected NUMBER as argument #2")
   
-  if (mode >= 0 and mode <= 2 and xafcoreMath:checkInteger(mode) == true) then
+  if (mode >= RedStream.static.MODE_DEFAULT and mode <= RedStream.static.MODE_DIGITAL and xafcoreMath:checkInteger(mode) == true) then
     private.streamMode = mode
   else
     error("[XAF Error] Invalid redstone stream mode")

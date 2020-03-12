@@ -576,18 +576,18 @@ end
 function XafCore:getTextInstance()
   local public = {}
 
-  public.convertLinesToString = function(self, linesTable, mode)                                   -- [!] Function: convertLinesToString(linesTable, mode) - Converts table with string lines to one concatenated string.
-    assert(type(linesTable) == "table", "[XAF Core] Expected TABLE as argument #1")                -- [!] Parameter: linesTable - Table with lines to concatenate.
-    assert(type(mode) == "number", "[XAF Core] Expected NUMBER as argument #2")                    -- [!] Parameter: mode - Concatenation mode (0 - default, 1 - space, 2 - no space, 3 - new line character).
-                                                                                                   -- [!] Return: concatenatedString - The string after concatenation.
+  public.convertLinesToString = function(self, linesTable, mode)                                                                              -- [!] Function: convertLinesToString(linesTable, mode) - Converts table with string lines to one concatenated string.
+    assert(type(linesTable) == "table", "[XAF Core] Expected TABLE as argument #1")                                                           -- [!] Parameter: linesTable - Table with lines to concatenate.
+    assert(type(mode) == "number", "[XAF Core] Expected NUMBER as argument #2")                                                               -- [!] Parameter: mode - Concatenation mode (all modes are defined as static constants).
+                                                                                                                                              -- [!] Return: concatenatedString - The string after concatenation.
     local stringTable = linesTable
     local concatenationMode = mode
     local concatenatedString = ""
     local concatenationLink = ""
 
-    if (concatenationMode >= 0 and concatenationMode <= 3) then
-      concatenationLink = (concatenationMode == 0 or concatenationMode == 1)
-      and ' ' or (concatenationMode == 2) and '' or (concatenationMode == 3) and '\n'
+    if (concatenationMode >= XafCore.static.CONCAT_DEFAULT and concatenationMode <= XafCore.static.CONCAT_NEWLINE) then
+      concatenationLink = (concatenationMode == XafCore.static.CONCAT_DEFAULT or concatenationMode == XafCore.static.CONCAT_SPACE)
+      and ' ' or (concatenationMode == XafCore.static.CONCAT_NOSPACE) and '' or (concatenationMode == XafCore.static.CONCAT_NEWLINE) and '\n'
 
       for key, value in pairs(linesTable) do
         concatenatedString = concatenatedString .. tostring(value) .. concatenationLink

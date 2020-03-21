@@ -43,7 +43,6 @@ This class implements very important type of protocol - File Transfer Protocol, 
   * `New Name Already Occupied` - received when trying to rename a file with name, that was being used by another file (or directory).
   * `Path Is Not A Directory` - sent by server on attempt to move, view list (or upload) a file to target path, that is not a directory - sending file 'to file'.
   * `Path Not Exists` - another generic message received when trying to create directory into on path, which does not exist.
-  * `XAF Version Mismatch` - sent on XAF versions incompatibility on server and client machines.
   * `OK` - message received on proper request.
   * `OK (Next)` - special case message received when 'continue downloading' but there is more data assigned to this file in server's buffer. That means you should do downloading request again to get entire file.
   * `OK (Stop)` - special case message received on 'continue downloading' while there is **no** more data in its buffer - file has been completely transferred.
@@ -51,10 +50,6 @@ This class implements very important type of protocol - File Transfer Protocol, 
 ## Method documentation
 
 * *All methods from* `Network:Server`
-* **Function:** `process(event)` - Receives the request and processes it.
-
-  * **Parameter:** `event` - Event table from 'event.pull()' function in OC Event API, with request object.
-  * Return: status, ... - Request procession status ('true' if it has been processed properly or 'false' when server has received unknown request type) and potential return values.
 
 ### Private in-class method documentation
 
@@ -102,6 +97,11 @@ This class implements very important type of protocol - File Transfer Protocol, 
 
   * **Parameter:** `rootPath` - Root path of the server's workspace.
   * **Return:** `'true'` - If the workspace has been set properly.
+
+* **Function:** `process(event)` - Receives the request and processes it.
+
+  * **Parameter:** `event` - Event table from `event.pull()` function in OC Event API, with request object.
+  * **Return:** `status, ...` - Request procession status (true, if it has been processed properly or false - when server has received unknown request type) and potential return values.
 
 * **Function:** `setWorkspace(addresses)` - Sets the FTP server workspace filesystem components addresses map.
 

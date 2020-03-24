@@ -28,16 +28,11 @@ Another module that allows creating custom networks and managing them, but this 
   * `Invalid File` - received on attempt to executing path of directory, not a file.
   * `Script Execution Error` - information received when (protected) execution of given script has failed.
   * `Script Not Exists` - message sent on case when the target script does not exist on REP server disk.
-  * `XAF Version Mismatch` - sent on XAF versions incompatibility on server and client machines.
   * `OK` - message recevied on proper request made, often with received execution results.
 
 ## Method documentation
 
 * *All methods from* `Network:Server`
-* **Function:** `process(event)` - Captures request and passes its object to proper handling function.
-
-  * **Parameter:** `event` - Event table from OC Event API 'event.pull()' function which holds request object.
-  * **Return:** `status, ...` - Processing status as boolean flag and additional request values (unless NO_RETURN choosen).
 
 ### Private in-class method documentation
 
@@ -69,3 +64,8 @@ Another module that allows creating custom networks and managing them, but this 
 
   * **Parameter:** `rootPath` - REP server workspace tree root path string.
   * **Return:** `'true'` - If all required directories have been prepared correctly.
+
+* **Function:** `process(event)` - Captures request and passes its object to proper handling function.
+
+  * **Parameter:** `event` - Event table from OC Event API `event.pull()` function which holds request object.
+  * **Return:** `status, ...` - Processing status as boolean flag and additional request values (unless NO_RETURN choosen).

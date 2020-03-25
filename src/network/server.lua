@@ -25,6 +25,7 @@ function Server:initialize()
   private.eventStopArguments = {}
   private.componentModem = nil -- By default server has not modem component assigned.
   private.port = 1             -- Default server working port is equal to one.
+  private.process = nil
   
   public.getModem = function(self) -- [!] Function: getModem() - Returns current server's modem component as its proxy.
     return private.componentModem  -- [!] Return: componentModem - Proxy of server's modem component.
@@ -38,8 +39,39 @@ function Server:initialize()
     return private.active           -- [!] Return: active - Server's activity flag.
   end
   
-  public.process = function(self)                                                              -- [!] Function: process() - Default server processing function, which always throw an error.
-    error("[XAF Error] Server processing function has not been initialized - running default")
+  public.process = function(self, event)                                                                   -- [!] Function: process() - Master server processing function, which checks all requirements and executes custom (private set) processing function.
+    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")                          -- [!] Parameter: event - Event table object from function `event.pull()` in OC Event API.
+                                                                                                           -- [!] Return: status, ... - Request status (false, when server has received unknown request, otherwise - true) and potential request returned values.
+    local modem = private.componentModem
+    local port = private.port
+    local address = modem.address
+
+    if (private.active == true) then
+      if (modem) then
+        if (event[1] == "modem_message") then
+          if (event[2] == address and event[4] == port) then
+            local clientVersion = event[6]
+            local serverVersion = _G._XAF._VERSION
+            local responseAddress = event[3]
+            local responsePort = event[6]
+
+            if (clientVersion == serverVersion) then
+              if (type(private.process) == "function") then
+                return private:process(event) -- Custom processing callback must accept 'event' parameter to handle the request.
+              else
+                error("[XAF Error] Server processing function has not been initialized - running default")
+              end
+            else
+              modem.send(responseAddress, responsePort, false, "XAF Version Mismatch")
+            end
+          end
+        end
+      else
+        error("[XAF Error] Server network modem component has not been initialized")
+      end
+    else
+      error("[XAF Error] Server is already stopped")
+    end
   end
   
   public.setModem = function(self, modem)                                         -- [!] Function: setModem(modem) - Sets new server network modem component.

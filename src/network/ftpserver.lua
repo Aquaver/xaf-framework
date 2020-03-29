@@ -419,6 +419,36 @@ function FtpServer:initialize()
     return true
   end
 
+  private.process = function(self, event)                                         -- [!] Function: process(event) - Receives the request and processes it.
+    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1") -- [!] Parameter: event - Event table from `event.pull()` function in OC Event API, with request object.
+                                                                                  -- [!] Return: status, ... - Request procession status (true, if it has been processed properly or false - when server has received unknown request type) and potential return values.
+    local requestName = event[7]
+
+    if (requestName == "FTP_DIRECTORY_CREATE") then
+      return true, private:doDirectoryCreate(event)
+    elseif (requestName == "FTP_DIRECTORY_LIST") then
+      return true, private:doDirectoryList(event)
+    elseif (requestName == "FTP_FILE_DOWNLOAD_CONTINUE") then
+      return true, private:doFileDownloadContinue(event)
+    elseif (requestName == "FTP_FILE_DOWNLOAD_START") then
+      return true, private:doFileDownloadStart(event)
+    elseif (requestName == "FTP_FILE_MOVE") then
+      return true, private:doFileMove(event)
+    elseif (requestName == "FTP_FILE_REMOVE") then
+      return true, private:doFileRemove(event)
+    elseif (requestName == "FTP_FILE_RENAME") then
+      return true, private:doFileRename(event)
+    elseif (requestName == "FTP_FILE_UPLOAD_CONTINUE") then
+      return true, private:doFileUploadContinue(event)
+    elseif (requestName == "FTP_FILE_UPLOAD_START") then
+      return true, private:doFileUploadStart(event)
+    elseif (requestName == "FTP_FILE_UPLOAD_STOP") then
+      return true, private:doFileUploadStop(event)
+    else
+      return false
+    end
+  end
+
   private.setWorkspace = function(self, addresses)                                         -- [!] Function: setWorkspace(addresses) - Sets the FTP server workspace filesystem components addresses map.
     assert(type(addresses) == "table", "[XAF Network] Expected TABLE as argument #1")      -- [!] Parameter: addresses - Table with filesystem components addresses.
                                                                                            -- [!] Return: 'true' - If the workspace map has been set without errors.
@@ -452,60 +482,6 @@ function FtpServer:initialize()
     private.mountCounter = #sortedAddresses
     private.workspaceMap = sortedAddresses
     return true
-  end
-
-  public.process = function(self, event)                                             -- [!] Function: process(event) - Receives the request and processes it.
-    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")    -- [!] Parameter: event - Event table from 'event.pull()' function in OC Event API, with request object.
-                                                                                     -- [!] Return: status, ... - Request procession status ('true' if it has been processed properly or 'false' when server has received unknown request type) and potential return values.
-    local modem = private.componentModem
-    local port = private.port
-    local address = modem.address
-
-    if (private.active == true) then
-      if (modem) then
-        if (event[1] == "modem_message") then
-          if (event[2] == address and event[4] == port) then
-            local clientVersion = event[6]
-            local serverVersion = _G._XAF._VERSION
-            local responseAddress = event[3]
-            local responsePort = event[4]
-            local requestName = event[7]
-
-            if (clientVersion == serverVersion) then
-              if (requestName == "FTP_DIRECTORY_CREATE") then
-                return true, private:doDirectoryCreate(event)
-              elseif (requestName == "FTP_DIRECTORY_LIST") then
-                return true, private:doDirectoryList(event)
-              elseif (requestName == "FTP_FILE_DOWNLOAD_CONTINUE") then
-                return true, private:doFileDownloadContinue(event)
-              elseif (requestName == "FTP_FILE_DOWNLOAD_START") then
-                return true, private:doFileDownloadStart(event)
-              elseif (requestName == "FTP_FILE_MOVE") then
-                return true, private:doFileMove(event)
-              elseif (requestName == "FTP_FILE_REMOVE") then
-                return true, private:doFileRemove(event)
-              elseif (requestName == "FTP_FILE_RENAME") then
-                return true, private:doFileRename(event)
-              elseif (requestName == "FTP_FILE_UPLOAD_CONTINUE") then
-                return true, private:doFileUploadContinue(event)
-              elseif (requestName == "FTP_FILE_UPLOAD_START") then
-                return true, private:doFileUploadStart(event)
-              elseif (requestName == "FTP_FILE_UPLOAD_STOP") then
-                return true, private:doFileUploadStop(event)
-              end
-            else
-              modem.send(responseAddress, responsePort, false, "XAF Version Mismatch")
-            end
-
-            return false
-          end
-        end
-      else
-        error("[XAF Error] Server network modem component has not been initialized")
-      end
-    else
-      error("[XAF Error] Server is already stopped")
-    end
   end
 
   return {

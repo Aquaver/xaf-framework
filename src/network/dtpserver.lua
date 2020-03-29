@@ -240,51 +240,27 @@ function DtpServer:initialize()
     return true
   end
 
-  public.process = function(self, event)                                             -- [!] Function: process(event) - Processes received request object.
-    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")    -- [!] Parameter: event - Event table with request object from 'event.pull()' function in OC Event API.
-                                                                                     -- [!] Return: status, ... - Request procession status ('false' in case of receiving unknown request type, in otherwise 'true') and potential return values.
-    local modem = private.componentModem
-    local port = private.port
-    local address = modem.address
+  private.process = function(self, event)                                         -- [!] Function: process(event) - Processes received request object.
+    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1") -- [!] Parameter: event - Event table with request object from `event.pull()` function in OC Event API.
+                                                                                  -- [!] Return: status, ... - Request procession status (false, in case of receiving unknown request type, in otherwise - true) and potential return values.
+    local requestName = event[7]
 
-    if (private.active == true) then
-      if (modem) then
-        if (event[1] == "modem_message") then
-          if (event[2] == address and event[4] == port) then
-            local clientVersion = event[6]
-            local serverVersion = _G._XAF._VERSION
-            local responseAddress = event[3]
-            local responsePort = event[4]
-            local requestName = event[7]
-
-            if (clientVersion == serverVersion) then
-              if (requestName == "DTP_DATA_GET") then
-                return true, private:doDataGet(event)
-              elseif (requestName == "DTP_DATA_SET") then
-                return true, private:doDataSet(event)
-              elseif (requestName == "DTP_DIRECTORY_CREATE") then
-                return true, private:doDirectoryCreate(event)
-              elseif (requestName == "DTP_OBJECT_MOVE") then
-                return true, private:doObjectMove(event)
-              elseif (requestName == "DTP_OBJECT_REMOVE") then
-                return true, private:doObjectRemove(event)
-              elseif (requestName == "DTP_OBJECT_RENAME") then
-                return true, private:doObjectRename(event)
-              elseif (requestName == "DTP_TABLE_CREATE") then
-                return true, private:doTableCreate(event)
-              end
-            else
-              modem.send(responseAddress, responsePort, false, "XAF Version Mismatch")
-            end
-
-            return false
-          end
-        end
-      else
-        error("[XAF Error] Server network modem component has not been initialized")
-      end
+    if (requestName == "DTP_DATA_GET") then
+      return true, private:doDataGet(event)
+    elseif (requestName == "DTP_DATA_SET") then
+      return true, private:doDataSet(event)
+    elseif (requestName == "DTP_DIRECTORY_CREATE") then
+      return true, private:doDirectoryCreate(event)
+    elseif (requestName == "DTP_OBJECT_MOVE") then
+      return true, private:doObjectMove(event)
+    elseif (requestName == "DTP_OBJECT_REMOVE") then
+      return true, private:doObjectRemove(event)
+    elseif (requestName == "DTP_OBJECT_RENAME") then
+      return true, private:doObjectRename(event)
+    elseif (requestName == "DTP_TABLE_CREATE") then
+      return true, private:doTableCreate(event)
     else
-      error("[XAF Error] Server is already stopped")
+      return false
     end
   end
 

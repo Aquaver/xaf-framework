@@ -251,49 +251,25 @@ function RepServer:initialize()
     return true
   end
 
-  public.process = function(self, event)                                             -- [!] Function: process(event) - Captures request and passes its object to proper handling function.
-    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")    -- [!] Parameter: event - Event table from OC Event API 'event.pull()' function which holds request object.
-                                                                                     -- [!] Return: status, ... - Processing status as boolean flag and additional request values (unless NO_RETURN choosen).
-    local modem = private.componentModem
-    local port = private.port
-    local address = modem.address
+  private.process = function(self, event)                                         -- [!] Function: process(event) - Captures request and passes its object to proper handling function.
+    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1") -- [!] Parameter: event - Event table from OC Event API `event.pull()` function which holds request object.
+                                                                                  -- [!] Return: status, ... - Processing status as boolean flag and additional request values (unless NO_RETURN choosen).
+    local requestName = event[7]
 
-    if (private.active == true) then
-      if (modem) then
-        if (event[1] == "modem_message") then
-          if (event[2] == address and event[4] == port) then
-            local clientVersion = event[6]
-            local serverVersion = _G._XAF._VERSION
-            local responseAddress = event[3]
-            local responsePort = event[4]
-            local requestName = event[7]
-
-            if (clientVersion == serverVersion) then
-              if (requestName == "REP_EXECUTE") then
-                return true, private:doExecute(event)
-              elseif (requestName == "REP_EXECUTE_ABSOLUTE") then
-                return true, private:doExecuteAbsolute(event)
-              elseif (requestName == "REP_EXECUTE_COMMAND") then
-                return true, private:doExecuteCommand(event)
-              elseif (requestName == "REP_EXECUTE_NO_PROTECT") then
-                return true, private:doExecuteNoProtect(event)
-              elseif (requestName == "REP_EXECUTE_NO_RETURN") then
-                return true, private:doExecuteNoReturn(event)
-              elseif (requestName == "REP_SCRIPT_LIST") then
-                return true, private:doScriptList(event)
-              end
-            else
-              modem.send(responseAddress, responsePort, false, "XAF Version Mismatch")
-            end
-
-            return false
-          end
-        end
-      else
-        error("[XAF Error] Server network modem component has not been initialized")
-      end
+    if (requestName == "REP_EXECUTE") then
+      return true, private:doExecute(event)
+    elseif (requestName == "REP_EXECUTE_ABSOLUTE") then
+      return true, private:doExecuteAbsolute(event)
+    elseif (requestName == "REP_EXECUTE_COMMAND") then
+      return true, private:doExecuteCommand(event)
+    elseif (requestName == "REP_EXECUTE_NO_PROTECT") then
+      return true, private:doExecuteNoProtect(event)
+    elseif (requestName == "REP_EXECUTE_NO_RETURN") then
+      return true, private:doExecuteNoReturn(event)
+    elseif (requestName == "REP_SCRIPT_LIST") then
+      return true, private:doScriptList(event)
     else
-      error("[XAF Error] Server is already stopped")
+      return false
     end
   end
 

@@ -1,6 +1,6 @@
 # XAF Module - Network:Server
 
-Server module is the top-level class for all servers - passive network components (computers) which response on clients requests. It describes the default behavior for all servers - setting working network modem, port number and starting or stopping. Furthermore, on these two least actions, the server may perform task function (its called initialization or finalization respectively) that allow preparing server to work or for example closes all file handles before stopping and shutting the machine down. **Important!** Each server should handle case of client version incompatibility - it means that the XAF version on server machine is not equal to the XAF version on client machine. It strongly recommended sending `false` response flag with `XAF Version Mismatch` fixed message to the client.
+Server module is the top-level class for all servers - passive network components (computers) which response on clients requests. It describes the default behavior for all servers - setting working network modem, port number and starting or stopping. Furthermore, on these two least actions, the server may perform task function (its called initialization or finalization respectively) that allow preparing server to work or for example closing all file handles before stopping and shutting the machine down. **Important!** Each custom protocol server must override `private:process(event)` callback where the request is handled. It must contain only the `if-else-end` structure for each custom request name and return `true` on proper request (with additional values - if needed) or `false` in `else` condition. Master (public) procession function - which is called in applications - checks all requirements before sending it to custom callback, so the only task for developer is to handle custom requests.
 
 ## Class documentation
 
@@ -11,6 +11,12 @@ Server module is the top-level class for all servers - passive network component
 
 * **Constructor -** *class is not instantiable - no constructor*
 * **Dependencies -** *no dependencies*
+
+## Network documentation
+
+* **Response messages**
+
+  * `XAF Version Mismatch` - sent on XAF versions incompatibility on server and client machines.
 
 ## Method documentation
 
@@ -26,7 +32,10 @@ Server module is the top-level class for all servers - passive network component
 
   * **Return:** `active` - Server's activity flag.
 
-* **Function:** `process()` - Default server processing function, which always throw an error. It was created to remind that every custom server class must override this method.
+* **Function:** `process()` - Master server processing function, which checks all requirements and executes custom (private set) processing function.
+
+  * **Parameter:** `event` - Event table object from function `event.pull()` in OC Event API.
+  * **Return:** `status, ...` - Request status (false, when server has received unknown request, otherwise - true) and potential request returned values.
 
 * **Function:** `setModem(modem)` - Sets new server network modem component.
 

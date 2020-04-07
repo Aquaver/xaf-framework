@@ -61,7 +61,7 @@ Component class is the abstract top-level interface for graphic components hiera
 
 * **Function:** `setRenderMode(mode)` - Switches current component rendering mode.
 
-  * **Parameter:** `mode` - New rendering mode (0 - default, 1 - all, 2 - insets only, 3 - content only).
+  * **Parameter:** `mode` - New rendering mode (all modes are defined as static constants).
   * **Return:** `'true'` - If new rendering mode was set correctly.
 
 * **Function:** `setRenderer(gpu)` - Sets new GPU as render engine for component.

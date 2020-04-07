@@ -70,6 +70,7 @@ local inetConnection = nil
 if (options.i == true or options.info == true) then
   inetAddress = sourceAddress .. sourceReleases .. '/' .. sourceTags .. '/' .. tostring(argument)
   inetConnection = httpstream:new(inetComponent, inetAddress)
+  inetConnection:setMaxTimeout(0.5)
 
   if (argument == nil) then
     print("    >> Empty XAF version identifier")
@@ -109,6 +110,7 @@ if (options.i == true or options.info == true) then
 elseif (options.l == true or options.list == true) then
   inetAddress = sourceAddress .. sourceReleases .. sourceFlags
   inetConnection = httpstream:new(inetComponent, inetAddress)
+  inetConnection:setMaxTimeout(0.5)
 
   if (argument == nil) then
     argument = 1

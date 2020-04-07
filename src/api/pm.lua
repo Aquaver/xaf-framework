@@ -8,6 +8,7 @@
 local configTable = _G._XAF
 local configAppdata = (type(configTable) == "table") and configTable._APPDATA or nil
 local filesystem = require("filesystem")
+local xafcoreTable = require("xaf/core/xafcore"):getTableInstance()
 
 local PackageManager = {
   C_NAME = "XAF Package Manager API",
@@ -22,12 +23,12 @@ function PackageManager:initialize()
   local private = (parent) and parent.private or {}
   local public = (parent) and parent.public or {}
 
-  private.pathRoot = "aquaver.github.io"
+  private.pathRoot = "io.github.aquaver"
   private.pathPackage = ''
   private.pathPackages = "xaf-packages"
   private.pathPackageBinary = "_bin"
   private.pathPackageConfig = "_config"
-  
+
   public.checkTable = function(self)                    -- [!] Function: checkTable() - Checks whether XAF application data table of this package exists.
     if (configAppdata[private.pathPackage] == nil) then -- [!] Return: 'true' or 'false' - If present package's table exists.
       return false
@@ -35,7 +36,7 @@ function PackageManager:initialize()
       return true
     end
   end
-  
+
   public.createTable = function(self)                   -- [!] Function: createTable() - Tries to create XAF application data table for this package.
     if (configAppdata[private.pathPackage] == nil) then -- [!] Return: 'true' or 'false' - If the table has been created successfully.
       _G._XAF._APPDATA[private.pathPackage] = {}
@@ -44,7 +45,7 @@ function PackageManager:initialize()
       return false
     end
   end
-  
+
   public.dropTable = function(self)                     -- [!] Function: dropTable() - Tries to remove XAF application data table for this package.
     if (configAppdata[private.pathPackage] == nil) then -- [!] Return: 'true' or 'false' - If the table has been dropped (removed) without errors.
       return false
@@ -53,7 +54,7 @@ function PackageManager:initialize()
       return true
     end
   end
-  
+
   public.getPackagePath = function(self, relativePath)                                                       -- [!] Function: getPackagePath(relativePath) - Returns absolute path of this package built on parameter relative path.
     assert(type(relativePath) == "string", "[XAF Core] Expected STRING as argument #1")                      -- [!] Parameter: relativePath - Relative path of given target file.
                                                                                                              -- [!] Return: pathBinary - Created absolute path of given target object file.
@@ -62,7 +63,25 @@ function PackageManager:initialize()
 
     return pathBinary
   end
-  
+
+  public.getPackageVersion = function(self)                                                                                                           -- [!] Function: getPackageVersion() - Returns detected package version.
+    local pathConfig = filesystem.concat('/', private.pathRoot, private.pathPackages, private.pathPackage, private.pathPackageConfig, "package.info") -- [!] Return: packageVersion - Retrieved package version from its configuration file.
+    local pathTable = {}
+
+    if (filesystem.exists(pathConfig) == true) then
+      pathTable = xafcoreTable:loadFromFile(pathConfig)
+
+      if (pathTable["package-description"] and pathTable["package-identifier"] and pathTable["package-index"] and
+          pathTable["package-owner"] and pathTable["package-title"] and pathTable["package-version"] and pathTable["package-xaf"]) then
+            return pathTable["package-version"]
+      else
+        error("[XAF Error] Invalid package configuration file - cannot read version")
+      end
+    else
+      error("[XAF Error] Could not find configuration for package '" .. private.pathPackage .. "'")
+    end
+  end
+
   public.getTableValue = function(self, tableKey)                                   -- [!] Function: getTableValue(tableKey) - Returns specified data value from XAF application data table of this package.
     assert(type(tableKey) == "string", "[XAF Core] Expected STRING as argument #1") -- [!] Parameter: tableKey - Table index (key) of data value you would like to get from.
                                                                                     -- [!] Return: 'true' or 'false' - Boolean flag is the application data table exists (If 'true' then second returned value is retrieved data value).
@@ -72,7 +91,7 @@ function PackageManager:initialize()
       return true, configAppdata[private.pathPackage][tableKey]
     end
   end
-  
+
   public.setTableValue = function(self, tableKey, tableValue)                       -- [!] Function: setTableValue(tableKey, tableValue) - Changes (sets or removes) value stored under specified key in package's XAF application data table.
     assert(type(tableKey) == "string", "[XAF Core] Expected STRING as argument #1") -- [!] Parameter: tableKey - Table index (key) under which the new data will be stored.
                                                                                     -- [!] Parameter: tableValue - New data value that will be stored under given key, leave empty (`nil`) to remove.

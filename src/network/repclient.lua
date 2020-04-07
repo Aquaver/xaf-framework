@@ -71,7 +71,7 @@ function RepClient:initialize()
     local scriptTable = {}                                                                          -- [!] Return: responseStatus, responseMessage, scriptTable - Response status, message and retrieved full script list as Lua table.
     local responseStatus, responseMessage, responseData = private:sendRawRequest("REP_SCRIPT_LIST")
 
-    scriptTable = xafcoreText:split(responseData, string.char(0))
+    scriptTable = xafcoreText:split(responseData, string.char(0), true)
     return responseStatus, responseMessage, scriptTable
   end
 

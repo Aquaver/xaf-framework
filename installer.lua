@@ -18,12 +18,16 @@ local systemVersion = string.sub(systemIdentifier, systemDelimiter)
 
 -- General XAF package installation properties.
 local sourceProject = "https://raw.githubusercontent.com/Aquaver/xaf-framework/"
-local sourceVersion = "1.1.1"
+local sourceVersion = "1.1.2"
 local sourcePackage = "/package"
 local sourcePackageData = "/data"
 local sourceData = {}
 local sourceModules = {}
 local sourceScripts = {}
+
+-- Paths of files that may be tried to download again.
+local retryPathsLocal = {}
+local retryPathsRemote = {}
 
 -- Project required data (tables, constants, et cetera).
 sourceData = {"pm-source", "pm-update"}
@@ -33,10 +37,10 @@ sourceModules["api"] = {"pm"}
 sourceModules["core"] = {"xafcore"}
 sourceModules["graphic"] = {"button", "checkbox", "component", "list", "passwordfield", "progressbar", "slider", "spinner", "switch", "textfield"}
 sourceModules["network"] = {"client", "dnsclient", "dnsserver", "dtpclient", "dtpserver", "ftpclient", "ftpserver", "repclient", "repserver", "server"}
-sourceModules["utility"] = {"bignumber", "httpstream", "jsonparser", "redstream"}
+sourceModules["utility"] = {"bignumber", "httpstream", "jsonparser", "jsonwriter", "redstream"}
 
 -- Target installation directories in absolute paths.
-local pathRoot = "aquaver.github.io"
+local pathRoot = "io.github.aquaver"
 local pathProject = "xaf-framework"
 local pathPackages = "xaf-packages"
 local pathClasses = "xaf"
@@ -182,7 +186,7 @@ for dataIdentifier, dataName in pairs(sourceData) do
   local connection = internet.request(remotePath)
 
   print("    >> Downloading required data: " .. dataName)
-  os.sleep(1)
+  os.sleep(0.5)
 
   for i = 1, 3 do
     if (connection.response()) then
@@ -204,7 +208,12 @@ for dataIdentifier, dataName in pairs(sourceData) do
       break
     else
       print("      >> Cannot download, trying again...")
-      os.sleep(1)
+      os.sleep(0.5)
+
+      if (i == 3) then
+        table.insert(retryPathsLocal, localPath)
+        table.insert(retryPathsRemote, remotePath)
+      end
     end
   end
 end
@@ -233,7 +242,7 @@ for scriptType, scriptTable in pairs(sourceScripts) do
     local connection = internet.request(internalRemote)
 
     print("      >> Downloading script: " .. scriptType .. '/' .. scriptName)
-    os.sleep(1)
+    os.sleep(0.5)
 
     for i = 1, 3 do
       if (connection.response()) then
@@ -255,7 +264,12 @@ for scriptType, scriptTable in pairs(sourceScripts) do
         break
       else
         print("        >> Cannot download, trying again...")
-        os.sleep(1)
+        os.sleep(0.5)
+
+        if (i == 3) then
+          table.insert(retryPathsLocal, internalLocal)
+          table.insert(retryPathsRemote, internalRemote)
+        end
       end
     end
   end
@@ -276,7 +290,7 @@ for moduleName, moduleTable in pairs(sourceModules) do
     local connection = internet.request(remotePath)
 
     print("      >> Downloading class: " .. moduleName .. '/' .. className)
-    os.sleep(1)
+    os.sleep(0.5)
 
     for i = 1, 3 do
       if (connection.response()) then
@@ -298,12 +312,97 @@ for moduleName, moduleTable in pairs(sourceModules) do
         break
       else
         print("        >> Cannot download, trying again...")
-        os.sleep(1)
+        os.sleep(0.5)
+
+        if (i == 3) then
+          table.insert(retryPathsLocal, localPath)
+          table.insert(retryPathsRemote, remotePath)
+        end
       end
     end
   end
 
   print("    >> Downloading module '" .. moduleName .. "' finished")
+end
+
+while (#retryPathsLocal > 0 and #retryPathsRemote > 0) do -- Block responsible for retrying retrieve all files not downloaded properly.
+  print("      >> Warning! Some files (" .. tostring(#retryPathsLocal) .. " items) could not be downloaded")
+  print("      >> Would you like to retry download them?")
+  print("      >> Hit 'Y' to accept or 'N' to finish the installation")
+
+  while (true) do
+    local option = {event.pull("key_down")}
+
+    if (option[3] == 89) then
+      local newRetryLocal = {}
+      local newRetryRemote = {}
+
+      for i = 1, #retryPathsLocal do
+        local fileSegments = filesystem.segments(retryPathsLocal[i])
+        local fileIdentifier = ''
+        local retryConnection = internet.request(retryPathsRemote[i])
+
+        if (fileSegments[#fileSegments - 2]) then
+          fileIdentifier = fileSegments[#fileSegments - 2] .. '/'
+        end
+
+        if (fileSegments[#fileSegments - 1]) then
+          fileIdentifier = fileIdentifier .. fileSegments[#fileSegments - 1] .. '/'
+        end
+
+        if (fileSegments[#fileSegments]) then
+          fileIdentifier = fileIdentifier .. fileSegments[#fileSegments]
+        end
+
+        print("        >> Downloading file: " .. fileIdentifier)
+        os.sleep(0.5)
+
+        for j = 1, 3 do
+          if (retryConnection.response()) then
+            local retryFile = filesystem.open(retryPathsLocal[i], 'w')
+            local retryCode = retryConnection.read(math.huge)
+            local retrySize = 0
+
+            while (retryCode) do
+              retrySize = retrySize + unicode.wlen(retryCode)
+              retryFile:write(retryCode)
+              retryCode = retryConnection.read(math.huge)
+            end
+
+            sourceTotalSize = sourceTotalSize + retrySize
+            retryConnection.close()
+            retryFile:close()
+
+            print("        >> Downloading file '" .. fileIdentifier .. "' finished (" .. string.format("%.2f", retrySize / 1024) .. " kB)")
+            break
+          else
+            print("          >> Cannot download, trying again...")
+            os.sleep(0.5)
+
+            if (j == 3) then
+              table.insert(newRetryLocal, retryPathsLocal[i])
+              table.insert(newRetryRemote, retryPathsRemote[i])
+            end
+          end
+        end
+      end
+
+      retryPathsLocal = {}
+      retryPathsRemote = {}
+
+      for i = 1, #newRetryLocal do
+        table.insert(retryPathsLocal, table.remove(newRetryLocal, 1))
+        table.insert(retryPathsRemote, table.remove(newRetryRemote, 1))
+      end
+
+      break
+    elseif (option[3] == 78) then
+      retryPathsLocal = {} -- Ignoring not downloaded files.
+      retryPathsRemote = {}
+
+      break
+    end
+  end
 end
 
 if (_G._XAF) then

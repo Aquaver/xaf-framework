@@ -160,7 +160,7 @@ XAFCore is framework core library as its name says. This class provides five sub
 * **Function:** `convertLinesToString(linesTable, mode)` - Converts table with string lines to one concatenated string.
 
   * **Parameter:** `linesTable` - Table with lines to concatenate.
-  * **Parameter:** `mode` - Concatenation mode (0 - default, 1 - space, 2 - no space, 3 - new line character)
+  * **Parameter:** `mode` - Concatenation mode (all modes are defined as static constants).
   * **Return:** `concatenatedString` - The string after concatenation.
 
 * **Function:** `convertStringToLines(text, width)` - Splits whole string into lines and returns them as table.
@@ -187,8 +187,9 @@ XAFCore is framework core library as its name says. This class provides five sub
   * **Parameter:** `width` - Fixed width to which text will be aligned.
   * **Return:** `paddedText` - Right-side aligned text with fixed width.
 
-* **Function:** `split(text, delimiter)` - Splits given string to tokens by given delimiters.
+* **Function:** `split(text, delimiter, ignoreEmpty)` - Splits given string to tokens by given delimiters.
 
   * **Parameter:** `text` - String data text to be split.
-  * **Parameter:** `delimiter` - String which contains set of delimiters to splitting (for space use - ' ').
-  * **Return:** `tokensTable` - Table with split string as tokens.
+  * **Parameter:** `delimiter` - Delimiter string used for splitting, may be multicharacter.
+  * **Parameter:** `ignoreEmpty` - When 'true' value, ignores and discards found empty characters ('') between delimiters.
+  * **Return:** `tokenTable` - Table with split string as tokens.

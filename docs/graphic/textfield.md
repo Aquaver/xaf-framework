@@ -22,11 +22,19 @@ Text field module is the most common graphical component which allows entering d
 
 * **Function:** `getColorSelected()` - Returns text field selection (highlight) color.
 
-  * **Return:** `'colorSelected'` - Current text field highlight color as number.
+  * **Return:** `colorSelected` - Current text field highlight color as number.
+
+* **Function:** `getLineExtension()` - Returns current set line extension capacity value.
+
+  * **Return:** `lineExtension` - Value of text line extended capacity (in characters).
 
 * **Function:** `getText()` - Returns text field content table.
 
   * **Return:** `textTable` - Table with text content lines.
+
+* **Function:** `getTrimmedText()` - Returns text table trimmed trailing empty lines (nil or empty characters).
+
+  * **Return:** `trimmedText` - Value of text table without last empty lines.
 
 * **Function:** `register(event)` - Registers the text field component in main event loop.
 
@@ -37,6 +45,11 @@ Text field module is the most common graphical component which allows entering d
 
   * **Parameter:** `color` - New line selection (highlight) color (in 0 - 0xFFFFFF range).
   * **Return:** `'true'` - If new color has been set properly.
+
+* **Function:** `setLineExtension(newValue)` - Extends total capacity of text line (in characters).
+
+  * **Parameter:** `newValue` - Value of line extension (0 to disable, math.huge for no limit).
+  * **Return:** `'true'` - If new line extension value has been set.
 
 * **Function:** `setOnClick(task, ...)` - Changes response action on 'click' event.
 

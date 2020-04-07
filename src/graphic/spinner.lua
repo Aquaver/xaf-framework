@@ -64,19 +64,31 @@ function Spinner:initialize()
               event = private.eventClick
               arguments = private.eventClickArguments
 
-              if (private.contentIndex > 1) then
-                private.contentIndex = private.contentIndex - 1
+              if (private.spinnerMode == Spinner.static.MODE_ITERATOR) then -- Reversed scrolling (click up) direction in 'MODE_ITERATOR' spinner mode.
+                if (private.contentIndex < private.contentLength) then
+                  private.contentIndex = private.contentIndex + 1
+                end
+              else
+                if (private.contentIndex > 1) then
+                  private.contentIndex = private.contentIndex - 1
+                end
               end
             elseif (clickX == private.positionX + private.columns + 6) then
               event = private.eventClick
               arguments = private.eventClickArguments
 
-              if (private.contentIndex < private.contentLength) then
-                private.contentIndex = private.contentIndex + 1
+              if (private.spinnerMode == Spinner.static.MODE_ITERATOR) then -- Reversed scrolling (click down).
+                if (private.contentIndex > 1) then
+                  private.contentIndex = private.contentIndex - 1
+                end
+              else
+                if (private.contentIndex < private.contentLength) then
+                  private.contentIndex = private.contentIndex + 1
+                end
               end
             end
 
-            public:setRenderMode(3)
+            public:setRenderMode(component.static.RENDER_CONTENT)
             public:view()
             public:setRenderMode(render)
 
@@ -98,17 +110,17 @@ function Spinner:initialize()
           local endPositionX = 0
           local endPositionY = 0
 
-          if (render <= 1) then
+          if (render <= component.static.RENDER_ALL) then
             startPositionX = private.positionX
             startPositionY = private.positionY
             endPositionX = private.positionX + private.totalWidth - 1
             endPositionY = private.positionY + private.totalHeight - 1
-          elseif (render <= 2) then
+          elseif (render <= component.static.RENDER_INSETS) then
             startPositionX = private.positionX + 1
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 2
             endPositionY = private.positionY + private.totalHeight - 2
-          elseif (render <= 3) then
+          elseif (render <= component.static.RENDER_CONTENT) then
             startPositionX = private.positionX + 2
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 2
@@ -120,13 +132,21 @@ function Spinner:initialize()
             local event = private.eventScroll
             local arguments = private.eventScrollArguments
 
-            if (private.contentIndex > 1 and scrollDirection < 0) then
-              private.contentIndex = private.contentIndex - 1
-            elseif (private.contentIndex < private.contentLength and scrollDirection > 0) then
-              private.contentIndex = private.contentIndex + 1
+            if (private.spinnerMode == Spinner.static.MODE_ITERATOR) then
+              if (private.contentIndex > 1 and scrollDirection > 0) then -- Reversed scrolling (scroll up).
+                private.contentIndex = private.contentIndex - 1
+              elseif (private.contentIndex < private.contentLength and scrollDirection < 0) then -- Reversed scrolling (scroll down).
+                private.contentIndex = private.contentIndex + 1
+              end
+            else
+              if (private.contentIndex > 1 and scrollDirection < 0) then
+                private.contentIndex = private.contentIndex - 1
+              elseif (private.contentIndex < private.contentLength and scrollDirection > 0) then
+                private.contentIndex = private.contentIndex + 1
+              end
             end
 
-            public:setRenderMode(3)
+            public:setRenderMode(component.static.RENDER_CONTENT)
             public:view()
             public:setRenderMode(render)
 
@@ -149,7 +169,7 @@ function Spinner:initialize()
     local incrementValue = increment
     local tableIndex = 1
 
-    if (private.spinnerMode == 0 or private.spinnerMode == 1) then
+    if (private.spinnerMode == Spinner.static.MODE_DEFAULT or private.spinnerMode == Spinner.static.MODE_COUNTER) then
       if (increment <= 0) then
         error("[XAF Error] Increment number must be positive")
       end
@@ -179,7 +199,7 @@ function Spinner:initialize()
   public.setIterator = function(self, content)                                      -- [!] Function: setIterator(content) - Sets spinner new content table (only for iterators).
     assert(type(content) == "table", "[XAF Graphic] Expected TABLE as argument #1") -- [!] Parameter: content - New table with content.
                                                                                     -- [!] Return: 'true' - If new content table has been set correctly.
-    if (private.spinnerMode == 2) then
+    if (private.spinnerMode == Spinner.static.MODE_ITERATOR) then
       private.contentTable = {}
       private.contentIndex = 1
       private.contentValue = nil
@@ -248,7 +268,7 @@ function Spinner:initialize()
       local previousForeground = renderer.getForeground()
       local render = private.renderMode
 
-      if (render <= 1) then
+      if (render <= component.static.RENDER_ALL) then
         renderer.setBackground(private.colorBackground)
         renderer.setForeground(private.colorBorder)
 
@@ -270,14 +290,14 @@ function Spinner:initialize()
         renderer.set(posX + columns + 5, posY + 2, '┴')
       end
 
-      if (render <= 2) then
+      if (render <= component.static.RENDER_INSETS) then
         renderer.setBackground(private.colorBackground)
 
         renderer.set(posX + 1, posY + 1, ' ')
         renderer.set(posX + columns + 2, posY + 1, ' ')
       end
 
-      if (render <= 3) then
+      if (render <= component.static.RENDER_CONTENT) then
         local valueRaw = private.contentTable[private.contentIndex]
         local valueString = (valueRaw == nil) and '' or tostring(valueRaw)
 
@@ -337,7 +357,7 @@ function Spinner:new(positionX, positionY, columns, mode)
 
   assert(type(mode) == "number", "[XAF Graphic] Expected NUMBER as argument #4")
 
-  if (mode >= 0 and mode <= 2) then
+  if (mode >= Spinner.static.MODE_DEFAULT and mode <= Spinner.static.MODE_ITERATOR) then
     if (xafcoreMath:checkInteger(mode) == true) then
       private.spinnerMode = mode
     else

@@ -31,17 +31,11 @@ DNS Server is as its name says module which allows creating and running simple b
   * `Invalid Address` - received on sending address with invalid UUID syntax.
   * `Invalid Domain Name` - mostly sent in response on sending `nil` domain name.
   * `Invalid Domain Object` - as same as the upper one, sent when trying to unregister `nil` domain object.
-  * `XAF Version Mismatch` - sent on XAF versions incompatibility on server and client machines.
   * `OK` - Message sent as response on proper request.
 
 ## Method documentation
 
 * *All methods from* `Network:Server`
-
-* **Function:** `process(event)` - Passes the whole event table object and processes the DNS request.
-
-  * **Parameter:** `event` - Event table object from function 'event.pull()' in OC Event API.
-  * **Return:** `status, ...` - Request status ('false' when server has received unknown request, otherwise 'true') and potential request returned values.
 
 ### Private in-class method documentation
 
@@ -65,3 +59,8 @@ DNS Server is as its name says module which allows creating and running simple b
 
   * **Parameter:** `rootPath` - DNS server workspace tree root path string.
   * **Return:** `'true'` - If server workspace has been initialized successfully.
+
+* **Function:** `process(event)` - Passes the whole event table object and processes the DNS request.
+
+  * **Parameter:** `event` - Event table object from function `event.pull()` in OC Event API.
+  * **Return:** `status, ...` - Request status (false, when server has received unknown request, otherwise - true) and potential request returned values.

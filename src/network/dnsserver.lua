@@ -181,45 +181,21 @@ function DnsServer:initialize()
     return true
   end
 
-  public.process = function(self, event)                                           -- [!] Function: process(event) - Passes the whole event table object and processes the DNS request.
-    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1")  -- [!] Parameter: event - Event table object from function 'event.pull()' in OC Event API.
-                                                                                   -- [!] Return: status, ... - Request status ('false' when server has received unknown request, otherwise 'true') and potential request returned values.
-    local modem = private.componentModem
-    local port = private.port
-    local address = modem.address
+  private.process = function(self, event)                                         -- [!] Function: process(event) - Passes the whole event table object and processes the DNS request.
+    assert(type(event) == "table", "[XAF Network] Expected TABLE as argument #1") -- [!] Parameter: event - Event table object from function `event.pull()` in OC Event API.
+                                                                                  -- [!] Return: status, ... - Request status (false, when server has received unknown request, otherwise - true) and potential request returned values.
+    local requestName = event[7]
 
-    if (private.active == true) then
-      if (modem) then
-        if (event[1] == "modem_message") then
-          if (event[2] == address and event[4] == port) then
-            local clientVersion = event[6]
-            local serverVersion = _G._XAF._VERSION
-            local responseAddress = event[3]
-            local responsePort = event[4]
-            local requestName = event[7]
-
-            if (clientVersion == serverVersion) then
-              if (requestName == "DNS_REGISTER") then
-                return true, private:doRegister(event)
-              elseif (requestName == "DNS_TRANSLATE_FORWARD") then
-                return true, private:doTranslateForward(event)
-              elseif (requestName == "DNS_TRANSLATE_REVERSE") then
-                return true, private:doTranslateReverse(event)
-              elseif (requestName == "DNS_UNREGISTER") then
-                return true, private:doUnregister(event)
-              end
-            else
-              modem.send(responseAddress, responsePort, false, "XAF Version Mismatch")
-            end
-
-            return false
-          end
-        end
-      else
-        error("[XAF Error] Server network modem component has not been initialized")
-      end
+    if (requestName == "DNS_REGISTER") then
+      return true, private:doRegister(event)
+    elseif (requestName == "DNS_TRANSLATE_FORWARD") then
+      return true, private:doTranslateForward(event)
+    elseif (requestName == "DNS_TRANSLATE_REVERSE") then
+      return true, private:doTranslateReverse(event)
+    elseif (requestName == "DNS_UNREGISTER") then
+      return true, private:doUnregister(event)
     else
-      error("[XAF Error] Server is already stopped")
+      return false
     end
   end
 

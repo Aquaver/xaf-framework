@@ -33,7 +33,7 @@ Progress Bar is a simple graphic component which does not accept any events. It 
 
 * **Function:** `setLayoutMode(mode)` - Changes progress bar component layout mode.
 
-  * **Parameter:** `mode` - New progress bar layout mode (0 - default, 1 - horizontal, 2 - vertical).
+  * **Parameter:** `mode` - New progress bar layout mode (all modes are defined as static constants).
   * **Return:** `'true'` - If the new progress bar layout mode has been set correctly.
 
 * **Function:** `setValues(minimum, maximum, initial)` - Sets new progress bar value bounds with initial value.

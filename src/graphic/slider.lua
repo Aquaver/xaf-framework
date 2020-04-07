@@ -53,17 +53,17 @@ function Slider:initialize()
           local endPositionX = 0
           local endPositionY = 0
           
-          if (render <= 1) then
+          if (render <= component.static.RENDER_ALL) then
             startPositionX = private.positionX
             startPositionY = private.positionY
             endPositionX = private.positionX + private.totalWidth - 1
             endPositionY = private.positionY + private.totalHeight - 1
-          elseif (render <= 2) then
+          elseif (render <= component.static.RENDER_INSETS) then
             startPositionX = private.positionX + 1
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 2
             endPositionY = private.positionY + private.totalHeight - 2
-          elseif (render <= 3) then
+          elseif (render <= component.static.RENDER_CONTENT) then
             startPositionX = private.positionX + 2
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 3
@@ -85,16 +85,16 @@ function Slider:initialize()
                 local posY = private.positionY
                 local previousBackground = renderer.getBackground()
                 local previousForeground = renderer.getForeground()
-                local lineChar = (private.rotation == 0 or private.rotation == 1) and '─' or '│'
+                local lineChar = (private.rotation == Slider.static.ROTATE_DEFAULT or private.rotation == Slider.static.ROTATE_HORIZONTAL) and '─' or '│'
                 
-                public:setRenderMode(3)
+                public:setRenderMode(component.static.RENDER_CONTENT)
                 public:view()
                 public:setRenderMode(render)
                 
                 renderer.setBackground(private.colorBackground)
                 renderer.setForeground(private.colorContent)
                 
-                if (private.rotation == 0 or private.rotation == 1) then
+                if (private.rotation == Slider.static.ROTATE_DEFAULT or private.rotation == Slider.static.ROTATE_HORIZONTAL) then
                   private.value = positionTable[positionKey]
                   
                   renderer.set(posX + 3, posY + 1, lineChar)
@@ -151,7 +151,7 @@ function Slider:initialize()
       error("[XAF Error] Invalid slider bar incremental number - must be a positive integer")
     end
     
-    if (private.rotation == 0 or private.rotation == 1) then
+    if (private.rotation == Slider.static.ROTATE_DEFAULT or private.rotation == Slider.static.ROTATE_HORIZONTAL) then
       for i = posX + 3, posX + sliderMaxShift + 2, sliderShift do
         local key = tostring(i .. ':' .. posY + 1)
         local value = valueInitial + (valueIncrement * valueIndex)
@@ -185,7 +185,7 @@ function Slider:initialize()
       local previousForeground = renderer.getForeground()
       local render = private.renderMode
       
-      if (render <= 1) then
+      if (render <= component.static.RENDER_ALL) then
         renderer.setBackground(private.colorBackground)
         renderer.setForeground(private.colorBorder)
         
@@ -200,18 +200,18 @@ function Slider:initialize()
         renderer.set(posX + width - 1, posY + height - 1, '┘')
       end
       
-      if (render <= 2) then
+      if (render <= component.static.RENDER_INSETS) then
         renderer.setBackground(private.colorBackground)
         
         renderer.fill(posX + 1, posY + 1, 1, height - 2, ' ')
         renderer.fill(posX + width - 2, posY + 1, 1, height - 2, ' ')
       end
       
-      if (render <= 3) then
+      if (render <= component.static.RENDER_CONTENT) then
         renderer.setBackground(private.colorBackground)
         renderer.setForeground(private.colorContent)
         
-        if (private.rotation == 0 or private.rotation == 1) then
+        if (private.rotation == Slider.static.ROTATE_DEFAULT or private.rotation == Slider.static.ROTATE_HORIZONTAL) then
           renderer.fill(posX + 3, posY + 1, length, 1, '─')
           
           renderer.set(posX + 2, posY + 1, '├')
@@ -272,14 +272,14 @@ function Slider:new(positionX, positionY, sliderLength, sliderRotation)
   
   assert(type(sliderRotation) == "number", "[XAF Graphic] Expected NUMBER as argument #4")
   
-  if ((xafcoreMath:checkInteger(sliderRotation) == true) and (sliderRotation >= 0 and sliderRotation <= 2)) then
+  if ((xafcoreMath:checkInteger(sliderRotation) == true) and (sliderRotation >= Slider.static.ROTATE_DEFAULT and sliderRotation <= Slider.static.ROTATE_VERTICAL)) then
     private.rotation = sliderRotation
   else
     error("[XAF Error] Invalid slider rotation mode")
   end
   
-  private.totalWidth = (sliderRotation == 0 or sliderRotation == 1) and sliderLength + 6 or 5
-  private.totalHeight = (sliderRotation == 0 or sliderRotation == 1) and 3 or sliderLength + 4
+  private.totalWidth = (sliderRotation == Slider.static.ROTATE_DEFAULT or sliderRotation == Slider.static.ROTATE_HORIZONTAL) and sliderLength + 6 or 5
+  private.totalHeight = (sliderRotation == Slider.static.ROTATE_DEFAULT or sliderRotation == Slider.static.ROTATE_HORIZONTAL) and 3 or sliderLength + 4
   
   if (self.C_INSTANCE == true) then
     return public

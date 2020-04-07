@@ -48,7 +48,9 @@ local sourceData = ''
 
 local inetAddress = sourceAddress .. sourceReleaseBranch .. sourcePackageInfo
 local inetComponent = component.getPrimary("internet")
+
 local inetConnection = httpstream:new(inetComponent, inetAddress)
+inetConnection:setMaxTimeout(0.5)
 
 if (inetConnection.connect() == true) then
   for dataChunk in inetConnection:getData() do

@@ -49,9 +49,12 @@ RedStream (also referenced as Redstone Stream) is a class which generally makes 
   * **Parameter:** `value` - New redstone power value - if 'nil' then it will be the maximum available ('full on').
   * **Return:** `'true'` - If the redstone signal has been changed properly.
 
+    * For `analog` mode, output signal value range is `0 - 15`
+    * For `digital (bundled)` mode, output signal value range is `0 - 255`
+
 * **Function:** `setBundleColor(color)` - Changes redstone bundle color for digital mode.
 
-  * **Parameter:** `color` - Plain color name as string (white, orange, light_blue, etc). All bundle colors have been shown below.
+  * **Parameter:** `color` - Plain color name as string (white, orange, light_blue, etc).
   * **Return:** `'true'` - If the color value has been set correctly.
 
 | Color name | Numeric value | Color name | Numeric value | Color name | Numeric value | Color name | Numeric value |
@@ -68,7 +71,7 @@ RedStream (also referenced as Redstone Stream) is a class which generally makes 
 
 * **Function:** `setStreamSide(side)` - Sets redstone stream side, from which the signal will be transmitted.
 
-  * **Parameter:** `side` - New side as its name, may be absolute (like 'north') or relative (like 'right'). All supported sides have been shown below.
+  * **Parameter:** `side` - New side as its name, may be absolute (like 'north') or relative (like 'right').
   * **Return:** `'true'` - If the side value has been changed properly.
 
     * `top`

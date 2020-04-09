@@ -30,7 +30,7 @@ if (options.h == true or options.help == true) then
 end
 
 if (options.c == true or options.content == true or options.l == true or options.list == true) then
-  local pathRoot = "aquaver.github.io"
+  local pathRoot = "io.github.aquaver"
   local pathProject = "xaf-framework"
   local pathData = "data"
   local pathName = "pm-source.info"
@@ -108,7 +108,9 @@ if (options.c == true or options.content == true or options.l == true or options
       local targetSuffix = "/git/trees/master"
       local inetAddress = targetAddress .. sourceData[repositoryIndex] .. targetSuffix
       local inetComponent = component.getPrimary("internet")
+
       local inetConnection = httpstream:new(inetComponent, inetAddress)
+      inetConnection:setMaxTimeout(0.5)
 
       if (inetConnection:connect() == true) then
         local packageCount = 0
@@ -129,6 +131,7 @@ if (options.c == true or options.content == true or options.l == true or options
           if (jsonTable["tree"][i]["path"] == categoryName) then
             inetAddress = jsonTable["tree"][i]["url"]
             inetConnection = httpstream:new(inetComponent, inetAddress)
+            inetConnection:setMaxTimeout(0.5)
 
             if (inetConnection:connect() == true) then
               jsonData = ''
@@ -152,6 +155,7 @@ if (options.c == true or options.content == true or options.l == true or options
 
                   inetAddress = configAddress .. sourceData[repositoryIndex] .. configBranch .. categoryName .. '/' .. objectPath .. configPath
                   inetConnection = httpstream:new(inetComponent, inetAddress)
+                  inetConnection:setMaxTimeout(0.5)
 
                   if (inetConnection:connect() == true) then
                     print("      >> Object found: " .. objectPath .. " (valid PM package)")
@@ -212,7 +216,9 @@ if (options.c == true or options.content == true or options.l == true or options
       local targetSuffix = "/git/trees/master"
       local inetAddress = targetAddress .. sourceData[repositoryIndex] .. targetSuffix
       local inetComponent = component.getPrimary("internet")
+
       local inetConnection = httpstream:new(inetComponent, inetAddress)
+      inetConnection:setMaxTimeout(0.5)
 
       if (inetConnection:connect() == true) then
         local categoryCount = 0

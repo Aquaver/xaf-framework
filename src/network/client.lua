@@ -25,10 +25,10 @@ function Client:initialize()
   local private = (parent) and parent.private or {}
   local public = (parent) and parent.public or {}
 
-  private.componentModem = nil -- By default, any client has not modem component assigned.
-  private.targetAddress = ''   -- Each client must have target address set before connection attempt.
-  private.targetPort = 1       -- Clients must also have target port set before connection.
-  private.timeout = 10         -- Timeout is a time after which client will interrupt connection in seconds [-1 = infinity, default = 10].
+  private.componentModem = nil                    -- By default, any client has not modem component assigned.
+  private.targetAddress = ''                      -- Each client must have target address set before connection attempt.
+  private.targetPort = 1                          -- Clients must also have target port set before connection.
+  private.timeout = Client.static.TIMEOUT_DEFAULT -- Timeout is a time after which client will interrupt connection in seconds [-1 = infinity, default = 10].
 
   private.sendRawRequest = function(self, name, ...)                                     -- [!] Function: sendRawRequest(name, ...) - Sends raw request to the target server to previously set target port. To use in custom requesting functions as core connecting.
     assert(type(name) == "string", "[XAF Network] Expected STRING as argument #1")       -- [!] Parameter: name - Raw request name as string.

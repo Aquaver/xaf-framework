@@ -39,17 +39,11 @@ Another XAF built-in useful network protocol called Data Transfer Protocol. In c
   * `Path Not Exists` - generic message received on trying to work with path does not exist.
   * `Table Already Exists` - feedback got when creating new table with name that was currently used by another table in directory.
   * `Table Not Exists` - message got on using table mechanisms (data get/set) on table that does not exist.
-  * `XAF Version Mismatch` - sent on XAF versions incompatibility on server and client machines.
   * `OK` - received as response on proper request.
 
 ## Method documentation
 
 * *All methods from* `Network:Server`
-
-* **Function:** `process(event)` - Processes received request object.
-
-  * **Parameter:** `event` - Event table with request object from 'event.pull()' function in OC Event API.
-  * **Return:** `status`, `...` - Request procession status ('false' in case of receiving unknown request type, in otherwise 'true') and potential return values.
 
 ### Private in-class method documentation
 
@@ -85,3 +79,8 @@ Another XAF built-in useful network protocol called Data Transfer Protocol. In c
 
   * **Parameter:** `rootPath` - Workspace root path string.
   * **Return:** `'true'` - If the workspace has been prepared and initialized successfully.
+
+* **Function:** `process(event)` - Processes received request object.
+
+  * **Parameter:** `event` - Event table with request object from `event.pull()` function in OC Event API.
+  * **Return:** `status`, `...` - Request procession status (false, in case of receiving unknown request type, in otherwise - true) and potential return values.

@@ -128,9 +128,10 @@ function HttpStream:initialize()
 
   public.getDateObject = function(self)                                                                                                                                                  -- [!] Function: getDateObject() - Returns a table with an actual date and time elements returned from HTTP server.
     if (private.isConnected == true) then                                                                                                                                                -- [!] Return: dateObject - Date and time elements table.
-      local dateString = private.responseHeaders["Date"][1]
+      local dateStringRaw = private.responseHeaders["Date"][1]
+      local dateString = dateStringRaw:gsub(' ', '|'):gsub(',', '|'):gsub(':', '|')
       local dateObject = {}
-      local dateObjectRaw = xafcoreText:split(dateString, " ,:")
+      local dateObjectRaw = xafcoreText:split(dateString, '|', true)
       local dayNames = {["Mon"] = 1, ["Tue"] = 2, ["Wed"] = 3, ["Thu"] = 4, ["Fri"] = 5, ["Sat"] = 6, ["Sun"] = 7}
       local monthNames = {["Jan"] = 1, ["Feb"] = 2, ["Mar"] = 3, ["Apr"] = 4, ["May"] = 5, ["Jun"] = 6, ["Jul"] = 7, ["Aug"] = 8, ["Sep"] = 9, ["Oct"] = 10, ["Nov"] = 11, ["Dec"] = 12}
 

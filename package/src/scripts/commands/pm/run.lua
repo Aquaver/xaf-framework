@@ -27,7 +27,7 @@ if (options.h == true or options.help == true) then
   os.exit()
 end
 
-local pathRoot = "aquaver.github.io"
+local pathRoot = "io.github.aquaver"
 local pathPackages = "xaf-packages"
 local pathPackageBin = "_bin"
 local pathPackageConfig = "_config"
@@ -45,7 +45,19 @@ end
 
 local sourceName = tostring(table.remove(arguments, 1))
 local sourcePath = filesystem.concat(pathRoot, pathPackages, sourceName, pathPackageConfig, pathConfigName)
+local sourceFile = filesystem.concat(pathRoot, pathPackages, sourceName)
 local sourceData = {}
+
+if (filesystem.exists(sourceFile) == false or filesystem.isDirectory(sourceFile) == false) then
+  print("--------------------------------------")
+  print("-- XAF Package Manager - Controller --")
+  print("--------------------------------------")
+  print("  >> Cannot find package with entered name")
+  print("  >> Install it via 'xaf-pm package [-a | -add]'")
+  print("  >> Or use 'xaf-pm package [-l | --list]' for available package list")
+
+  os.exit()
+end
 
 if (filesystem.exists(sourcePath) == true) then
   sourceData = xafcoreTable:loadFromFile(sourcePath)

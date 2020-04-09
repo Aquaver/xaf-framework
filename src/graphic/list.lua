@@ -85,7 +85,7 @@ function List:initialize()
           local endPositionX = 0
           local endPositionY = 0
 
-          if (render <= 3) then -- List will react on clicks only inside the internal container because of click line index.
+          if (render <= component.static.RENDER_CONTENT) then -- List will react on clicks only inside the internal container because of click line index.
             startPositionX = private.positionX + 2
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 3
@@ -138,7 +138,7 @@ function List:initialize()
               error("[XAF Error] Invalid list selection mode")
             end
 
-            public:setRenderMode(3)
+            public:setRenderMode(component.static.RENDER_CONTENT)
             public:view(private.showKeys)
             public:setRenderMode(render)
 
@@ -160,17 +160,17 @@ function List:initialize()
           local endPositionX = 0
           local endPositionY = 0
 
-          if (render <= 1) then
+          if (render <= component.static.RENDER_ALL) then
             startPositionX = private.positionX
             startPositionY = private.positionY
             endPositionX = private.positionX + private.totalWidth - 1
             endPositionY = private.positionY + private.totalHeight - 1
-          elseif (render <= 2) then
+          elseif (render <= component.static.RENDER_INSETS) then
             startPositionX = private.positionX + 1
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 2
             endPositionY = private.positionY + private.totalHeight - 2
-          elseif (render <= 3) then
+          elseif (render <= component.static.RENDER_CONTENT) then
             startPositionX = private.positionX + 2
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 3
@@ -194,7 +194,7 @@ function List:initialize()
             scrollPosition = math.floor(scrollFactor * (private.rows - 1))
             private.scrollbarPosition = scrollPosition
 
-            public:setRenderMode(3)
+            public:setRenderMode(component.static.RENDER_CONTENT)
             public:view(private.showKeys)
             public:setRenderMode(render)
 
@@ -256,11 +256,11 @@ function List:initialize()
     return true
   end
 
-  public.setSelectionModel = function(self, mode, color)                            -- [!] Function: setSelectionModel(mode, color) - Sets new list selection model (mode number and color number).
-    assert(type(mode) == "number", "[XAF Graphic] Expected NUMBER as argument #1")  -- [!] Parameter: mode - New selection mode (0 - default, 1 - single, 2 - multiple).
-    assert(type(color) == "number", "[XAF Graphic] Expected NUMBER as argument #2") -- [!] Parameter: color - New selected line highlight color.
-                                                                                    -- [!] Return: 'true' - If the new selection model has been set properly.
-    if (mode >= 0 and mode <= 3) then
+  public.setSelectionModel = function(self, mode, color)                                -- [!] Function: setSelectionModel(mode, color) - Sets new list selection model (mode number and color number).
+    assert(type(mode) == "number", "[XAF Graphic] Expected NUMBER as argument #1")      -- [!] Parameter: mode - New selection mode (all modes are defined as static constants).
+    assert(type(color) == "number", "[XAF Graphic] Expected NUMBER as argument #2")     -- [!] Parameter: color - New selected line highlight color.
+                                                                                        -- [!] Return: 'true' - If the new selection model has been set properly.
+    if (mode >= List.static.SELECT_DEFAULT and mode <= List.static.SELECT_NOTHING) then
       private.selectionMode = mode
     else
       error("[XAF Error] Invalid list selection mode number")
@@ -297,7 +297,7 @@ function List:initialize()
       local previousForeground = renderer.getForeground()
       local render = private.renderMode
 
-      if (render <= 1) then
+      if (render <= component.static.RENDER_ALL) then
         renderer.setBackground(private.colorBackground)
         renderer.setForeground(private.colorBorder)
 
@@ -319,14 +319,14 @@ function List:initialize()
         end
       end
 
-      if (render <= 2) then
+      if (render <= component.static.RENDER_INSETS) then
         renderer.setBackground(private.colorBackground)
 
         renderer.fill(posX + 1, posY + 1, 1, height - 2, ' ')
         renderer.fill(posX + columns + 2, posY + 1, 1, height - 2, ' ')
       end
 
-      if (render <= 3) then
+      if (render <= component.static.RENDER_CONTENT) then
         local contentTable = private.contentTable
         local contentKeys = private.contentTableKeys
         local contentLength = private.contentLength

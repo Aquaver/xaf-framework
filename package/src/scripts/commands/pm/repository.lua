@@ -37,7 +37,7 @@ end
 
 if (options.l == true or options.list == true or options.p == true or options.priority == true or -- First group, offline (local only) commands - do not need internet component.
     options.r == true or options.remove == true) then
-      local pathRoot = "aquaver.github.io"
+      local pathRoot = "io.github.aquaver"
       local pathProject = "xaf-framework"
       local pathData = "data"
       local pathName = "pm-source.info"
@@ -263,8 +263,10 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
     local inetAddress = targetAddress .. targetRepository .. targetPath
     local inetComponent = component.getPrimary("internet")
+
     local inetConnection = httpstream:new(inetComponent, inetAddress)
     local inetResponse = 0
+    inetConnection:setMaxTimeout(0.5)
 
     if (inetConnection:connect() == true) then
       local infoData = ''
@@ -289,7 +291,7 @@ if (options.a == true or options.add == true or options.i == true or options.inf
         infoData = ''
 
         if (infoTable["repository-description"] and infoTable["repository-owner"] and infoTable["repository-title"] and infoTable["repository-xaf"]) then
-          local pathRoot = "aquaver.github.io"
+          local pathRoot = "io.github.aquaver"
           local pathProject = "xaf-framework"
           local pathData = "data"
           local pathName = "pm-source.info"
@@ -366,8 +368,10 @@ if (options.a == true or options.add == true or options.i == true or options.inf
 
     local inetAddress = targetAddress .. targetRepository .. targetPath
     local inetComponent = component.getPrimary("internet")
+
     local inetConnection = httpstream:new(inetComponent, inetAddress)
     local inetResponse = 0
+    inetConnection:setMaxTimeout(0.5)
 
     if (inetConnection:connect() == true) then
       local infoData = ''

@@ -32,7 +32,7 @@ if (options.h == true or options.help == true) then
 end
 
 if (options.p == true or options.package == true) then
-  local pathRoot = "aquaver.github.io"
+  local pathRoot = "io.github.aquaver"
   local pathProject = "xaf-framework"
   local pathPackages = "xaf-packages"
   local pathData = "data"
@@ -127,7 +127,9 @@ if (options.p == true or options.package == true) then
 
     local inetAddress = targetAddress .. sourceRepository .. targetSuffix .. targetFlag
     local inetComponent = component.getPrimary("internet")
+
     local inetConnection = httpstream:new(inetComponent, inetAddress)
+    inetConnection:setMaxTimeout(0.5)
 
     if (inetConnection:connect() == true) then
       local jsonData = ''
@@ -150,7 +152,9 @@ if (options.p == true or options.package == true) then
           targetFound = true
           sourceAddress = jsonTable["tree"][i]["url"]
           inetAddress = jsonTable["tree"][i]["url"]
+
           inetConnection = httpstream:new(inetComponent, inetAddress)
+          inetConnection:setMaxTimeout(0.5)
 
           if (inetConnection:connect() == true) then
             jsonData = ''
@@ -163,185 +167,191 @@ if (options.p == true or options.package == true) then
             inetConnection:disconnect()
             jsonTable = jsonObject:parse(jsonData)
 
-            if (#jsonTable["tree"] == 2 and jsonTable["tree"][1]["path"] == "_bin" and jsonTable["tree"][2]["path"] == "_config") then
-              local repositoryAddress = "https://raw.githubusercontent.com/"
-              local repositoryPath = "_config/repository.info"
-              local repositoryBranch = "/master/"
+            if (#jsonTable["tree"] == 2 and jsonTable["tree"][1]["path"] == "_bin" and jsonTable["tree"][2]["path"] == "_config") or
+               (#jsonTable["tree"] == 3 and jsonTable["tree"][1]["path"] == "README.md" and jsonTable["tree"][2]["path"] == "_bin" and jsonTable["tree"][3]["path"] == "_config") then
+                  local repositoryAddress = "https://raw.githubusercontent.com/"
+                  local repositoryPath = "_config/repository.info"
+                  local repositoryBranch = "/master/"
 
-              inetAddress = repositoryAddress .. sourceRepository .. repositoryBranch .. repositoryPath
-              inetConnection = httpstream:new(inetComponent, inetAddress)
-
-              if (inetConnection:connect() == true) then
-                local repositoryInfoData = ''
-                local repositoryInfoTable = {}
-
-                for dataChunk in inetConnection:getData() do
-                  repositoryInfoData = repositoryInfoData .. dataChunk
-                end
-
-                repositoryInfoTable = xafcoreTable:loadFromString(repositoryInfoData)
-                repositoryInfoData = ''
-
-                if (configVersion > repositoryInfoTable["repository-xaf"]) then
-                  local dataAddress = "https://raw.githubusercontent.com/"
-                  local dataPath = "/_config/package.info"
-                  local dataBranch = "/master/"
-
-                  inetAddress = dataAddress .. sourceRepository .. dataBranch .. sourceCategory .. '/' .. packageString .. dataPath
+                  inetAddress = repositoryAddress .. sourceRepository .. repositoryBranch .. repositoryPath
                   inetConnection = httpstream:new(inetComponent, inetAddress)
+                  inetConnection:setMaxTimeout(0.5)
 
                   if (inetConnection:connect() == true) then
-                    local infoData = ''
-                    local infoTable = {}
+                    local repositoryInfoData = ''
+                    local repositoryInfoTable = {}
 
                     for dataChunk in inetConnection:getData() do
-                      infoData = infoData .. dataChunk
+                      repositoryInfoData = repositoryInfoData .. dataChunk
                     end
 
-                    infoTable = xafcoreTable:loadFromString(infoData)
-                    infoData = ''
+                    repositoryInfoTable = xafcoreTable:loadFromString(repositoryInfoData)
+                    repositoryInfoData = ''
 
-                    if (infoTable["package-description"] and infoTable["package-identifier"] and infoTable["package-index"] and
-                        infoTable["package-owner"] and infoTable["package-title"] and infoTable["package-version"] and infoTable["package-xaf"]) then
-                          if (packageString == infoTable["package-identifier"]) then
-                            if (configVersion > infoTable["package-xaf"]) then
-                              print("        >> Updating package '" .. packageString .. "' from source repository: " .. sourceRepository)
-                              print("        >> All prerequisites have been checked")
-                              print("        >> Starting update downloading procedure...")
+                    if (configVersion > repositoryInfoTable["repository-xaf"]) then
+                      local dataAddress = "https://raw.githubusercontent.com/"
+                      local dataPath = "/_config/package.info"
+                      local dataBranch = "/master/"
 
-                              inetAddress = sourceAddress .. targetFlag
-                              inetConnection = httpstream:new(inetComponent, inetAddress)
+                      inetAddress = dataAddress .. sourceRepository .. dataBranch .. sourceCategory .. '/' .. packageString .. dataPath
+                      inetConnection = httpstream:new(inetComponent, inetAddress)
+                      inetConnection:setMaxTimeout(0.5)
 
-                              if (inetConnection:connect() == true) then
-                                jsonData = ''
-                                jsonTable = {}
+                      if (inetConnection:connect() == true) then
+                        local infoData = ''
+                        local infoTable = {}
 
-                                for dataChunk in inetConnection:getData() do
-                                  jsonData = jsonData .. dataChunk
-                                end
+                        for dataChunk in inetConnection:getData() do
+                          infoData = infoData .. dataChunk
+                        end
 
-                                inetConnection:disconnect()
-                                jsonTable = jsonObject:parse(jsonData)
+                        infoTable = xafcoreTable:loadFromString(infoData)
+                        infoData = ''
 
-                                for j = 1, #jsonTable["tree"] do
-                                  local objectPath = jsonTable["tree"][j]["path"]
-                                  local objectType = jsonTable["tree"][j]["type"]
-                                  local pathRoot = "aquaver.github.io"
-                                  local pathProject = "xaf-packages"
+                        if (infoTable["package-description"] and infoTable["package-identifier"] and infoTable["package-index"] and
+                            infoTable["package-owner"] and infoTable["package-title"] and infoTable["package-version"] and infoTable["package-xaf"]) then
+                              if (packageString == infoTable["package-identifier"]) then
+                                if (configVersion > infoTable["package-xaf"]) then
+                                  print("        >> Updating package '" .. packageString .. "' from source repository: " .. sourceRepository)
+                                  print("        >> All prerequisites have been checked")
+                                  print("        >> Starting update downloading procedure...")
 
-                                  if (objectType == "tree") then
-                                    filesystem.makeDirectory(filesystem.concat(pathRoot, pathProject, packageName .. "_update", objectPath))
-                                  elseif (objectType == "blob") then
-                                    local filePath = filesystem.concat(pathRoot, pathProject, packageName .. "_update", objectPath)
-                                    local fileObject = nil
-                                    local fileSize = -1
+                                  inetAddress = sourceAddress .. targetFlag
+                                  inetConnection = httpstream:new(inetComponent, inetAddress)
+                                  inetConnection:setMaxTimeout(0.5)
 
-                                    inetAddress = dataAddress .. sourceRepository .. dataBranch .. sourceCategory .. '/' .. packageString .. '/' .. objectPath
-                                    inetConnection = httpstream:new(inetComponent, inetAddress)
-                                    print("          >> Trying to download: " .. packageString .. '/' .. objectPath)
+                                  if (inetConnection:connect() == true) then
+                                    jsonData = ''
+                                    jsonTable = {}
 
-                                    if (inetConnection:connect() == true) then
-                                      fileObject = filesystem.open(filePath, 'w')
-                                      fileSize = 0
-
-                                      for dataChunk in inetConnection:getData() do
-                                        fileObject:write(dataChunk)
-                                        fileSize = fileSize + unicode.wlen(dataChunk)
-                                      end
-
-                                      sourceTotalSize = sourceTotalSize + fileSize
-                                      fileObject:close()
-                                      print("            >> Downloaded file: " .. packageString .. '/' .. objectPath .. " (" .. string.format("%.2f", fileSize / 1024) .. " kB)")
-                                    else
-                                      print("            >> Cannot download '" .. packageString .. '/' .. objectPath .. "' file")
+                                    for dataChunk in inetConnection:getData() do
+                                      jsonData = jsonData .. dataChunk
                                     end
+
+                                    inetConnection:disconnect()
+                                    jsonTable = jsonObject:parse(jsonData)
+
+                                    for j = 1, #jsonTable["tree"] do
+                                      local objectPath = jsonTable["tree"][j]["path"]
+                                      local objectType = jsonTable["tree"][j]["type"]
+                                      local pathRoot = "io.github.aquaver"
+                                      local pathProject = "xaf-packages"
+
+                                      if (objectType == "tree") then
+                                        filesystem.makeDirectory(filesystem.concat(pathRoot, pathProject, packageName .. "_update", objectPath))
+                                      elseif (objectType == "blob") then
+                                        local filePath = filesystem.concat(pathRoot, pathProject, packageName .. "_update", objectPath)
+                                        local fileObject = nil
+                                        local fileSize = -1
+
+                                        inetAddress = dataAddress .. sourceRepository .. dataBranch .. sourceCategory .. '/' .. packageString .. '/' .. objectPath
+                                        inetConnection = httpstream:new(inetComponent, inetAddress)
+
+                                        inetConnection:setMaxTimeout(0.5)
+                                        print("          >> Trying to download: " .. packageString .. '/' .. objectPath)
+
+                                        if (inetConnection:connect() == true) then
+                                          fileObject = filesystem.open(filePath, 'w')
+                                          fileSize = 0
+
+                                          for dataChunk in inetConnection:getData() do
+                                            fileObject:write(dataChunk)
+                                            fileSize = fileSize + unicode.wlen(dataChunk)
+                                          end
+
+                                          sourceTotalSize = sourceTotalSize + fileSize
+                                          fileObject:close()
+                                          print("            >> Downloaded file: " .. packageString .. '/' .. objectPath .. " (" .. string.format("%.2f", fileSize / 1024) .. " kB)")
+                                        else
+                                          print("            >> Cannot download '" .. packageString .. '/' .. objectPath .. "' file")
+                                        end
+                                      end
+                                    end
+
+                                    print("              >> Successfully downloaded updated version of package '" .. packageString .. "' from repository: " .. sourceRepository)
+                                    print("              >> Downloaded package total size: " .. string.format("%.2f", sourceTotalSize / 1024) .. " kB")
+                                    print("              >> Are you sure to install this update?")
+                                    print("              >> Hit 'Y' to confirm, or 'N' to abort and remove it")
+                                    print("              >> Warning! It will delete entire current version of package with all its data")
+
+                                    while (true) do
+                                      local option = {event.pull("key_down")}
+
+                                      if (option[3] == 89) then
+                                        local oldPath = filesystem.concat(pathRoot, pathPackages, packageName)
+                                        local newPath = filesystem.concat(pathRoot, pathPackages, packageName .. "_update")
+
+                                        filesystem.remove(oldPath)
+                                        filesystem.rename(newPath, oldPath)
+
+                                        print("                >> Current version of package has been deleted")
+                                        print("                >> Successfully installed package update")
+                                        print("                >> Reboot this machine and initialize XAF to complete updating procedure")
+                                        print("                >> Updating finished")
+                                        break
+                                      elseif (option[3] == 78) then
+                                        local newPath = filesystem.concat(pathRoot, pathPackages, packageName .. "_update")
+                                        filesystem.remove(newPath)
+
+                                        print("                >> Updating procedure has been interrupted manually")
+                                        print("                >> Downloaded updated version of package has been deleted")
+                                        print("                >> Current package version remain unaffected")
+                                        break
+                                      end
+                                    end
+
+                                    os.exit()
+                                  else
+                                    print("          >> Cannot connect to package installation content tree")
+                                    print("          >> Ensure you have not lost internet access")
+                                    print("          >> Update downloading procedure has been interrupted")
+
+                                    os.exit()
                                   end
+                                else
+                                  print("        >> This package update requires newer XAF version (" .. infoTable["package-xaf"] .. ')')
+                                  print("        >> Detected local API version: " .. configVersion)
+                                  print("        >> Please update XAF via 'xaf update' before package updating")
+                                  print("        >> Updating procedure has been interrupted")
+
+                                  os.exit()
                                 end
-
-                                print("              >> Successfully downloaded updated version of package '" .. packageString .. "' from repository: " .. sourceRepository)
-                                print("              >> Downloaded package total size: " .. string.format("%.2f", sourceTotalSize / 1024) .. "kB")
-                                print("              >> Are you sure to install this update?")
-                                print("              >> Hit 'Y' to confirm, or 'N' to abort and remove it")
-                                print("              >> Warning! It will delete entire current version of package with all its data")
-
-                                while (true) do
-                                  local option = {event.pull("key_down")}
-
-                                  if (option[3] == 89) then
-                                    local oldPath = filesystem.concat(pathRoot, pathPackages, packageName)
-                                    local newPath = filesystem.concat(pathRoot, pathPackages, packageName .. "_update")
-
-                                    filesystem.remove(oldPath)
-                                    filesystem.rename(newPath, oldPath)
-
-                                    print("                >> Current version of package has been deleted")
-                                    print("                >> Successfully installed package update")
-                                    print("                >> Reboot this machine and initialize XAF to complete updating procedure")
-                                    print("                >> Updating finished")
-                                    break
-                                  elseif (option[3] == 78) then
-                                    local newPath = filesystem.concat(pathRoot, pathPackages, packageName .. "_update")
-                                    filesystem.remove(newPath)
-
-                                    print("                >> Updating procedure has been interrupted manually")
-                                    print("                >> Downloaded updated version of package has been deleted")
-                                    print("                >> Current package version remain unaffected")
-                                    break
-                                  end
-                                end
-
-                                os.exit()
                               else
-                                print("          >> Cannot connect to package installation content tree")
-                                print("          >> Ensure you have not lost internet access")
-                                print("          >> Update downloading procedure has been interrupted")
+                                print("        >> Package identifier mismatch detected")
+                                print("        >> Identifier from configuration file and package directory (entered name) must be equal")
+                                print("        >> This package cannot be updated")
 
                                 os.exit()
                               end
-                            else
-                              print("        >> This package update requires newer XAF version (" .. infoTable["package-xaf"] .. ')')
-                              print("        >> Detected local API version: " .. configVersion)
-                              print("        >> Please update XAF via 'xaf update' before package updating")
-                              print("        >> Updating procedure has been interrupted")
+                        else
+                          print("        >> Invalid package description file detected")
+                          print("        >> If this message appears again, contact the package owner")
+                          print("        >> Updating procedure has been interrupted")
 
-                              os.exit()
-                            end
-                          else
-                            print("        >> Package identifier mismatch detected")
-                            print("        >> Identifier from configuration file and package directory (entered name) must be equal")
-                            print("        >> This package cannot be updated")
+                          os.exit()
+                        end
+                      else
+                        print("        >> Cannot retrieve package description file")
+                        print("        >> Ensure you have not lost internet access")
+                        print("        >> Updating procedure has been interrupted")
 
-                            os.exit()
-                          end
+                        os.exit()
+                      end
                     else
-                      print("        >> Invalid package description file detected")
-                      print("        >> If this message appears again, contact the package owner")
+                      print("        >> Repository '" .. sourceRepository .. "' forces requirement to have newer XAF version")
+                      print("        >> Detected local API version: " .. configVersion .. " (required by this repository is: " .. repositoryInfoTable["repository-xaf"] .. ')')
+                      print("        >> Please update XAF via 'xaf update' before updating this package")
                       print("        >> Updating procedure has been interrupted")
 
                       os.exit()
                     end
                   else
-                    print("        >> Cannot retrieve package description file")
+                    print("        >> Cannot retrieve repository description file")
                     print("        >> Ensure you have not lost internet access")
                     print("        >> Updating procedure has been interrupted")
 
                     os.exit()
                   end
-                else
-                  print("        >> Repository '" .. sourceRepository .. "' forces requirement to have newer XAF version")
-                  print("        >> Detected local API version: " .. configVersion .. " (required by this repository is: " .. repositoryInfoTable["repository-xaf"] .. ')')
-                  print("        >> Please update XAF via 'xaf update' before updating this package")
-                  print("        >> Updating procedure has been interrupted")
-
-                  os.exit()
-                end
-              else
-                print("        >> Cannot retrieve repository description file")
-                print("        >> Ensure you have not lost internet access")
-                print("        >> Updating procedure has been interrupted")
-
-                os.exit()
-              end
             else
               print("        >> Invalid XAF PM package structure")
               print("        >> Encountered unexpected files in package master directory")

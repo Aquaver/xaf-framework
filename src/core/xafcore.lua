@@ -576,24 +576,24 @@ end
 function XafCore:getTextInstance()
   local public = {}
 
-  public.convertLinesToString = function(self, linesTable, mode)                                   -- [!] Function: convertLinesToString(linesTable, mode) - Converts table with string lines to one concatenated string.
-    assert(type(linesTable) == "table", "[XAF Core] Expected TABLE as argument #1")                -- [!] Parameter: linesTable - Table with lines to concatenate.
-    assert(type(mode) == "number", "[XAF Core] Expected NUMBER as argument #2")                    -- [!] Parameter: mode - Concatenation mode (0 - default, 1 - space, 2 - no space, 3 - new line character).
-                                                                                                   -- [!] Return: concatenatedString - The string after concatenation.
+  public.convertLinesToString = function(self, linesTable, mode)                                                                              -- [!] Function: convertLinesToString(linesTable, mode) - Converts table with string lines to one concatenated string.
+    assert(type(linesTable) == "table", "[XAF Core] Expected TABLE as argument #1")                                                           -- [!] Parameter: linesTable - Table with lines to concatenate.
+    assert(type(mode) == "number", "[XAF Core] Expected NUMBER as argument #2")                                                               -- [!] Parameter: mode - Concatenation mode (all modes are defined as static constants).
+                                                                                                                                              -- [!] Return: concatenatedString - The string after concatenation.
     local stringTable = linesTable
     local concatenationMode = mode
     local concatenatedString = ""
     local concatenationLink = ""
 
-    if (concatenationMode >= 0 and concatenationMode <= 3) then
-      concatenationLink = (concatenationMode == 0 or concatenationMode == 1)
-      and ' ' or (concatenationMode == 2) and '' or (concatenationMode == 3) and '\n'
+    if (concatenationMode >= XafCore.static.CONCAT_DEFAULT and concatenationMode <= XafCore.static.CONCAT_NEWLINE) then
+      concatenationLink = (concatenationMode == XafCore.static.CONCAT_DEFAULT or concatenationMode == XafCore.static.CONCAT_SPACE)
+      and ' ' or (concatenationMode == XafCore.static.CONCAT_NOSPACE) and '' or (concatenationMode == XafCore.static.CONCAT_NEWLINE) and '\n'
 
       for key, value in pairs(linesTable) do
         concatenatedString = concatenatedString .. tostring(value) .. concatenationLink
       end
 
-      concatenatedString = string.sub(concatenatedString, 1, unicode.wlen(concatenatedString) - 1)
+      concatenatedString = string.sub(concatenatedString, 1, unicode.wlen(concatenatedString) - unicode.wlen(concatenationLink))
       return concatenatedString
     else
       error("[XAF Error] Invalid concatenation mode")
@@ -656,19 +656,44 @@ function XafCore:getTextInstance()
     return paddedText
   end
 
-  public.split = function(self, text, delimiter)                                     -- [!] Function: split(text, delimiter) - Splits given string to tokens by given delimiters.
-    assert(type(text) == "string", "[XAF Core] Expected STRING as argument #1")      -- [!] Parameter: text - String data text to be split.
-    assert(type(delimiter) == "string", "[XAF Core] Expected STRING as argument #2") -- [!] Parameter: delimiter - String which contains set of delimiters to splitting (for space use - ' ').
-                                                                                     -- [!] Return: tokensTable - Table with split string as tokens.
-    local textString = text
-    local delimiterChars = (delimiter == '') and ' ' or delimiter
-    local tokensTable = {}
+  public.split = function(self, text, delimiter, ignoreEmpty)                            -- [!] Function: split(text, delimiter, ignoreEmpty) - Splits given string to tokens by given delimiter.
+    assert(type(text) == "string", "[XAF Core] Expected STRING as argument #1")          -- [!] Parameter: text - String data text to be split.
+    assert(type(delimiter) == "string", "[XAF Core] Expected STRING as argument #2")     -- [!] Parameter: delimiter - Delimiter string used for splitting, may be multicharacter.
+    assert(type(ignoreEmpty) == "boolean", "[XAF Core] Expected BOOLEAN as argument #3") -- [!] Parameter: ignoreEmpty - When 'true' value, ignores and discards found empty characters ('') between delimiters.
+                                                                                         -- [!] Return: tokenTable - Table with split string as tokens.
+    local inputLength = #text
+    local tokenIndex = 0
+    local tokenTable = {}
 
-    for token in string.gmatch(textString, "[^" .. delimiterChars .. "]+") do
-      table.insert(tokensTable, token)
+    while (true) do
+      local delimiterFirst, delimiterLast = string.find(text, delimiter, tokenIndex, true)
+
+      if (delimiterFirst and delimiterLast) then
+        local tokenString = string.sub(text, tokenIndex, delimiterFirst - 1)
+
+        if (tokenString == '') then
+          if (ignoreEmpty == false) then
+            table.insert(tokenTable, tokenString)
+          end
+        else
+          table.insert(tokenTable, tokenString)
+        end
+
+        tokenIndex = delimiterLast + 1
+      else
+        if (tokenIndex - 1 < inputLength) then
+          table.insert(tokenTable, string.sub(text, tokenIndex))
+        else
+          if (ignoreEmpty == false) then
+            table.insert(tokenTable, '')
+          end
+        end
+
+        break
+      end
     end
 
-    return tokensTable
+    return tokenTable
   end
 
   return public

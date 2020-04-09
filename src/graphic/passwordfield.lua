@@ -71,7 +71,7 @@ function PasswordField:initialize()
           
           private.inputValue = unicode.sub(newInput, 1, inputLength)
           
-          public:setRenderMode(3)
+          public:setRenderMode(component.static.RENDER_CONTENT)
           public:view()
           public:setRenderMode(render)
           
@@ -102,7 +102,7 @@ function PasswordField:initialize()
             private.inputValue = unicode.sub(newInput, 1, inputLength)
           end
           
-          public:setRenderMode(3)
+          public:setRenderMode(component.static.RENDER_CONTENT)
           public:view()
           public:setRenderMode(render)
           
@@ -124,17 +124,17 @@ function PasswordField:initialize()
           local endPositionX = 0
           local endPositionY = 0
           
-          if (render <= 1) then
+          if (render <= component.static.RENDER_ALL) then
             startPositionX = private.positionX
             startPositionY = private.positionY
             endPositionX = private.positionX + private.totalWidth - 1
             endPositionY = private.positionY + private.totalHeight - 1
-          elseif (render <= 2) then
+          elseif (render <= component.static.RENDER_INSETS) then
             startPositionX = private.positionX + 1
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 2
             endPositionY = private.positionY + private.totalHeight - 2
-          elseif (render <= 3) then
+          elseif (render <= component.static.RENDER_CONTENT) then
             startPositionX = private.positionX + 2
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 3
@@ -145,7 +145,7 @@ function PasswordField:initialize()
           and (clickY >= startPositionY and clickY <= endPositionY)) then
             private.fieldFocus = true
             
-            public:setRenderMode(3)
+            public:setRenderMode(component.static.RENDER_CONTENT)
             public:view()
             public:setRenderMode(render)
             
@@ -156,7 +156,7 @@ function PasswordField:initialize()
             if (private.fieldFocus == true) then
               private.fieldFocus = false
               
-              public:setRenderMode(3)
+              public:setRenderMode(component.static.RENDER_CONTENT)
               public:view()
               public:setRenderMode(render)
             end
@@ -262,7 +262,7 @@ function PasswordField:initialize()
       local previousForeground = renderer.getForeground()
       local render = private.renderMode
       
-      if (render <= 1) then
+      if (render <= component.static.RENDER_ALL) then
         renderer.setBackground(private.colorBackground)
         renderer.setForeground(private.colorBorder)
         
@@ -277,14 +277,14 @@ function PasswordField:initialize()
         renderer.set(posX + width - 1, posY + height - 1, '┘')
       end
       
-      if (render <= 2) then
+      if (render <= component.static.RENDER_INSETS) then
         renderer.setBackground(private.colorBackground)
         
         renderer.set(posX + 1, posY + 1, ' ')
         renderer.set(posX + width - 2, posY + 1, ' ')
       end
       
-      if (render <= 3) then
+      if (render <= component.static.RENDER_CONTENT) then
         local inputColor = (private.fieldFocus == true) and private.colorSelected or private.colorContent
         local inputRaw = private.inputValue
         local inputString = (inputRaw == nil) and '' or tostring(inputRaw)

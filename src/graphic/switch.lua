@@ -60,17 +60,17 @@ function Switch:initialize()
           local endPositionX = 0
           local endPositionY = 0
           
-          if (render <= 1) then
+          if (render <= component.static.RENDER_ALL) then
             startPositionX = private.positionX
             startPositionY = private.positionY
             endPositionX = private.positionX + private.totalWidth - 1
             endPositionY = private.positionY + private.totalHeight - 1
-          elseif (render <= 2) then
+          elseif (render <= component.static.RENDER_INSETS) then
             startPositionX = private.positionX + 1
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 2
             endPositionY = private.positionY + private.totalHeight - 2
-          elseif (render <= 3) then
+          elseif (render <= component.static.RENDER_CONTENT) then
             startPositionX = private.positionX + 2
             startPositionY = private.positionY + 1
             endPositionX = private.positionX + private.totalWidth - 3
@@ -201,7 +201,7 @@ function Switch:initialize()
       local height = private.totalHeight
       local render = private.renderMode
       
-      if (render <= 1) then
+      if (render <= component.static.RENDER_ALL) then
         renderer.setBackground(colorBackground)
         renderer.setForeground(colorBorder)
         
@@ -216,14 +216,14 @@ function Switch:initialize()
         renderer.set(posX + width - 1, posY + height - 1, '┘')
       end
       
-      if (render <= 2) then
+      if (render <= component.static.RENDER_INSETS) then
         renderer.setBackground(colorBackground)
         
         renderer.fill(posX + 1, posY + 1, 1, height - 2, ' ')
         renderer.fill(posX + width - 2, posY + 1, 1, height - 2, ' ')
       end
       
-      if (render <= 3) then
+      if (render <= component.static.RENDER_CONTENT) then
         renderer.setBackground(colorBackground)
         renderer.setForeground(colorContent)
         

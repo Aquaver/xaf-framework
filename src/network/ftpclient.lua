@@ -45,8 +45,8 @@ function FtpClient:initialize()
     if (responseStatus == false) then
       return responseStatus, responseMessage
     else
-      tableDirectories = xafcoreText:split(dataDirectories, '/')
-      tableFiles = xafcoreText:split(dataFiles, '/')
+      tableDirectories = xafcoreText:split(dataDirectories, '/', true)
+      tableFiles = xafcoreText:split(dataFiles, '/', true)
 
       return responseStatus, responseMessage, tableDirectories, tableFiles
     end

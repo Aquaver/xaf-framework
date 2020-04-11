@@ -38,7 +38,7 @@ This picture shows an example graphical user interface made by means of XAF buil
 
 * **Internet** - Access to internet through Internet Card.
 * **Computer** - Both screen and GPU components at tier 3 (teal color).
-* **Memory** - About 200 kB of free memory for minified version or about 500 kB for full source version.
+* **Memory** - About 250 kB of free memory for minified version or about 550 kB for full source version.
 * **Dependencies** - Original OpenOS (required system version is shown next to release versions).
 
 ### Automated installation

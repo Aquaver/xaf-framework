@@ -40,7 +40,7 @@ else
   package.path = package.path .. pathSegment
   _G._XAF = {}
   _G._XAF._APPDATA = {}
-  _G._XAF._VERSION = "1.1.1"
+  _G._XAF._VERSION = "1.1.2"
   
   print("---------------------------------------------------")
   print("-- Extensible Application Framework - Controller --")

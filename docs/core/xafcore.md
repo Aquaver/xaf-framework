@@ -14,10 +14,7 @@ XAFCore is framework core library as its name says. This class provides five sub
 * **Class name** - `XAF Core`, **instantiable** - `false`, **inheritable** - `false`
 * **Static fields**
 
-  * `CONCAT_DEFAULT` - constant used in text instance function `convertLinesToString(linesTable, mode)` where `mode` is the concatenation mode. When used, that method will insert one space character between each line.
-  * `CONCAT_SPACE` - constant used in text instance function `convertLinesToString(linesTable, mode)` where `mode` is the concatenation mode. That option will work exactly the same like that above, inserts spaces to each line.
-  * `CONCAT_NOSPACE` - constant used in text instance function `convertLinesToString(linesTable, mode)` where `mode` is the concatenation mode. If passed as `mode` then all lines will be concatenated as they are, without adding anything to them.
-  * `CONCAT_NEWLINE` - constant used in text instance function `convertLinesToString(linesTable, mode)` where `mode` is the concatenation mode. With that option, method inserts new line character between each line.
+  * *no static fields*
 
 * **Constructor** - *class is not instantiable - no constructor*
 * **Dependencies** - *no dependencies*
@@ -157,10 +154,10 @@ XAFCore is framework core library as its name says. This class provides five sub
 
 ### Text instance
 
-* **Function:** `convertLinesToString(linesTable, mode)` - Converts table with string lines to one concatenated string.
+* **Function:** `convertLinesToString(linesTable, delimiter)` - Converts table with string lines to one concatenated string.
 
-  * **Parameter:** `linesTable` - Table with lines to concatenate.
-  * **Parameter:** `mode` - Concatenation mode (all modes are defined as static constants).
+  * **Parameter:** `linesTable` - Table with lines to concatenate (must be an index-type only key array, not an Lua object).
+  * **Parameter:** `delimiter` - Concatenation delimiter, string that will be inserted after next lines (without the last one).
   * **Return:** `concatenatedString` - The string after concatenation.
 
 * **Function:** `convertStringToLines(text, width)` - Splits whole string into lines and returns them as table.

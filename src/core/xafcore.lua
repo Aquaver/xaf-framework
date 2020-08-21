@@ -572,7 +572,7 @@ function XafCore:getTextInstance()
   local public = {}
 
   public.convertLinesToString = function(self, linesTable, delimiter)                                                                         -- [!] Function: convertLinesToString(linesTable, delimiter) - Converts table with string lines to one concatenated string.
-    assert(type(linesTable) == "table", "[XAF Core] Expected TABLE as argument #1")                                                           -- [!] Parameter: linesTable - Table with lines to concatenate (must be an index-type only key array, not an Lua object).
+    assert(type(linesTable) == "table", "[XAF Core] Expected TABLE as argument #1")                                                           -- [!] Parameter: linesTable - Table with lines to concatenate (must be an index-type only key array, not a Lua object).
     assert(type(delimiter) == "string", "[XAF Core] Expected STRING as argument #2")                                                          -- [!] Parameter: delimiter - Concatenation delimiter, string that will be inserted after next lines (without the last one).
                                                                                                                                               -- [!] Return: concatenatedString - The string after concatenation.
     local stringTable = linesTable

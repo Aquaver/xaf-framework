@@ -156,7 +156,7 @@ XAFCore is framework core library as its name says. This class provides five sub
 
 * **Function:** `convertLinesToString(linesTable, delimiter)` - Converts table with string lines to one concatenated string.
 
-  * **Parameter:** `linesTable` - Table with lines to concatenate (must be an index-type only key array, not an Lua object).
+  * **Parameter:** `linesTable` - Table with lines to concatenate (must be an index-type only key array, not a Lua object).
   * **Parameter:** `delimiter` - Concatenation delimiter, string that will be inserted after next lines (without the last one).
   * **Return:** `concatenatedString` - The string after concatenation.
 

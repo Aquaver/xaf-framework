@@ -197,6 +197,10 @@ function TextField:initialize()
               local oldLine = (rawLine == nil) and '' or tostring(rawLine)
               local newLine = oldLine .. string.char(keyChar)
 
+              if (lineLength == math.huge) then
+                lineLength = nil -- Unicode/string 'sub()' method does not accept 'math.huge' as limit value.
+              end
+
               private.textTable[lineNumber] = unicode.sub(newLine, 1, lineLength)
               private:refreshLine(lineNumber)
             end

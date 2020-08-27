@@ -190,12 +190,15 @@ function TextField:initialize()
                 private.textTable[lineNumber] = newLine
                 private:refreshLine(lineNumber)
               end
-            elseif (keyChar >= 32 and keyChar <= 126) then
+            elseif (keyChar == 127) then
+              -- Possible future feature, using DELETE key to remove characters in forward.
+              -- Before it, must introduce possibility to move caret to the left and right inline.
+            elseif (keyChar >= 32) then
               local lineLength = private.columns + private.lineExtension
               local lineNumber = private.selectedLine
               local rawLine = private.textTable[lineNumber]
               local oldLine = (rawLine == nil) and '' or tostring(rawLine)
-              local newLine = oldLine .. string.char(keyChar)
+              local newLine = oldLine .. unicode.char(keyChar)
 
               if (lineLength == math.huge) then
                 lineLength = nil -- Unicode/string 'sub()' method does not accept 'math.huge' as limit value.

@@ -46,7 +46,7 @@ RedStream (also referenced as Redstone Stream) is a class which generally makes 
 
 * **Function:** `on(value)` - Switches on redstone output signal and sets it to specified value.
 
-  * **Parameter:** `value` - New redstone power value - if 'nil' then it will be the maximum available ('full on').
+  * **Parameter:** `value` - New redstone power value - if 'nil' then it will be the maximum available (full on).
   * **Return:** `'true'` - If the redstone signal has been changed properly.
 
     * For `analog` mode, output signal value range is `0 - 15`

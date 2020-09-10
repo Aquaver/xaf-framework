@@ -1,13 +1,14 @@
 # XAF Module - Utility:HTTPStream
 
-First module of new type - utility. This class is used for creating streams that connect to HTTP server by means of OC Internet Card. That stream comes with some methods for doing primary actions. The object is able to getting connection informations like response code, message or headers. It also might retrieve full body data from the stream to process it. Currently only GET and POST methods are supported, but it is enough for two-way communication, both sending and receiving data are easy with this module. **Important!** Retrieving full body data with 'getData()' method is possible only one time per connection. Therefore, if you need to get the same body second time, you should disconnect and connect again to reset the stream buffer.
+First module of new type - utility. This class is used for creating streams that connect to HTTP server by means of OC Internet Card. That stream comes with some methods for doing primary actions. The object is able to getting connection informations like response code, message or headers. It also might retrieve full body data from the stream to process it. Currently only GET and POST methods are supported, but it is enough for two-way communication, both sending and receiving data are easy with this module. **Important!** Retrieving full body data with `getData()` method is possible only one time per connection. Therefore, if you need to get the same body second time, you should disconnect and connect again to reset the stream buffer.
 
 ## Class documentation
 
 * **Class name -** `Generic HTTP Stream`, **instantiable -** `true`, **inheritable -** `true`
 * **Static fields**
 
-  * *no static fields*
+  * `TIMEOUT_DEFAULT` - Initial value of timeout (in seconds) between connection tries, used in `setMaxTimeout()` method. Currently, its value is 1.
+  * `TRIES_DEFAULT` - Default value of max connection tries (repetitions) before breaking further connection, may be used in `setMaxTries()` function. Currently, its value is 3.
 
 * **Constructor -** `HTTPStream:new(card, url)`
 * **Dependencies -** *no dependencies*

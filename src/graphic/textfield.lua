@@ -103,9 +103,11 @@ function TextField:initialize()
     local newLine = lineNumber
     local maxLine = private.rows
 
-    if (newLine <= maxLine and xafcoreMath:checkNatural(newLine, false) == true) then
+    if (newLine <= maxLine and xafcoreMath:checkNatural(newLine, true) == true) then
       private.fieldFocus = true
       private.selectedLine = newLine
+
+      private:refreshLine(newLine)
     else
       error("[XAF Error] Invalid text line number")
     end

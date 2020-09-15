@@ -366,6 +366,14 @@ function TextField:initialize()
     return true
   end
 
+  public.unfocus = function(self) -- [!] Function: unfocus() - Sets text field object's state to unfocused and blocks further typing.
+    private.fieldFocus = false    -- [!] Return: 'true' - If this method has been executed without errors.
+    private.selectedLine = 0
+    public:view()
+
+    return true
+  end
+
   public.view = function(self)                                                                            -- [!] Function: view() - Renders text field on the screen.
     local renderer = private.renderer                                                                     -- [!] Return: 'true' - If the component has been rendered successfully.
 

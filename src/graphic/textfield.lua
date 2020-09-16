@@ -369,7 +369,10 @@ function TextField:initialize()
   public.unfocus = function(self) -- [!] Function: unfocus() - Sets text field object's state to unfocused and blocks further typing.
     private.fieldFocus = false    -- [!] Return: 'true' - If this method has been executed without errors.
     private.selectedLine = 0
-    public:view()
+
+    if (private.renderer) then
+      public:view()
+    end
 
     return true
   end

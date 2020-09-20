@@ -96,6 +96,25 @@ function TextField:initialize()
     return true
   end
 
+  public.focus = function(self, lineNumber)                                              -- [!] Function: focus(lineNumber) - Sets text field object's state to focused on given line and allow typing directly.
+    assert(type(lineNumber) == "number", "[XAF Graphic] Expected NUMBER as argument #1") -- [!] Parameter: lineNumber - Target field line number value.
+                                                                                         -- [!] Return: oldLine - Old value of selected line, if zero then the field was not focused on.
+    local oldLine = private.selectedLine
+    local newLine = lineNumber
+    local maxLine = private.rows
+
+    if (newLine <= maxLine and xafcoreMath:checkNatural(newLine, true) == true) then
+      private.fieldFocus = true
+      private.selectedLine = newLine
+
+      private:refreshLine(newLine)
+    else
+      error("[XAF Error] Invalid text line number")
+    end
+
+    return oldLine
+  end
+
   public.getColorSelected = function(self) -- [!] Function: getColorSelected() - Returns text field selection (highlight) color.
     return private.colorSelected           -- [!] Return: colorSelected - Current text field highlight color as number.
   end
@@ -344,6 +363,17 @@ function TextField:initialize()
     end
 
     private.textTable = textTable
+    return true
+  end
+
+  public.unfocus = function(self) -- [!] Function: unfocus() - Sets text field object's state to unfocused and blocks further typing.
+    private.fieldFocus = false    -- [!] Return: 'true' - If this method has been executed without errors.
+    private.selectedLine = 0
+
+    if (private.renderer) then
+      public:view()
+    end
+
     return true
   end
 

@@ -297,7 +297,7 @@ function PasswordField:initialize()
         renderer.fill(posX + 2, posY + 1, columns, height - 2, ' ')
         
         if (private.showFlag == false) then
-          inputShown = string.gsub(inputString, ".", private.inputCharacter)
+          inputShown = string.rep(private.inputCharacter, unicode.wlen(inputString))
         else
           inputShown = inputString
         end

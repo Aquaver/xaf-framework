@@ -93,11 +93,14 @@ function PasswordField:initialize()
             local newInput = unicode.sub(oldInput, 1, unicode.wlen(oldInput) - 1)
             
             private.inputValue = newInput
-          elseif (keyChar >= 32 and keyChar <= 126) then
+          elseif (keyChar == 127) then
+            -- Possible future feature, using DELETE key to remove characters in forward.
+            -- More information in Graphic:TextField class, identical feature is planned.
+          elseif (keyChar >= 32) then
             local inputLength = private.columns
             local rawInput = private.inputValue
             local oldInput = (rawInput == nil) and '' or tostring(rawInput)
-            local newInput = oldInput .. string.char(keyChar)
+            local newInput = oldInput .. unicode.char(keyChar)
             
             private.inputValue = unicode.sub(newInput, 1, inputLength)
           end
@@ -294,7 +297,7 @@ function PasswordField:initialize()
         renderer.fill(posX + 2, posY + 1, columns, height - 2, ' ')
         
         if (private.showFlag == false) then
-          inputShown = string.gsub(inputString, ".", private.inputCharacter)
+          inputShown = string.rep(private.inputCharacter, unicode.wlen(inputString))
         else
           inputShown = inputString
         end

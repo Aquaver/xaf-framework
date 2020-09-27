@@ -65,7 +65,7 @@ function PackageManager:initialize()
   end
 
   public.getPackageData = function(self, packageName)                                                                                               -- [!] Function: getPackageData(packageName) - Returns specified package configuration data.
-    assert(type(packageName) == "string" or type(packageName) == "nil", "[XAF Core] Expected STRING as argument #1")                                -- [!] Parameter: packageName - Target package name, if empty then tries to get configuration of this package (self reference).
+    assert(type(packageName) == "string" or type(packageName) == "nil", "[XAF Core] Expected STRING as argument #1")                                -- [!] Parameter: packageName - Target package name, if not passed (nil) then tries to get configuration of this package (self reference).
                                                                                                                                                     -- [!] Return: pathTable - Retrieved package data table from its configuration file.
     local packageTargetName = (packageName == nil) and private.pathPackage or packageName
     local pathConfig = filesystem.concat('/', private.pathRoot, private.pathPackages, packageTargetName, private.pathPackageConfig, "package.info")

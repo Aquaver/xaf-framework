@@ -31,9 +31,10 @@ This class is the first in new `API` module group which contains classes that he
   * **Parameter:** `relativePath` - Relative path of given target file.
   * **Return:** `pathBinary` - Created absolute path of given target object file.
 
-* **Function:** `getPackageVersion()` - Returns detected package version.
+* **Function:** `getPackageData(packageName)` - Returns specified package configuration data.
 
-  * **Return:** `packageVersion` - Retrieved package version from its configuration file.
+  * **Parameter:** `packageName` - Target package name, if not passed (nil) then tries to get configuration of this package (self reference).
+  * **Return:** `pathTable` - Retrieved package [data table][1] from its configuration file.
 
 * **Function:** `getTableValue(tableKey)` - Returns specified data value from XAF application data table of this package.
 
@@ -44,3 +45,5 @@ This class is the first in new `API` module group which contains classes that he
 
   * **Parameter:** `tableKey` - Table index (key) under which the new data will be stored.
   * **Parameter:** `tableValue` - New data value that will be stored under given key, leave empty (`nil`) to remove.
+
+[1]: https://github.com/Aquaver/xaf-packages#package-description-data

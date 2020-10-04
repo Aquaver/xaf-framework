@@ -18,7 +18,7 @@ local systemVersion = string.sub(systemIdentifier, systemDelimiter)
 
 -- General XAF package installation properties.
 local sourceProject = "https://raw.githubusercontent.com/Aquaver/xaf-framework/"
-local sourceVersion = "1.1.2"
+local sourceVersion = "1.1.3"
 local sourcePackage = "/package"
 local sourcePackageData = "/data"
 local sourceData = {}

@@ -19,12 +19,7 @@ local XafCore = {
   C_INSTANCE = false,
   C_INHERIT = false,
 
-  static = {
-    CONCAT_DEFAULT = 0, -- [>] Text instance related constants, used for string mode concatenation in function 'convertLinesToString()'
-    CONCAT_SPACE = 1,   -- [>] Access to constants: local xafcore = require("xafcore") xafcore.static.NAME
-    CONCAT_NOSPACE = 2, -- [?] Example: local myString = convertLinesToString(myTable, xafcore.static.CONCAT_DEFAULT)
-    CONCAT_NEWLINE = 3
-  }
+  static = {}
 }
 
 function XafCore:getExecutorInstance()
@@ -576,28 +571,20 @@ end
 function XafCore:getTextInstance()
   local public = {}
 
-  public.convertLinesToString = function(self, linesTable, mode)                                                                              -- [!] Function: convertLinesToString(linesTable, mode) - Converts table with string lines to one concatenated string.
-    assert(type(linesTable) == "table", "[XAF Core] Expected TABLE as argument #1")                                                           -- [!] Parameter: linesTable - Table with lines to concatenate.
-    assert(type(mode) == "number", "[XAF Core] Expected NUMBER as argument #2")                                                               -- [!] Parameter: mode - Concatenation mode (all modes are defined as static constants).
+  public.convertLinesToString = function(self, linesTable, delimiter)                                                                         -- [!] Function: convertLinesToString(linesTable, delimiter) - Converts table with string lines to one concatenated string.
+    assert(type(linesTable) == "table", "[XAF Core] Expected TABLE as argument #1")                                                           -- [!] Parameter: linesTable - Table with lines to concatenate (must be an index-type only key array, not a Lua object).
+    assert(type(delimiter) == "string", "[XAF Core] Expected STRING as argument #2")                                                          -- [!] Parameter: delimiter - Concatenation delimiter, string that will be inserted after next lines (without the last one).
                                                                                                                                               -- [!] Return: concatenatedString - The string after concatenation.
     local stringTable = linesTable
-    local concatenationMode = mode
+    local concatenationLink = delimiter
     local concatenatedString = ""
-    local concatenationLink = ""
 
-    if (concatenationMode >= XafCore.static.CONCAT_DEFAULT and concatenationMode <= XafCore.static.CONCAT_NEWLINE) then
-      concatenationLink = (concatenationMode == XafCore.static.CONCAT_DEFAULT or concatenationMode == XafCore.static.CONCAT_SPACE)
-      and ' ' or (concatenationMode == XafCore.static.CONCAT_NOSPACE) and '' or (concatenationMode == XafCore.static.CONCAT_NEWLINE) and '\n'
-
-      for key, value in pairs(linesTable) do
-        concatenatedString = concatenatedString .. tostring(value) .. concatenationLink
-      end
-
-      concatenatedString = string.sub(concatenatedString, 1, unicode.wlen(concatenatedString) - unicode.wlen(concatenationLink))
-      return concatenatedString
-    else
-      error("[XAF Error] Invalid concatenation mode")
+    for key, value in ipairs(linesTable) do -- Only suitable for index-type key arrays, other type keys are ignored.
+      concatenatedString = concatenatedString .. tostring(value) .. concatenationLink
     end
+
+    concatenatedString = string.sub(concatenatedString, 1, unicode.wlen(concatenatedString) - unicode.wlen(concatenationLink))
+    return concatenatedString
   end
 
   public.convertStringToLines = function(self, text, width)                      -- [!] Function: convertStringToLines(text, width) - Splits whole string into lines and returns them as table.

@@ -17,7 +17,10 @@ local HttpStream = {
   C_INSTANCE = true,
   C_INHERIT = true,
 
-  static = {}
+  static = {
+    TIMEOUT_DEFAULT = 1, -- Predefined default values for HTTPStream object connection timeout and maximum tries (repetitions).
+    TRIES_DEFAULT = 3
+  }
 }
 
 function HttpStream:initialize()
@@ -29,8 +32,8 @@ function HttpStream:initialize()
   private.connectionHandle = nil
   private.isConnected = false
   private.isSecure = false
-  private.maxTimeout = 1
-  private.maxTries = 3
+  private.maxTimeout = HttpStream.static.TIMEOUT_DEFAULT
+  private.maxTries = HttpStream.static.TRIES_DEFAULT
   private.postData = nil
   private.requestHeaders = {}
   private.responseCode = 0

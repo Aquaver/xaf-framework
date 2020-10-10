@@ -20,6 +20,11 @@ Text field module is the most common graphical component which allows entering d
 
   * **Return:** `'true'` - If text field has been cleared without errors.
 
+* **Function:** `focus(lineNumber)` - Sets text field object's state to focused on given line and allow typing directly.
+
+  * **Parameter:** `lineNumber` - Target field line number value.
+  * **Return:** `oldLine` - Old value of selected line, if zero then the field was not focused on.
+
 * **Function:** `getColorSelected()` - Returns text field selection (highlight) color.
 
   * **Return:** `colorSelected` - Current text field highlight color as number.
@@ -73,6 +78,10 @@ Text field module is the most common graphical component which allows entering d
 
   * **Parameter:** `text` - Table with new text content table.
   * **Return:** `'true'` - If new text has been set correctly.
+
+* **Function:** `unfocus()` - Sets text field object's state to unfocused and blocks further typing.
+
+  * **Return:** `'true'` - If this method has been executed without errors.
 
 * **Function:** `view()` - Renders text field on the screen.
 

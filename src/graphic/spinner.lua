@@ -243,8 +243,19 @@ function Spinner:initialize()
   public.setValue = function(self, newValue)                                          -- [!] Function: setValue(newValue) - Forces to change current spinner value (not index) independently on its type (counter or iterator).
     assert(type(newValue) ~= "nil", "[XAF Graphic] Expected ANYTHING as argument #1") -- [!] Parameter: newValue - New value to set - must belong to current set of spinner values.
                                                                                       -- [!] Return: 'true' or 'false' - If the new value has been set correctly - 'false' on bad new value, which does not belong to current set.
+    local newValueLocal = newValue
+    local valueLocal = nil
+
     for key, value in pairs(private.contentTable) do
-      if (value == newValue) then
+      if (type(newValue) == "number" and type(value) == "number") then -- Prevents fails when comparing floating point numbers.
+        newValueLocal = tostring(newValue)
+        valueLocal = tostring(value)
+      else
+        newValueLocal = newValue
+        valueLocal = value
+      end
+
+      if (valueLocal == newValueLocal) then
         private.contentIndex = key
         private.contentValue = value
 

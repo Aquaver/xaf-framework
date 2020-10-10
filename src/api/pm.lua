@@ -64,8 +64,11 @@ function PackageManager:initialize()
     return pathBinary
   end
 
-  public.getPackageVersion = function(self)                                                                                                           -- [!] Function: getPackageVersion() - Returns detected package version.
-    local pathConfig = filesystem.concat('/', private.pathRoot, private.pathPackages, private.pathPackage, private.pathPackageConfig, "package.info") -- [!] Return: packageVersion - Retrieved package version from its configuration file.
+  public.getPackageData = function(self, packageName)                                                                                               -- [!] Function: getPackageData(packageName) - Returns specified package configuration data.
+    assert(type(packageName) == "string" or type(packageName) == "nil", "[XAF Core] Expected STRING as argument #1")                                -- [!] Parameter: packageName - Target package name, if not passed (nil) then tries to get configuration of this package (self reference).
+                                                                                                                                                    -- [!] Return: pathTable - Retrieved package data table from its configuration file.
+    local packageTargetName = (packageName == nil) and private.pathPackage or packageName
+    local pathConfig = filesystem.concat('/', private.pathRoot, private.pathPackages, packageTargetName, private.pathPackageConfig, "package.info")
     local pathTable = {}
 
     if (filesystem.exists(pathConfig) == true) then
@@ -73,12 +76,12 @@ function PackageManager:initialize()
 
       if (pathTable["package-description"] and pathTable["package-identifier"] and pathTable["package-index"] and
           pathTable["package-owner"] and pathTable["package-title"] and pathTable["package-version"] and pathTable["package-xaf"]) then
-            return pathTable["package-version"]
+            return pathTable
       else
-        error("[XAF Error] Invalid package configuration file - cannot read version")
+        error("[XAF Error] Invalid package configuration file - cannot read data")
       end
     else
-      error("[XAF Error] Could not find configuration for package '" .. private.pathPackage .. "'")
+      error("[XAF Error] Could not find configuration file for package '" .. packageTargetName .. "'")
     end
   end
 
